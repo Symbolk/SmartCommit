@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import os
+# path = "C:/Documents and Settings/Program Files/"
+# os.chdir(path)
+os.system('../dist/SmartCommit-win32-x64/SmartCommit.exe')
