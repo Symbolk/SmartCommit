@@ -3,4 +3,9 @@
 import os
 # path = "C:/Documents and Settings/Program Files/"
 # os.chdir(path)
-os.system('../dist/SmartCommit-win32-x64/SmartCommit.exe')
+# repo_path = os.getcwd()
+# -r repo_path
+# os.system("F:/workspace/dev/SmartCommit/dist/SmartCommit-win32-x64/SmartCommit.exe --repo=%s" % repo_path)
+
+os.system("F:/workspace/dev/SmartCommit/dist/SmartCommit-win32-x64/SmartCommit.exe")
+print("Farewell~")

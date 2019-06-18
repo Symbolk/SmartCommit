@@ -1,8 +1,19 @@
 const electron = require('electron')
 const app = electron.app
 const BrowserWindow = electron.BrowserWindow
+const optionDefinitions = [
+    { name: 'repo', alias: 'r', type: String, defaultOption: "" }
+    // { name: 'src', type: String, multiple: true, defaultOption: true },
+    // { name: 'timeout', alias: 't', type: Number }
+]
+// const commandLineArgs = require('command-line-args')
 
 function createWindow() {
+    // BUG cannot parse args correctly from .exe, with commandLineArgs or minimist
+    // var argv = require('minimist')(process.argv.slice(2));
+    // const options = commandLineArgs(optionDefinitions) 
+    // console.log(options.repo);
+
     const {
         width,
         height
