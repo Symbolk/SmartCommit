@@ -7,7 +7,10 @@
     "start": "cd electron-app && electron main.js --debug",
     "simpleserver": "node_modules/.bin/http-server -c-1 ./ -p 8888"
   },
-  "keywords": ["git", "commit"],
+  "keywords": [
+    "git",
+    "commit"
+  ],
   "author": "Symbolk",
   "license": "MIT",
   "devDependencies": {

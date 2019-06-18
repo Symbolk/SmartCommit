@@ -1,11 +1,11 @@
 const git = require("simple-git");
 const d3 = require("d3");
 
-vizStatus("D:\\workspace\\dev\\Electron\\monaco-editor-samples")
+vizStatus("")
 
 /**
  * Get the status of a git repo, and visualize the change set
- * @param {} repo_path
+ * @param {} repo_path empty means the current working directory
  */
 function vizStatus(repo_path) {
 	git(repo_path).status((err, status) => {

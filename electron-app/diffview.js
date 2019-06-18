@@ -10,7 +10,7 @@ require(['vs/editor/editor.main'], function () {
 		scrollBeyondLastLine: false
 	});
 
-	monaco.Promise.join([xhr('D:\\workspace\\dev\\Electron\\monaco-editor-samples\\test.js'), xhr('D:\\workspace\\dev\\Electron\\monaco-editor-samples\\test.js')]).then(function (r) {
+	monaco.Promise.join([xhr('changes.js'), xhr('diffview.js')]).then(function (r) {
 		var originalTxt = r[0].responseText;
 		var modifiedTxt = r[1].responseText;
 
