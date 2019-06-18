@@ -1,4 +1,4 @@
-const git = require("simple-git");
+var git = require("simple-git");
 const d3 = require("d3");
 
 vizStatus("")
@@ -8,9 +8,14 @@ vizStatus("")
  * @param {} repo_path empty means the current working directory
  */
 function vizStatus(repo_path) {
-	git(repo_path).status((err, status) => {
+	git = git(repo_path)
+	git.status((err, status) => {
+		if (err) throw err;
 		let data = formatStatus(status);
 		draw(data);
+		// get the latest commit hash (uncessary since we can use HEAD instead)
+		// git.log((err, res) => {
+		// });
 	});
 }
 
@@ -53,6 +58,14 @@ function formatStatus(status) {
  */
 function getFileName(path) {
 	return path.replace(/^.*[\\\/]/, '');
+}
+
+/**
+ * Get the parent dir for a file/dir
+ * @param {} path 
+ */
+function getParentDir(path) {
+	return path.substring(0, path.lastIndexOf("\\") + 1);
 }
 
 /**
@@ -192,7 +205,18 @@ function draw(data) {
 		// .style("stroke-width", 0.5)
 		.on("mousemove", groups.snap)
 		.on("dblclick", (d) => {
-			console.log(d.path)
+			// get file content before and after the change
+			let arg = 'HEAD:' + d.path
+			let abs_path = getParentDir(git._baseDir) + d.path
+			if (d.operation != "A") {
+				// exists at last commit
+				git.show([arg], (err, res) => {
+					originalTxt = res
+					showDiff(originalTxt, abs_path)
+				})
+			} else {
+				showDiff("", abs_path)
+			}
 		})
 		.call(force.drag);
 
