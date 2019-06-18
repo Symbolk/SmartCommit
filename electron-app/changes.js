@@ -51,7 +51,7 @@ function formatStatus(status) {
  * Get the file name from absolute path
  * @param {} path
  */
-function getFileName(path){
+function getFileName(path) {
 	return path.replace(/^.*[\\\/]/, '');
 }
 
@@ -65,7 +65,7 @@ function draw(data) {
 		count = 10,
 		fill = d3.scale.category10(),
 		rec_w = 100,
-		rec_h = 20;
+		rec_h = 30;
 	// nodes = d3.range(count).map(Object);
 	nodes = data.nodes;
 
@@ -191,10 +191,15 @@ function draw(data) {
 		// })
 		// .style("stroke-width", 0.5)
 		.on("mousemove", groups.snap)
+		.on("dblclick", (d) => {
+			console.log(d.path)
+		})
 		.call(force.drag);
 
 	node.append("rect")
-		.attr("width", rec_w)
+		.attr("width", (d) => {
+			return (d.name.length + 2) * 10;
+		})
 		.attr("height", rec_h)
 		.attr("rx", 4)
 		// .attr("transform", function(d) {
@@ -207,10 +212,11 @@ function draw(data) {
 
 
 	node.append("text")
-		.attr("dx", rec_w*0.5).attr("dy", rec_h * 0.7)
+		.attr("dx", (d) => {
+			return (d.name.length + 2) * 5;
+		}).attr("dy", rec_h * 0.7)
 		.style("font-size", "20px")
 		.attr("text-anchor", "middle").style("fill", "black")
-
 		.text(function (d) {
 			return d.name;
 		});
