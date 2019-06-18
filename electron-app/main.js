@@ -3,12 +3,12 @@ const app = electron.app
 const BrowserWindow = electron.BrowserWindow
 
 function createWindow() {
-    // const {
-    //     width,
-    //     height
-    // } = electron.screen.getPrimaryDisplay().workAreaSize
+    const {
+        width,
+        height
+    } = electron.screen.getPrimaryDisplay().workAreaSize
 
-	const width = 800, height =600
+	// const width = 800, height =600
     let mainWindow = new BrowserWindow({
         width: width,
         height: height,
@@ -37,7 +37,8 @@ function createWindow() {
     //         console.log('results', results)
     //     }
     // )
-    mainWindow.setMenu(null);
+
+    // mainWindow.setMenu(null);
 
     // load static file
     mainWindow.loadURL(`file://${__dirname}/index.html`)
