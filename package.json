@@ -1,11 +1,12 @@
 {
   "name": "SmartCommit",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Smart Assistant to help you commit elegantly.",
-  "main": "electronapp/main.js",
+  "main": "main.js",
   "scripts": {
     "start": "cd electron-app && electron main.js --debug",
-    "simpleserver": "node_modules/.bin/http-server -c-1 ./ -p 8888"
+    "simpleserver": "node_modules/.bin/http-server -c-1 ./ -p 8888",
+    "build-win64": "electron-packager ./electron-app SmartCommit --electron-version 5.0.3 --platform win32 --arch=x64 --icon ./assets/logo.png --out ./dist --overwrite"
   },
   "keywords": [
     "git",
@@ -14,13 +15,11 @@
   "author": "Symbolk",
   "license": "MIT",
   "devDependencies": {
+    "electron-packager": "^13.1.1",
     "http-server": "^0.11.1",
     "nodemon": "^1.19.1"
   },
   "dependencies": {
-    "electron": "^5.0.3",
-    "d3": "^3.5.17",
-    "monaco-editor": "0.14.3",
-    "simple-git": "^1.115.0"
+    "electron": "5.0.3"
   }
 }

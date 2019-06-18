@@ -90,3 +90,5 @@ typings/
 .vscode/
 
 __pycache__/
+
+dist/
