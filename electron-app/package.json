@@ -5,6 +5,8 @@
     "dependencies": {
         "command-line-args": "^5.1.1",
         "d3": "^3.5.17",
+        "language-detect": "^1.1.0",
+        "language-map": "^1.4.0",
         "monaco-editor": "0.14.3",
         "path": "^0.12.7",
         "simple-git": "^1.115.0"

@@ -1,4 +1,7 @@
 var diffEditor = undefined;
+var langDetector = require('language-detect');
+var langMapper = require('language-map');
+
 // AMD require version to 
 (function () {
     var nodeRequire = global.require
@@ -49,14 +52,21 @@ var diffEditor = undefined;
  */
 function showDiff(originalTxt, path) {
     if (diffEditor != undefined) {
-        monaco.Promise.join([xhr(path)]).then(function (r) {
-            let modifiedTxt = r[0].responseText;
-            diffEditor.setModel({
-                original: monaco.editor.createModel(originalTxt, 'javascript'),
-                // modified: monaco.editor.createModel(readTextFile("file://" + path), 'javascript')
-                modified: monaco.editor.createModel(modifiedTxt, 'javascript')
+        let lang = 'plaintext'
+        langDetector(path, function (err, language) {
+            if (err) console.log(err); //=> null
+            lang = langMapper[language].aceMode;
+            console.log(path)
+            console.log(lang)
+            monaco.Promise.join([xhr(path)]).then(function (r) {
+                let modifiedTxt = r[0].responseText;
+                diffEditor.setModel({
+                    original: monaco.editor.createModel(originalTxt, lang),
+                    // modified: monaco.editor.createModel(readTextFile("file://" + path), 'javascript')
+                    modified: monaco.editor.createModel(modifiedTxt, lang)
+                })
             })
-        })
+        });
     }
 }
 
