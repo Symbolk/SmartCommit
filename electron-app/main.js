@@ -57,8 +57,9 @@ function createWindow() {
 
     // load dynamicly rendered file
     // win.loadURL('http://127.0.0.1:5858/')
-    // win.webContents.openDevTools()
-    process.env.NODE_ENV !== 'production' && mainWindow.webContents.openDevTools();
+
+    // since it seems impossible to detect NODE_ENV in packaged app, therefore use development checking is more reasonable
+    process.env.NODE_ENV == 'development' && mainWindow.webContents.openDevTools();
     mainWindow.on('closed', function () {
         mainWindow = null
     })

@@ -1,6 +1,4 @@
 var diffEditor = undefined;
-var langDetector = require('language-detect');
-var langMapper = require('language-map');
 
 // AMD require version to 
 (function () {
@@ -48,25 +46,19 @@ var langMapper = require('language-map');
 /**
  * Show the file content diff at HEAD and in working directory
  * @param {*} originalTxt 
- * @param {*} path 
+ * @param {*} abs_path 
  */
-function showDiff(originalTxt, path) {
+function showDiff(originalTxt, abs_path, lang) {
     if (diffEditor != undefined) {
-        let lang = 'plaintext'
-        langDetector(path, function (err, language) {
-            if (err) console.log(err); //=> null
-            lang = langMapper[language].aceMode;
-            console.log(path)
-            console.log(lang)
-            monaco.Promise.join([xhr(path)]).then(function (r) {
-                let modifiedTxt = r[0].responseText;
-                diffEditor.setModel({
-                    original: monaco.editor.createModel(originalTxt, lang),
-                    // modified: monaco.editor.createModel(readTextFile("file://" + path), 'javascript')
-                    modified: monaco.editor.createModel(modifiedTxt, lang)
-                })
+        console.log(abs_path + ':' + lang)
+        monaco.Promise.join([xhr(abs_path)]).then(function (r) {
+            let modifiedTxt = r[0].responseText;
+            diffEditor.setModel({
+                original: monaco.editor.createModel(originalTxt, lang),
+                // modified: monaco.editor.createModel(readTextFile("file://" + path), 'javascript')
+                modified: monaco.editor.createModel(modifiedTxt, lang)
             })
-        });
+        })
     }
 }
 

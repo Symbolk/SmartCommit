@@ -1,5 +1,7 @@
 var git = require("simple-git");
 const d3 = require("d3");
+const langDetector = require('language-detect');
+const langMapper = require('language-map');
 
 vizStatus("")
 
@@ -9,13 +11,18 @@ vizStatus("")
  */
 function vizStatus(repo_path) {
 	git = git(repo_path)
-	git.status((err, status) => {
-		if (err) throw err;
-		let data = formatStatus(status);
-		draw(data);
-		// get the latest commit hash (uncessary since we can use HEAD instead)
-		// git.log((err, res) => {
-		// });
+	var repo_path = getParentDir(git._baseDir);
+	git.status(async (err, status) => {
+		try {
+			if (err) throw err;
+			let data = await formatStatus(repo_path, status);
+			draw(data);
+			// get the latest commit hash (uncessary since we can use HEAD instead)
+			// git.log((err, res) => {
+			// });
+		} catch (err) {
+			console.log(err);
+		}
 	});
 }
 
@@ -23,33 +30,77 @@ function vizStatus(repo_path) {
  * Format the git statusinto graph data in json format
  * @param {} status
  */
-function formatStatus(status) {
+async function formatStatus(repo_path, status) {
 	// vertices and edges
 	let data = {
 		"nodes": [],
 		"links": []
 	};
 	let nodes = new Array();
-	for (let path of status.not_added) {
-		let name = getFileName(path);
-		nodes.push({
-			"operation": "A",
-			"type": "file",
-			"name": name,
-			"path": path
-		});
-	}
-	for (let path of status.modified) {
-		let name = getFileName(path);
-		nodes.push({
-			"operation": "M",
-			"type": "file",
-			"name": name,
-			"path": path
-		});
-	}
+	let temp = new Array();
+
+	temp = await formatWorkingFiles(repo_path, status.modified, 'M');
+	Array.prototype.push.apply(nodes, temp);
+	temp = await formatWorkingFiles(repo_path, status.not_added, 'A');
+	Array.prototype.push.apply(nodes, temp);
+	temp = await formatWorkingFiles(repo_path, status.conflicted, 'C');
+	Array.prototype.push.apply(nodes, temp);
+	temp = await formatWorkingFiles(repo_path, status.deleted, 'D');
+	Array.prototype.push.apply(nodes, temp);
+	temp = await formatWorkingFiles(repo_path, status.renamed, 'R');
+	Array.prototype.push.apply(nodes, temp);
+
+
 	data.nodes = nodes;
 	return data;
+}
+
+/**
+ * Format group of diff files in working dir to nodes array
+ * @param {Array} file_list 
+ * @param {string} operation 
+ */
+async function formatWorkingFiles(repo_path, file_list, operation) {
+	let nodes = new Array();
+	for (let path of file_list) {
+		let node = await generateNode(repo_path, path, operation);
+		nodes.push(node);
+	}
+	return nodes;
+}
+
+/**
+ * Generate one single node for each file
+ * @param {} repo_path 
+ * @param {*} path 
+ * @param {*} operation 
+ */
+function generateNode(repo_path, path, operation) {
+	return new Promise((resolve, reject) => {
+		let lang = 'unknown'; // unknown files will not be diff
+		let abs_path =  repo_path + path;
+		langDetector(abs_path, (err, language) => {
+			// suppose the path is relative to the curren folder
+			if (err) {
+				console.log(err);
+				lang = 'plaintext';
+			} else {
+				lang = langMapper[language].aceMode;
+			}
+
+			let node = {
+				"operation": operation,
+				"type": "text", // TODO: the file type (text, binary, link, etc)
+				"lang": lang,
+				"name": getFileName(path),
+				"path": path,
+				"abs_path":  abs_path// relative path
+			};
+
+			resolve(node);
+		});
+	})
+
 }
 
 /**
@@ -207,18 +258,17 @@ function draw(data) {
 		.on("dblclick", (d) => {
 			// get file content before and after the change
 			let arg = 'HEAD:' + d.path
-			let abs_path = getParentDir(git._baseDir) + d.path
 			if (d.operation != "A") {
 				// exists at last commit
 				git.show([arg], (err, res) => {
+					if (err) throw err;
 					originalTxt = res
-					showDiff(originalTxt, abs_path)
+					showDiff(originalTxt, d.abs_path, d.lang)
 				})
 			} else {
-				showDiff("", abs_path)
+				showDiff("", d.abs_path, d.lang)
 			}
-		})
-		.call(force.drag);
+		}).call(force.drag);
 
 	node.append("rect")
 		.attr("width", (d) => {
