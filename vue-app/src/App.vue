@@ -2,16 +2,19 @@
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
     <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <FileGroups></FileGroups>
   </div>
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
+import FileGroups from './components/FileGroups.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    HelloWorld,
+    FileGroups
   }
 }
 </script>
