@@ -9,12 +9,17 @@
 <script>
 import HelloWorld from './components/HelloWorld.vue'
 import FileCards from './components/FileCards.vue'
+import Vue from 'vue';
+import Vodal from 'vodal';
+
+Vue.component(Vodal.name, Vodal);
 
 export default {
   name: 'app',
   components: {
     HelloWorld,
-    FileCards
+    FileCards,
+    Vodal
   }
 }
 </script>

@@ -24,125 +24,162 @@
             :drop-placeholder="dropPlaceholderOptions"
           >
             <Draggable v-for="card in column.children" :key="card.id">
-              <div :class="card.props.className" :style="card.props.style">
-                <p>{{ card.data }}</p>
+              <div
+                :class="card.props.className"
+                :style="card.props.style"
+                class="no-select"
+                @dblclick="onShow(card.data)"
+              >
+                <p class="no-select">{{ card.data }}</p>
               </div>
             </Draggable>
           </Container>
         </div>
       </Draggable>
     </Container>
+    <vodal
+      measure="em"
+      :show="show"
+      :animation="animation"
+      :width="28.5"
+      :height="17"
+      :duration="301"
+      class="my-dialog"
+      @hide="show = false"
+    >
+      <div class="header">{{modalHeader}}</div>
+      <div class="body">{{modalContent}}</div>
+    </vodal>
   </div>
 </template>
 
 <script>
-import { Container, Draggable } from 'vue-smooth-dnd'
-import { applyDrag, generateItems } from './utils/helpers'
+import { Container, Draggable } from "vue-smooth-dnd";
+import { applyDrag, generateItems } from "./utils/helpers";
 
 const lorem = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
 Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
-Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`
+Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
 
-const columnNames = ['Lorem', 'Ipsum', 'Consectetur', 'Eiusmod']
+const columnNames = ["Lorem", "Ipsum", "Consectetur", "Eiusmod"];
 
 const cardColors = [
-  'azure',
-  'beige',
-  'bisque',
-  'blanchedalmond',
-  'burlywood',
-  'cornsilk',
-  'gainsboro',
-  'ghostwhite',
-  'ivory',
-  'khaki'
-]
+  "azure",
+  "beige",
+  "bisque",
+  "blanchedalmond",
+  "burlywood",
+  "cornsilk",
+  "gainsboro",
+  "ghostwhite",
+  "ivory",
+  "khaki"
+];
 
 const pickColor = () => {
-  const rand = Math.floor(Math.random() * 10)
-  return cardColors[rand]
-}
+  const rand = Math.floor(Math.random() * 10);
+  return cardColors[rand];
+};
 
 const scene = {
-  type: 'container',
+  type: "container",
   props: {
-    orientation: 'horizontal'
+    orientation: "horizontal"
   },
   children: generateItems(4, i => ({
     id: `column${i}`,
-    type: 'container',
+    type: "container",
     name: columnNames[i],
     props: {
-      orientation: 'vertical',
-      className: 'card-container'
+      orientation: "vertical",
+      className: "card-container"
     },
     children: generateItems(+(Math.random() * 5).toFixed() + 5, j => ({
-      type: 'draggable',
+      type: "draggable",
       id: `${i}${j}`,
       props: {
-        className: 'card',
-        style: {backgroundColor: pickColor()}
+        className: "card",
+        style: { backgroundColor: pickColor() }
       },
       data: lorem.slice(0, Math.floor(Math.random() * 150) + 30)
     }))
   }))
-}
+};
 
 export default {
-  name: 'Cards',
+  name: "Cards",
 
-  components: {Container, Draggable},
+  components: { Container, Draggable },
 
-  data () {
+  data() {
     return {
       scene,
       upperDropPlaceholderOptions: {
-        className: 'cards-drop-preview',
-        animationDuration: '150',
+        className: "cards-drop-preview",
+        animationDuration: "150",
         showOnTop: true
       },
       dropPlaceholderOptions: {
-        className: 'drop-preview',
-        animationDuration: '150',
+        className: "drop-preview",
+        animationDuration: "150",
         showOnTop: true
-      }
-    }
+      },
+      // modal data
+      show: false,
+      animation: "",
+      modalHeader: "",
+      modalContent: ""
+    };
   },
 
   methods: {
-    onColumnDrop (dropResult) {
-      const scene = Object.assign({}, this.scene)
-      scene.children = applyDrag(scene.children, dropResult)
-      this.scene = scene
+    onColumnDrop(dropResult) {
+      const scene = Object.assign({}, this.scene);
+      scene.children = applyDrag(scene.children, dropResult);
+      this.scene = scene;
     },
 
-    onCardDrop (columnId, dropResult) {
+    onCardDrop(columnId, dropResult) {
       if (dropResult.removedIndex !== null || dropResult.addedIndex !== null) {
-        const scene = Object.assign({}, this.scene)
-        const column = scene.children.filter(p => p.id === columnId)[0]
-        const columnIndex = scene.children.indexOf(column)
+        const scene = Object.assign({}, this.scene);
+        const column = scene.children.filter(p => p.id === columnId)[0];
+        const columnIndex = scene.children.indexOf(column);
 
-        const newColumn = Object.assign({}, column)
-        newColumn.children = applyDrag(newColumn.children, dropResult)
-        scene.children.splice(columnIndex, 1, newColumn)
+        const newColumn = Object.assign({}, column);
+        newColumn.children = applyDrag(newColumn.children, dropResult);
+        scene.children.splice(columnIndex, 1, newColumn);
 
-        this.scene = scene
+        this.scene = scene;
       }
     },
 
-    getCardPayload (columnId) {
+    getCardPayload(columnId) {
       return index => {
-        return this.scene.children.filter(p => p.id === columnId)[0].children[index]
-      }
+        return this.scene.children.filter(p => p.id === columnId)[0].children[
+          index
+        ];
+      };
     },
 
-    dragStart () {
-      console.log('drag started')
+    dragStart() {
+      console.log("drag started");
     },
 
-    log (...params) {
-      console.log(...params)
+    log(...params) {
+      console.log(...params);
+    },
+
+    onShow(data) {
+      this.animation = "door";
+      this.show = true;
+      this.modalHeader = data;
+      this.modalContent = data;
     }
   }
-}
+};
 </script>
+
+<style>
+@import "../assets/common.css";
+@import "../assets/door.css";
+</style>
