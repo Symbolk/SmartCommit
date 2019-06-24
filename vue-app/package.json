@@ -14,6 +14,7 @@
   "main": "background.js",
   "dependencies": {
     "core-js": "^2.6.5",
+    "vodal": "^2.4.0",
     "vue": "^2.6.10",
     "vue-smooth-dnd": "^0.8.0"
   },
