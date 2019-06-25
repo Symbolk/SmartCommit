@@ -49,7 +49,19 @@
       @hide="show = false"
     >
       <div class="header">{{modalHeader}}</div>
-      <div class="body">{{modalContent}}</div>
+          <!-- <MonacoEditor
+      :diffEditor="true"
+      original="..."></MonacoEditor> -->
+          <MonacoEditor
+                height="300"
+                width="1200"
+                language="javascript"
+                :code="code"
+                :editorOptions="options"
+                @mounted="onMounted"
+                @codeChange="onCodeChange"
+                >
+        </MonacoEditor>
     </vodal>
   </div>
 </template>
@@ -58,6 +70,8 @@
 import { Container, Draggable } from "vue-smooth-dnd";
 import { applyDrag, generateItems } from "./utils/helpers";
 import { getDiffFiles, analyzeStatus2 } from "./utils/gitutils";
+// import MonacoEditor from 'monaco-editor-vue';
+var MonacoEditor =require( 'vue-monaco-editor')
 
 const lorem = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
 Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
@@ -111,7 +125,7 @@ var scene = {
 export default {
   name: "Cards",
 
-  components: { Container, Draggable },
+  components: { Container, Draggable, MonacoEditor },
 
   data() {
     return {
@@ -131,7 +145,11 @@ export default {
       show: false,
       animation: "",
       modalHeader: "",
-      modalContent: ""
+
+      code: '<MonacoEditor language="typescript" :code="code" :editorOptions="options" @mounted="onMounted" @codeChange="onCodeChange"></MonacoEditor>',
+      options: {
+        selectOnLineNumbers: true
+      }
     };
   },
 
@@ -176,7 +194,6 @@ export default {
       this.animation = "door";
       this.show = true;
       this.modalHeader = data;
-      this.modalContent = data;
     }
   },
   created() {
