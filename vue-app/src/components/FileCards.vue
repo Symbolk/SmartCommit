@@ -1,7 +1,12 @@
 <template>
   <div class="card-scene">
+    <div v-if="loading">
+      <b-button variant="primary" disabled>
+        <b-spinner small type="grow"></b-spinner>Loading...
+      </b-button>
+    </div>
     <Container
-      v-if="isReady"
+      v-else
       orientation="horizontal"
       @drop="onColumnDrop($event)"
       drag-handle-selector=".column-drag-handle"
@@ -49,19 +54,6 @@
       @hide="show = false"
     >
       <div class="header">{{modalHeader}}</div>
-          <!-- <MonacoEditor
-      :diffEditor="true"
-      original="..."></MonacoEditor> -->
-          <MonacoEditor
-                height="300"
-                width="1200"
-                language="javascript"
-                :code="code"
-                :editorOptions="options"
-                @mounted="onMounted"
-                @codeChange="onCodeChange"
-                >
-        </MonacoEditor>
     </vodal>
   </div>
 </template>
@@ -69,9 +61,8 @@
 <script>
 import { Container, Draggable } from "vue-smooth-dnd";
 import { applyDrag, generateItems } from "./utils/helpers";
-import { getDiffFiles, analyzeStatus2 } from "./utils/gitutils";
-// import MonacoEditor from 'monaco-editor-vue';
-var MonacoEditor =require( 'vue-monaco-editor')
+import { getDiffFiles, analyzeStatus } from "./utils/gitutils";
+// import axios from "axios";
 
 const lorem = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
 Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
@@ -92,23 +83,6 @@ const cardColors = [
   "khaki"
 ];
 
-var diffFiles = {
-  nodes: [],
-  links: []
-};
-// (async () => {
-//   diffFiles = await getDiffFiles("");
-//   console.log("in");
-//   console.log(diffFiles);
-// })();
-// console.log("out");
-// console.log(diffFiles);
-
-// getDiffFiles("").then(res => {
-//   console.log("then");
-//   console.log(res);
-// });
-
 const pickColor = () => {
   const rand = Math.floor(Math.random() * 10);
   return cardColors[rand];
@@ -125,7 +99,7 @@ var scene = {
 export default {
   name: "Cards",
 
-  components: { Container, Draggable, MonacoEditor },
+  components: { Container, Draggable },
 
   data() {
     return {
@@ -141,12 +115,13 @@ export default {
         showOnTop: true
       },
       // async analyzing git repo
-      isReady: false,
+      loading: true,
       show: false,
       animation: "",
       modalHeader: "",
 
-      code: '<MonacoEditor language="typescript" :code="code" :editorOptions="options" @mounted="onMounted" @codeChange="onCodeChange"></MonacoEditor>',
+      code:
+        '<MonacoEditor language="typescript" :code="code" :editorOptions="options" @mounted="onMounted" @codeChange="onCodeChange"></MonacoEditor>',
       options: {
         selectOnLineNumbers: true
       }
@@ -194,40 +169,95 @@ export default {
       this.animation = "door";
       this.show = true;
       this.modalHeader = data;
+    },
+
+    prepareDataTest() {
+      // webSecurity: false in background.js
+      // axios
+      //   .get("https://reddit.com/r/aww.json?raw_json=1")
+      //   .then(response => {
+      //     this.scene = response.data.data.children;
+      //     this.loading = false;
+      //     console.log(scene);
+      //   })
+      //   .catch(error => {
+      //     console.log(error);
+      //   });
+      console.log("Analyzing git repo...");
+      analyzeStatus("")
+        .then(res => {
+          console.log(res);
+          this.scene = {
+            type: "container",
+            props: {
+              orientation: "horizontal"
+            },
+            children: generateItems(4, i => ({
+              id: `column${i}`,
+              type: "container",
+              name: columnNames[i],
+              props: {
+                orientation: "vertical",
+                className: "card-container"
+              },
+              children: generateItems(res.nodes.length, j => ({
+                type: "draggable",
+                id: `${i}${j}`,
+                props: {
+                  className: "card",
+                  style: { backgroundColor: pickColor() }
+                },
+                data: res.nodes[j].name
+              }))
+            }))
+          };
+          this.loading = false;
+          console.log(scene);
+        })
+        .catch(err => {
+          this.loading = false;
+          console.log(err);
+        });
+    },
+
+    prepareData() {
+      getDiffFiles("")
+        .then(res => {
+          this.scene = {
+            type: "container",
+            props: {
+              orientation: "horizontal"
+            },
+            children: generateItems(4, i => ({
+              id: `column${i}`,
+              type: "container",
+              name: columnNames[i],
+              props: {
+                orientation: "vertical",
+                className: "card-container"
+              },
+              children: generateItems(res.nodes.length, j => ({
+                type: "draggable",
+                id: `${i}${j}`,
+                props: {
+                  className: "card",
+                  style: { backgroundColor: pickColor() }
+                },
+                data: res.nodes[j].name
+              }))
+            }))
+          };
+          this.loading = false;
+          console.log(scene);
+        })
+        .catch(err => {
+          this.loading = false;
+          console.log(err);
+        });
     }
   },
   created() {
-    getDiffFiles("").then(res => {
-      console.log("then");
-      console.log(res);
-
-      this.scene = {
-        type: "container",
-        props: {
-          orientation: "horizontal"
-        },
-        children: generateItems(4, i => ({
-          id: `column${i}`,
-          type: "container",
-          name: columnNames[i],
-          props: {
-            orientation: "vertical",
-            className: "card-container"
-          },
-          children: generateItems(res.nodes.length, j => ({
-            type: "draggable",
-            id: `${i}${j}`,
-            props: {
-              className: "card",
-              style: { backgroundColor: pickColor() }
-            },
-            data: res.nodes[j].name
-          }))
-        }))
-      };
-      this.isReady = true;
-      console.log(scene);
-    });
+    this.prepareDataTest();
   }
 };
 </script>

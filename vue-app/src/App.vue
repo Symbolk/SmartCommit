@@ -9,8 +9,8 @@
 <script>
 import HelloWorld from './components/HelloWorld.vue'
 import FileCards from './components/FileCards.vue'
-import Vue from 'vue';
-import Vodal from 'vodal';
+import Vue from 'vue'
+import Vodal from 'vodal'
 
 Vue.component(Vodal.name, Vodal);
 

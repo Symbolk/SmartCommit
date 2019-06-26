@@ -96,9 +96,10 @@ function getParentDir(path) {
 
 /**
  * Analyze the status of a git repo to get changed files sets
+ * promise way
  * @param {} repo_path empty means the cu working directory
  */
-const analyzeStatus = (repo_path) => {
+export const analyzeStatus = (repo_path) => {
     var git = require('simple-git');
     git = git(repo_path)
     repo_path = getParentDir(git._baseDir);
@@ -120,11 +121,13 @@ const analyzeStatus = (repo_path) => {
     })
 }
 
+// callback way
 export const analyzeStatus2 = (repo_path, callback) => {
     var git = require('simple-git');
     git = git(repo_path)
     repo_path = getParentDir(git._baseDir);
     // repo_path = git._baseDir + '/';
+    console.log("Repo: " + repo_path)
     git.status(async (err, status) => {
         try {
             if (err) throw err;
@@ -139,10 +142,10 @@ export const analyzeStatus2 = (repo_path, callback) => {
     })
 }
 
-export const getDiffFiles = async (repo_path) => {
-    let res = await analyzeStatus(repo_path)
-    return res;
-}
+// export const getDiffFiles = async (repo_path) => {
+//     let res = await analyzeStatus(repo_path)
+//     return res;
+// }
 
 // commonjs
 // module.exports.getDiffFiles = getDiffFiles
