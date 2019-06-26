@@ -1,5 +1,6 @@
 <template>
   <div class="card-scene">
+    <!-- <b-button v-b-modal.modal-xl>Launch demo modal</b-button> -->
     <div v-if="loading">
       <b-button variant="primary" disabled>
         <b-spinner small type="grow"></b-spinner>Loading...
@@ -34,7 +35,7 @@
                 :class="card.props.className"
                 :style="card.props.style"
                 class="no-select"
-                @dblclick="onShow(card.data)"
+                @dblclick="show()"
               >
                 <p class="no-select">{{ card.data }}</p>
               </div>
@@ -43,7 +44,7 @@
         </div>
       </Draggable>
     </Container>
-    <vodal
+    <!-- <vodal
       measure="em"
       :show="show"
       :animation="animation"
@@ -54,7 +55,29 @@
       @hide="show = false"
     >
       <div class="header">{{modalHeader}}</div>
-    </vodal>
+
+    </vodal>-->
+    <!-- <b-modal id="modal-xl" size="xl" title="Extra Large Modal">
+      <MonacoEditor
+        height="100%"
+        theme="vs-light"
+        language="javascript"
+        :options="options"
+        :diffEditor="true"
+        original="dfgt"
+        value="abcv"
+      ></MonacoEditor>
+    </b-modal>-->
+    <modal name="diffview">
+      <MonacoEditor
+        theme="vs-light"
+        language="javascript"
+        :options="options"
+        :diffEditor="true"
+        original="dfgt"
+        value="abcv"
+      ></MonacoEditor>
+    </modal>
   </div>
 </template>
 
@@ -62,7 +85,7 @@
 import { Container, Draggable } from "vue-smooth-dnd";
 import { applyDrag, generateItems } from "./utils/helpers";
 import { getDiffFiles, analyzeStatus } from "./utils/gitutils";
-// import axios from "axios";
+import MonacoEditor from "monaco-editor-vue";
 
 const lorem = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
 Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. 
@@ -99,7 +122,7 @@ var scene = {
 export default {
   name: "Cards",
 
-  components: { Container, Draggable },
+  components: { Container, Draggable, MonacoEditor },
 
   data() {
     return {
@@ -116,14 +139,13 @@ export default {
       },
       // async analyzing git repo
       loading: true,
-      show: false,
+      showVodal: false,
       animation: "",
       modalHeader: "",
 
-      code:
-        '<MonacoEditor language="typescript" :code="code" :editorOptions="options" @mounted="onMounted" @codeChange="onCodeChange"></MonacoEditor>',
+      // diff editor options
       options: {
-        selectOnLineNumbers: true
+        // selectOnLineNumbers: true
       }
     };
   },
@@ -167,22 +189,18 @@ export default {
 
     onShow(data) {
       this.animation = "door";
-      this.show = true;
+      this.showVodal = true;
       this.modalHeader = data;
     },
 
+    show() {
+      this.$modal.show("diffview");
+    },
+    hide() {
+      this.$modal.hide("diffview");
+    },
+
     prepareDataTest() {
-      // webSecurity: false in background.js
-      // axios
-      //   .get("https://reddit.com/r/aww.json?raw_json=1")
-      //   .then(response => {
-      //     this.scene = response.data.data.children;
-      //     this.loading = false;
-      //     console.log(scene);
-      //   })
-      //   .catch(error => {
-      //     console.log(error);
-      //   });
       console.log("Analyzing git repo...");
       analyzeStatus("")
         .then(res => {
