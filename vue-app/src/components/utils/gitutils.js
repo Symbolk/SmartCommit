@@ -121,7 +121,7 @@ export const analyzeStatus = (repo_path) => {
     })
 }
 
-// callback way
+// callback way (deprecated)
 export const analyzeStatus2 = (repo_path, callback) => {
     var git = require('simple-git');
     git = git(repo_path)
@@ -141,11 +141,3 @@ export const analyzeStatus2 = (repo_path, callback) => {
         }
     })
 }
-
-// export const getDiffFiles = async (repo_path) => {
-//     let res = await analyzeStatus(repo_path)
-//     return res;
-// }
-
-// commonjs
-// module.exports.getDiffFiles = getDiffFiles
