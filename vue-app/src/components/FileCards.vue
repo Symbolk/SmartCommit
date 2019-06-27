@@ -1,6 +1,5 @@
 <template>
   <div class="card-scene">
-    <!-- <b-button v-b-modal.modal-xl>Launch demo modal</b-button> -->
     <div v-if="loading_status">
       <b-button variant="primary" disabled>
         <b-spinner small type="grow"></b-spinner>Loading...
@@ -46,7 +45,7 @@
                 :class="card.props.className"
                 :style="card.props.style"
                 class="no-select"
-                @dblclick="showDiffWithVodal(card.abs_path)"
+                @dblclick="showDiffWithVodal(card.abs_path, card.language)"
               >
                 <p class="no-select">{{ card.data }}</p>
               </div>
@@ -91,15 +90,16 @@
       <div v-if="loading_diff">
         <b-spinner variant="success" label="Spinning"></b-spinner>
       </div>
-      <MonacoEditor
+      <!-- <MonacoEditor
         v-else
         theme="vs-light"
-        language="javascript"
+        :language="language"
         :options="options"
         :diffEditor="true"
         :original="code_left"
         :value="code_right"
-      ></MonacoEditor>
+      ></MonacoEditor>-->
+      <!-- <MonacoEditor theme="vs-dark" language="javascript" value="const gitutils = require('./gitutils');" :options="options"></MonacoEditor> -->
     </modal>
   </div>
 </template>
@@ -163,12 +163,14 @@ export default {
       // diff editor options
       options: {
         // selectOnLineNumbers: true
+        langauge: "javascript"
       },
 
       // diff view contents
       diffTitle: "",
       showVodal: false, // only for vodal
       loading_diff: true,
+      language: "",
       code_left: "",
       code_right: ""
     };
@@ -212,7 +214,7 @@ export default {
     },
 
     // provide two ways to show diff view modal
-    showDiffWithVodal(abs_path) {
+    showDiffWithVodal(abs_path, language) {
       this.showVodal = true;
       this.loading_diff = true;
       this.diffTitle = abs_path;
@@ -221,13 +223,14 @@ export default {
           alert("An error ocurred reading the file :" + err.message);
           return;
         }
+        this.language = language;
         this.code_left = data;
         this.code_right = data;
         this.loading_diff = false;
       });
     },
 
-    showDiffWithJSModal(abs_path) {
+    showDiffWithJSModal(abs_path, language) {
       this.$modal.show("diffview");
       this.loading_diff = true;
       fs.readFile(abs_path, "utf-8", (err, data) => {
@@ -235,6 +238,7 @@ export default {
           alert("An error ocurred reading the file :" + err.message);
           return;
         }
+        this.language = language;
         this.code_left = data;
         this.code_right = data;
         this.loading_diff = false;
@@ -270,7 +274,8 @@ export default {
                   style: { backgroundColor: pickColor() }
                 },
                 data: res.nodes[j].path,
-                abs_path: res.nodes[j].abs_path
+                abs_path: res.nodes[j].abs_path,
+                language: res.nodes[j].lang
               }))
             }))
           };

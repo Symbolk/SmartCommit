@@ -1,12 +1,19 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
+    <!-- testing -->
+    <!-- <MonacoEditor height="200" theme="vs-light" language="javascript" value="const gitutils = require('./gitutils');"></MonacoEditor> -->
   </div>
 </template>
 
 <script>
+import MonacoEditor from "monaco-editor-vue";
+
 export default {
   name: "HelloWorld",
+
+  components: { MonacoEditor },
+
   props: {
     msg: String
   }
