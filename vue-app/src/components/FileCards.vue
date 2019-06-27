@@ -20,6 +20,17 @@
             <span class="column-drag-handle">&#x2630;</span>
             {{ column.name }}
           </div>
+          <b-input-group prepend class="mt-3">
+            <b-form-input placeholder="Commit Message"></b-form-input>
+            <b-input-group-append>
+              <b-button variant="outline-success">
+                <v-icon name="check"/>
+              </b-button>
+              <b-button variant="info">
+                <v-icon name="eraser"/>
+              </b-button>
+            </b-input-group-append>
+          </b-input-group>
           <Container
             group-name="col"
             @drop="(e) => onCardDrop(column.id, e)"
