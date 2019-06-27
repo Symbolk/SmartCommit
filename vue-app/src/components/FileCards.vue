@@ -1,7 +1,7 @@
 <template>
   <div class="card-scene">
     <!-- <b-button v-b-modal.modal-xl>Launch demo modal</b-button> -->
-    <div v-if="loading">
+    <div v-if="loading_status">
       <b-button variant="primary" disabled>
         <b-spinner small type="grow"></b-spinner>Loading...
       </b-button>
@@ -46,7 +46,7 @@
                 :class="card.props.className"
                 :style="card.props.style"
                 class="no-select"
-                @dblclick="show()"
+                @dblclick="showDiffWithJSModal(card.abs_path)"
               >
                 <p class="no-select">{{ card.data }}</p>
               </div>
@@ -68,14 +68,23 @@
       <div class="header">{{modalHeader}}</div>
 
     </vodal>-->
-    <modal name="diffview">
+    <modal name="diffview" :width="1000" :height="800" transition="nice-modal-fade">
+      <div>
+        <div slot="top-left">
+          <button @click="hide()">x</button>
+        </div>
+      </div>
+      <div v-if="loading_diff">
+        <b-spinner variant="success" label="Spinning"></b-spinner>
+      </div>
       <MonacoEditor
+        v-else
         theme="vs-light"
         language="javascript"
         :options="options"
         :diffEditor="true"
-        original="dfgt"
-        value="abcv"
+        :original="code_left"
+        :value="code_right"
       ></MonacoEditor>
     </modal>
   </div>
@@ -86,6 +95,7 @@ import { Container, Draggable } from "vue-smooth-dnd";
 import { applyDrag, generateItems } from "./utils/helpers";
 import { analyzeStatus } from "./utils/gitutils";
 import MonacoEditor from "monaco-editor-vue";
+const fs = require("fs");
 
 const columnNames = ["Lorem", "Ipsum", "Consectetur", "Eiusmod"];
 
@@ -134,7 +144,7 @@ export default {
         showOnTop: true
       },
       // async analyzing git repo
-      loading: true,
+      loading_status: true,
       showVodal: false,
       animation: "",
       modalHeader: "",
@@ -142,7 +152,12 @@ export default {
       // diff editor options
       options: {
         // selectOnLineNumbers: true
-      }
+      },
+
+      // diff view contents
+      loading_diff: true,
+      code_left: "",
+      code_right: ""
     };
   },
 
@@ -183,14 +198,25 @@ export default {
       console.log(...params);
     },
 
-    onShow(data) {
+    // provide two ways to show diff view modal
+    showDiffWithVodal(data) {
       this.animation = "door";
       this.showVodal = true;
       this.modalHeader = data;
     },
 
-    show() {
+    showDiffWithJSModal(abs_path) {
       this.$modal.show("diffview");
+      this.loading_diff = true;
+      fs.readFile(abs_path, "utf-8", (err, data) => {
+        if (err) {
+          alert("An error ocurred reading the file :" + err.message);
+          return;
+        }
+        this.code_left = data;
+        this.code_right = data;
+        this.loading_diff = false;
+      });
     },
     hide() {
       this.$modal.hide("diffview");
@@ -221,14 +247,15 @@ export default {
                   className: "card",
                   style: { backgroundColor: pickColor() }
                 },
-                data: res.nodes[j].name
+                data: res.nodes[j].path,
+                abs_path: res.nodes[j].abs_path
               }))
             }))
           };
-          this.loading = false;
+          this.loading_status = false;
         })
         .catch(err => {
-          this.loading = false;
+          this.loading_status = false;
           console.log(err);
         });
     }

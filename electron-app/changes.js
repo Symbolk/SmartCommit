@@ -78,7 +78,7 @@ async function formatWorkingFiles(repo_path, file_list, operation) {
 function generateNode(repo_path, path, operation) {
 	return new Promise((resolve, reject) => {
 		let lang = 'unknown'; // unknown files will not be diff
-		let abs_path =  repo_path + path;
+		let abs_path = repo_path + path;
 		langDetector(abs_path, (err, language) => {
 			// suppose the path is relative to the curren folder
 			if (err) {
@@ -94,7 +94,7 @@ function generateNode(repo_path, path, operation) {
 				"lang": lang,
 				"name": getFileName(path),
 				"path": path,
-				"abs_path":  abs_path// relative path
+				"abs_path": abs_path // relative path
 			};
 
 			resolve(node);
@@ -258,15 +258,18 @@ function draw(data) {
 		.on("dblclick", (d) => {
 			// get file content before and after the change
 			let arg = 'HEAD:' + d.path
-			if (d.operation != "A") {
+			if (d.operation == "A") {
+				showDiff("", d.abs_path, d.lang)
+			} else if (d.operation == "D") {
+				// TODO 
+				showDiff(d.abs_path, "", d.lang)
+			} else {
 				// exists at last commit
 				git.show([arg], (err, res) => {
 					if (err) throw err;
 					originalTxt = res
 					showDiff(originalTxt, d.abs_path, d.lang)
 				})
-			} else {
-				showDiff("", d.abs_path, d.lang)
 			}
 		}).call(force.drag);
 
