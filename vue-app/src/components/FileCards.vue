@@ -46,7 +46,7 @@
                 :class="card.props.className"
                 :style="card.props.style"
                 class="no-select"
-                @dblclick="showDiffWithJSModal(card.abs_path)"
+                @dblclick="showDiffWithVodal(card.abs_path)"
               >
                 <p class="no-select">{{ card.data }}</p>
               </div>
@@ -55,19 +55,33 @@
         </div>
       </Draggable>
     </Container>
-    <!-- <vodal
+    <!-- vodal -->
+    <vodal
       measure="em"
-      :show="show"
-      :animation="animation"
-      :width="28.5"
-      :height="17"
+      :show="showVodal"
+      animation="door"
+      :width="80"
+      :height="50"
       :duration="301"
       class="my-dialog"
-      @hide="show = false"
+      @hide="showVodal = false"
     >
-      <div class="header">{{modalHeader}}</div>
+      <div class="header">{{diffTitle}}</div>
+      <div v-if="loading_diff">
+        <b-spinner variant="success" label="Spinning"></b-spinner>
+      </div>
+      <MonacoEditor
+        v-else
+        theme="vs-light"
+        language="javascript"
+        :options="options"
+        :diffEditor="true"
+        :original="code_left"
+        :value="code_right"
+      ></MonacoEditor>
+    </vodal>
 
-    </vodal>-->
+    <!-- vue-js-modal -->
     <modal name="diffview" :width="1000" :height="800" transition="nice-modal-fade">
       <div>
         <div slot="top-left">
@@ -145,9 +159,6 @@ export default {
       },
       // async analyzing git repo
       loading_status: true,
-      showVodal: false,
-      animation: "",
-      modalHeader: "",
 
       // diff editor options
       options: {
@@ -155,6 +166,8 @@ export default {
       },
 
       // diff view contents
+      diffTitle: "",
+      showVodal: false, // only for vodal
       loading_diff: true,
       code_left: "",
       code_right: ""
@@ -199,10 +212,19 @@ export default {
     },
 
     // provide two ways to show diff view modal
-    showDiffWithVodal(data) {
-      this.animation = "door";
+    showDiffWithVodal(abs_path) {
       this.showVodal = true;
-      this.modalHeader = data;
+      this.loading_diff = true;
+      this.diffTitle = abs_path;
+      fs.readFile(abs_path, "utf-8", (err, data) => {
+        if (err) {
+          alert("An error ocurred reading the file :" + err.message);
+          return;
+        }
+        this.code_left = data;
+        this.code_right = data;
+        this.loading_diff = false;
+      });
     },
 
     showDiffWithJSModal(abs_path) {
@@ -268,5 +290,6 @@ export default {
 
 <style>
 @import "../assets/common.css";
+@import "../assets/slide-down.css";
 @import "../assets/door.css";
 </style>
