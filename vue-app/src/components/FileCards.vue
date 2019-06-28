@@ -23,6 +23,7 @@
           <b-input-group prepend class="mt-3">
             <b-form-input placeholder="Commit Message" v-model="column.message"></b-form-input>
             <b-input-group-append>
+              <!-- disable button if the message is empty with: :disabled="!column.message" -->
               <b-button
                 variant="outline-success"
                 v-b-tooltip.hover
@@ -78,6 +79,9 @@
       </b-card>
     </sweet-modal>
 
+    <sweet-modal ref="alert" title="Alert" icon="warning">The commit message cannot be empty!</sweet-modal>
+
+    <!-- dialog to show diff -->
     <!-- sweet-modal-vue -->
     <sweet-modal ref="diffViewModal" :title="diffViewTitle" width="80%">
       <!-- <div v-if="loadingDiff">
@@ -354,9 +358,13 @@ export default {
 
     // handle commit action
     readyToCommit(message, list) {
-      this.commitMessage = message;
-      this.commitFiles = list;
-      this.$refs.commitModal.open();
+      if (message === "") {
+        this.$refs.alert.open();
+      } else {
+        this.commitMessage = message;
+        this.commitFiles = list;
+        this.$refs.commitModal.open();
+      }
     }
   },
   created() {
