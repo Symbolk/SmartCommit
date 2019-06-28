@@ -10,7 +10,6 @@
       orientation="horizontal"
       @drop="onColumnDrop($event)"
       drag-handle-selector=".column-drag-handle"
-      @drag-start="dragStart"
       :drop-placeholder="upperDropPlaceholderOptions"
     >
       <Draggable v-for="column in scene.children" :key="column.id">
@@ -35,8 +34,6 @@
           <Container
             group-name="col"
             @drop="(e) => onCardDrop(column.id, e)"
-            @drag-start="(e) => log('drag start', e)"
-            @drag-end="(e) => log('drag end', e)"
             :get-child-payload="getCardPayload(column.id)"
             drag-class="card-ghost"
             drop-class="card-ghost-drop"
@@ -225,10 +222,6 @@ export default {
           index
         ];
       };
-    },
-
-    dragStart() {
-      console.log("drag started");
     },
 
     log(...params) {
