@@ -10,6 +10,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import 'vue-awesome/icons/check'
 import 'vue-awesome/icons/eraser'
+import 'vue-awesome/icons/hand-spock'
 
 Vue.config.productionTip = false
 Vue.component('v-icon', Icon)

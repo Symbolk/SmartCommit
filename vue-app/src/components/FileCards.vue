@@ -16,16 +16,18 @@
       <Draggable v-for="column in scene.children" :key="column.id">
         <div :class="column.props.className">
           <div class="card-column-header">
-            <span class="column-drag-handle">&#x2630;</span>
+            <span class="column-drag-handle" v-b-tooltip.hover title="Drag to Move">
+              <v-icon name="hand-spock"/>
+            </span>
             {{ column.name }}
           </div>
           <b-input-group prepend class="mt-3">
             <b-form-input placeholder="Commit Message"></b-form-input>
             <b-input-group-append>
-              <b-button variant="outline-success">
+              <b-button variant="outline-success" v-b-tooltip.hover title="Ok">
                 <v-icon name="check"/>
               </b-button>
-              <b-button variant="info">
+              <b-button variant="info" v-b-tooltip.hover title="Clear">
                 <v-icon name="eraser"/>
               </b-button>
             </b-input-group-append>
@@ -40,14 +42,24 @@
             drop-class="card-ghost-drop"
             :drop-placeholder="dropPlaceholderOptions"
           >
-            <Draggable v-for="card in column.children" :key="card.id">
+            <Draggable
+              v-for="card in column.children"
+              :key="card.id"
+              v-b-tooltip.hover
+              title="Drag to Move"
+            >
+              <!-- <b-tooltip :target="() => $refs['card']" placement="bottom">Drag to Move</b-tooltip> -->
               <div
                 :class="card.props.className"
                 :style="card.props.style"
                 class="no-select"
                 @dblclick="showDiffWithVodal(card.abs_path, card.language)"
               >
-                <p class="no-select">{{ card.data }}</p>
+                <p
+                  class="no-select"
+                  v-b-tooltip.hover
+                  title="Double Click to Show Diff"
+                >{{ card.data }}</p>
               </div>
             </Draggable>
           </Container>
@@ -66,13 +78,23 @@
       @hide="showVodal = false"
     >
       <div class="header">{{diffTitle}}</div>
-      <div v-if="loading_diff">
+      <div v-if="loadingDiff">
         <b-spinner variant="success" label="Spinning"></b-spinner>
       </div>
+      <!-- vue-monaco -->
+      <!-- <MonacoEditor
+        class="editor"
+        :value="code_left"
+        :original="code_right"
+        :diffEditor="true"
+        :options="options"
+        :language="language"
+      />-->
+      <!-- monaco-editor-vue -->
       <MonacoEditor
         v-else
         theme="vs-light"
-        language="javascript"
+        :language="language"
         :options="options"
         :diffEditor="true"
         :original="code_left"
@@ -87,7 +109,7 @@
           <button @click="hide()">x</button>
         </div>
       </div>
-      <div v-if="loading_diff">
+      <div v-if="loadingDiff">
         <b-spinner variant="success" label="Spinning"></b-spinner>
       </div>
       <!-- <MonacoEditor
@@ -99,7 +121,6 @@
         :original="code_left"
         :value="code_right"
       ></MonacoEditor>-->
-      <!-- <MonacoEditor theme="vs-dark" language="javascript" value="const gitutils = require('./gitutils');" :options="options"></MonacoEditor> -->
     </modal>
   </div>
 </template>
@@ -109,6 +130,7 @@ import { Container, Draggable } from "vue-smooth-dnd";
 import { applyDrag, generateItems } from "./utils/helpers";
 import { analyzeStatus } from "./utils/gitutils";
 import MonacoEditor from "monaco-editor-vue";
+// import MonacoEditor from "vue-monaco";
 const fs = require("fs");
 
 const columnNames = ["Lorem", "Ipsum", "Consectetur", "Eiusmod"];
@@ -163,13 +185,13 @@ export default {
       // diff editor options
       options: {
         // selectOnLineNumbers: true
-        langauge: "javascript"
+        // language: "json"
       },
 
       // diff view contents
       diffTitle: "",
       showVodal: false, // only for vodal
-      loading_diff: true,
+      loadingDiff: true,
       language: "",
       code_left: "",
       code_right: ""
@@ -216,7 +238,7 @@ export default {
     // provide two ways to show diff view modal
     showDiffWithVodal(abs_path, language) {
       this.showVodal = true;
-      this.loading_diff = true;
+      this.loadingDiff = true;
       this.diffTitle = abs_path;
       fs.readFile(abs_path, "utf-8", (err, data) => {
         if (err) {
@@ -226,13 +248,13 @@ export default {
         this.language = language;
         this.code_left = data;
         this.code_right = data;
-        this.loading_diff = false;
+        this.loadingDiff = false;
       });
     },
 
     showDiffWithJSModal(abs_path, language) {
       this.$modal.show("diffview");
-      this.loading_diff = true;
+      this.loadingDiff = true;
       fs.readFile(abs_path, "utf-8", (err, data) => {
         if (err) {
           alert("An error ocurred reading the file :" + err.message);
@@ -241,7 +263,7 @@ export default {
         this.language = language;
         this.code_left = data;
         this.code_right = data;
-        this.loading_diff = false;
+        this.loadingDiff = false;
       });
     },
     hide() {
@@ -297,4 +319,31 @@ export default {
 @import "../assets/common.css";
 @import "../assets/slide-down.css";
 @import "../assets/door.css";
+
+.no-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.column-drag-handle:hover {
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
+.no-select:hover {
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
+.no-select:active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
 </style>

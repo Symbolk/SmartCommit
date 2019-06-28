@@ -1,9 +1,21 @@
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+// const path = require('path')
 module.exports = {
+    // entry: './main.js',
+    // output: {
+    //   path: path.resolve(__dirname, 'dist'),
+    //   filename: 'app.js'
+    // },
+    // module: {
+    //   rules: [{
+    //     test: /\.css$/,
+    //     use: ['style-loader', 'css-loader']
+    //   }]
+    // },
     plugins: [
         new MonacoWebpackPlugin({
             // available options are documented at https://github.com/Microsoft/monaco-editor-webpack-plugin#options
-            languages: ['apex', 'azcli', 'bat', 'clojure', 'coffee', 'cpp', 'csharp', 'csp', 'css', 'dockerfile', 'fsharp', 'go', 'handlebars', 'html', 'ini', 'java', 'javascript', 'json', 'less', 'lua', 'markdown', 'msdax', 'mysql', 'objective', 'perl', 'pgsql', 'php', 'postiats', 'powerquery', 'powershell', 'pug', 'python', 'r', 'razor', 'redis', 'redshift', 'ruby', 'rust', 'sb', 'scheme', 'scss', 'shell', 'solidity', 'sql', 'st', 'swift', 'typescript', 'vb', 'xml', 'yaml']
+            languages: ['javascript', 'css', 'html', 'typescript', 'json']
         })
     ]
 };

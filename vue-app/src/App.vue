@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
-    <HelloWorld msg="Welcome to SmartCommit!"/>
+    <Header></Header>
+    <!-- <HelloWorld msg="Welcome to SmartCommit!"/> -->
     <FileCards></FileCards>
   </div>
 </template>
@@ -9,11 +9,12 @@
 <script>
 import HelloWorld from "./components/HelloWorld.vue";
 import FileCards from "./components/FileCards.vue";
+import Header from "./components/Header.vue";
 
 export default {
   name: "app",
   components: {
-    HelloWorld,
+    Header,
     FileCards
   }
 };
@@ -26,6 +27,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   /* text-align: center; */
   color: #2c3e50;
-  margin-top: 60px;
+  /* margin-top: 60px; */
 }
 </style>
