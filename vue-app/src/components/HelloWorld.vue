@@ -1,21 +1,23 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
+    <b-button variant="primary" @click="setLang('javascript')"></b-button>
     <!-- testing -->
     <!-- <MonacoEditor height="200" theme="vs-light" language="javascript" :value="code"></MonacoEditor> -->
-    <!-- <MonacoEditor
+    <MonacoEditor
+      ref="diffViewEditor"
       class="editor"
-      :value="code"
-      :original="code"
+      :value="code_left"
+      :original="code_right"
       :diffEditor="true"
-      language="javascript"
-    /> -->
+    />
   </div>
 </template>
 
 <script>
-import MonacoEditor from "monaco-editor-vue";
-// import MonacoEditor from "vue-monaco";
+// import MonacoEditor from "monaco-editor-vue";
+import MonacoEditor from "vue-monaco";
+const monaco = require("monaco-editor");
 
 export default {
   name: "HelloWorld",
@@ -28,8 +30,20 @@ export default {
 
   data() {
     return {
-      code: "const noop = () => {}"
+      code_left: "const noop = () => {}",
+      code_right: `function foo() {
+  return 'foo'
+    }`
     };
+  },
+
+  methods: {
+    setLang(lang) {
+      monaco.editor.setModelLanguage(
+        this.$refs.diffViewEditor.getModifiedEditor().getModel(),
+        lang
+      );
+    }
   }
 };
 </script>

@@ -15,6 +15,7 @@ export default {
   name: "app",
   components: {
     Header,
+    HelloWorld,
     FileCards
   }
 };

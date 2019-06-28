@@ -21,12 +21,17 @@
             {{ column.name }}
           </div>
           <b-input-group prepend class="mt-3">
-            <b-form-input placeholder="Commit Message"></b-form-input>
+            <b-form-input placeholder="Commit Message" v-model="column.message"></b-form-input>
             <b-input-group-append>
-              <b-button variant="outline-success" v-b-tooltip.hover title="Ok">
+              <b-button
+                variant="outline-success"
+                v-b-tooltip.hover
+                title="Ok"
+                @click="readyToCommit(column.message, column.children)"
+              >
                 <v-icon name="check"/>
               </b-button>
-              <b-button variant="info" v-b-tooltip.hover title="Clear">
+              <b-button variant="info" v-b-tooltip.hover title="Clear" @click="column.message=''">
                 <v-icon name="eraser"/>
               </b-button>
             </b-input-group-append>
@@ -50,7 +55,7 @@
                 :class="card.props.className"
                 :style="card.props.style"
                 class="no-select"
-                @dblclick="showDiffWithVodal(card.abs_path, card.language)"
+                @dblclick="showDiffWithSweet(card.abs_path, card.language)"
               >
                 <p
                   class="no-select"
@@ -63,6 +68,30 @@
         </div>
       </Draggable>
     </Container>
+
+    <!-- dialog to confirm commit -->
+    <sweet-modal ref="commitModal" title="Ready to Commit?">
+      <b-card :header="commitMessage">
+        <b-list-group>
+          <b-list-group-item v-for="file in commitFiles" :key="file.id">{{file.data}}</b-list-group-item>
+        </b-list-group>
+      </b-card>
+    </sweet-modal>
+
+    <!-- sweet-modal-vue -->
+    <sweet-modal ref="diffViewModal" :title="diffViewTitle" width="80%">
+      <!-- <div v-if="loadingDiff">
+        <b-spinner variant="success" label="Spinning"></b-spinner>
+      </div>-->
+      <!-- vue-monaco -->
+      <MonacoEditor
+        ref="diffViewEditor"
+        class="editor"
+        :value="code_left"
+        :original="code_right"
+        :diffEditor="true"
+      />
+    </sweet-modal>
     <!-- vodal -->
     <vodal
       measure="em"
@@ -74,21 +103,12 @@
       class="my-dialog"
       @hide="showVodal = false"
     >
-      <div class="header">{{diffTitle}}</div>
+      <div class="header">{{diffViewTitle}}</div>
       <div v-if="loadingDiff">
         <b-spinner variant="success" label="Spinning"></b-spinner>
       </div>
-      <!-- vue-monaco -->
-      <!-- <MonacoEditor
-        class="editor"
-        :value="code_left"
-        :original="code_right"
-        :diffEditor="true"
-        :options="options"
-        :language="language"
-      />-->
       <!-- monaco-editor-vue -->
-      <MonacoEditor
+      <!-- <MonacoEditor
         v-else
         theme="vs-light"
         :language="language"
@@ -96,11 +116,11 @@
         :diffEditor="true"
         :original="code_left"
         :value="code_right"
-      ></MonacoEditor>
+      ></MonacoEditor>-->
     </vodal>
 
     <!-- vue-js-modal -->
-    <modal name="diffview" :width="1000" :height="800" transition="nice-modal-fade">
+    <modal name="diffViewJSModal" :width="1000" :height="800" transition="nice-modal-fade">
       <div>
         <div slot="top-left">
           <button @click="hide()">x</button>
@@ -126,9 +146,12 @@
 import { Container, Draggable } from "vue-smooth-dnd";
 import { applyDrag, generateItems } from "./utils/helpers";
 import { analyzeStatus } from "./utils/gitutils";
-import MonacoEditor from "monaco-editor-vue";
-// import MonacoEditor from "vue-monaco";
+import { SweetModal } from "sweet-modal-vue";
+
+// import MonacoEditor from "monaco-editor-vue";
+import MonacoEditor from "vue-monaco";
 const fs = require("fs");
+const monaco = require("monaco-editor");
 
 const columnNames = ["Lorem", "Ipsum", "Consectetur", "Eiusmod"];
 
@@ -161,7 +184,7 @@ var scene = {
 export default {
   name: "Cards",
 
-  components: { Container, Draggable, MonacoEditor },
+  components: { Container, Draggable, MonacoEditor, SweetModal },
 
   data() {
     return {
@@ -186,16 +209,21 @@ export default {
       },
 
       // diff view contents
-      diffTitle: "",
+      diffViewTitle: "",
       showVodal: false, // only for vodal
       loadingDiff: true,
       language: "",
       code_left: "",
-      code_right: ""
+      code_right: "",
+
+      // commit data
+      commitMessage: "",
+      commitFiles: []
     };
   },
 
   methods: {
+    // handle drag&drop
     onColumnDrop(dropResult) {
       const scene = Object.assign({}, this.scene);
       scene.children = applyDrag(scene.children, dropResult);
@@ -228,41 +256,7 @@ export default {
       console.log(...params);
     },
 
-    // provide two ways to show diff view modal
-    showDiffWithVodal(abs_path, language) {
-      this.showVodal = true;
-      this.loadingDiff = true;
-      this.diffTitle = abs_path;
-      fs.readFile(abs_path, "utf-8", (err, data) => {
-        if (err) {
-          alert("An error ocurred reading the file :" + err.message);
-          return;
-        }
-        this.language = language;
-        this.code_left = data;
-        this.code_right = data;
-        this.loadingDiff = false;
-      });
-    },
-
-    showDiffWithJSModal(abs_path, language) {
-      this.$modal.show("diffview");
-      this.loadingDiff = true;
-      fs.readFile(abs_path, "utf-8", (err, data) => {
-        if (err) {
-          alert("An error ocurred reading the file :" + err.message);
-          return;
-        }
-        this.language = language;
-        this.code_left = data;
-        this.code_right = data;
-        this.loadingDiff = false;
-      });
-    },
-    hide() {
-      this.$modal.hide("diffview");
-    },
-
+    //  prepare data by analyzing git repo
     analyzeGitRepo() {
       console.log("Analyzing git repo...");
       analyzeStatus("")
@@ -281,6 +275,7 @@ export default {
                 orientation: "vertical",
                 className: "card-container"
               },
+              message: "",
               children: generateItems(res.nodes.length, j => ({
                 type: "draggable",
                 id: `${i}${j}`,
@@ -300,6 +295,68 @@ export default {
           this.loading_status = false;
           console.log(err);
         });
+    },
+
+    // show diffs with alternative modal
+    showDiffWithSweet(abs_path, language) {
+      this.$refs.diffViewModal.open();
+      this.loadingDiff = true;
+      this.diffViewTitle = abs_path;
+      fs.readFile(abs_path, "utf-8", (err, data) => {
+        if (err) {
+          alert("An error ocurred reading the file :" + err.message);
+          return;
+        }
+        // this.language = language;
+        this.loadingDiff = false;
+        monaco.editor.setModelLanguage(
+          this.$refs.diffViewEditor.getModifiedEditor().getModel(),
+          language
+        );
+        this.code_left = data;
+        this.code_right = data;
+      });
+    },
+
+    showDiffWithVodal(abs_path, language) {
+      this.showVodal = true;
+      this.loadingDiff = true;
+      this.diffViewTitle = abs_path;
+      fs.readFile(abs_path, "utf-8", (err, data) => {
+        if (err) {
+          alert("An error ocurred reading the file :" + err.message);
+          return;
+        }
+        this.language = language;
+        this.code_left = data;
+        this.code_right = data;
+        this.loadingDiff = false;
+      });
+    },
+
+    showDiffWithJSModal(abs_path, language) {
+      this.$modal.show("diffViewJSModal");
+      this.loadingDiff = true;
+      fs.readFile(abs_path, "utf-8", (err, data) => {
+        if (err) {
+          alert("An error ocurred reading the file :" + err.message);
+          return;
+        }
+        this.language = language;
+        this.code_left = data;
+        this.code_right = data;
+        this.loadingDiff = false;
+      });
+    },
+    hide() {
+      this.$modal.hide("diffViewJSModal");
+    },
+
+    // handle commit action
+    readyToCommit(message, list) {
+      this.commitMessage = message;
+      this.commitFiles = list;
+      this.$refs.commitModal.open();
     }
   },
   created() {
@@ -338,5 +395,13 @@ export default {
   cursor: grabbing;
   cursor: -moz-grabbing;
   cursor: -webkit-grabbing;
+}
+
+.editor {
+  height: 800px;
+}
+
+.sweet-modal .sweet-title h2 {
+  line-height: inherit;
 }
 </style>
