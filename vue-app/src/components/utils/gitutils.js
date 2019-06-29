@@ -13,15 +13,15 @@ async function formatStatus(repo_path, status) {
     let nodes = new Array();
     let temp = new Array();
 
-    temp = await formatEntries(repo_path, status.modified, 'M');
+    temp = await formatEntries(repo_path, status.modified, 'Modified');
     Array.prototype.push.apply(nodes, temp);
-    temp = await formatEntries(repo_path, status.not_added, 'A');
+    temp = await formatEntries(repo_path, status.not_added, 'Untracked');
     Array.prototype.push.apply(nodes, temp);
-    temp = await formatEntries(repo_path, status.conflicted, 'C');
+    temp = await formatEntries(repo_path, status.conflicted, 'Conflicted');
     Array.prototype.push.apply(nodes, temp);
-    temp = await formatEntries(repo_path, status.deleted, 'D');
+    temp = await formatEntries(repo_path, status.deleted, 'Deleted');
     Array.prototype.push.apply(nodes, temp);
-    temp = await formatEntries(repo_path, status.renamed, 'R');
+    temp = await formatEntries(repo_path, status.renamed, 'Renamed');
     Array.prototype.push.apply(nodes, temp);
 
 

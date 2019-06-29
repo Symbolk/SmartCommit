@@ -58,11 +58,10 @@
                 class="no-select"
                 @dblclick="showDiffWithSweet(card.abs_path, card.language)"
               >
-                <p
-                  class="no-select"
-                  v-b-tooltip.hover
-                  title="Double Click to Show Diff"
-                >{{ card.data }}</p>
+                <p class="no-select" v-b-tooltip.hover title="Double Click to Show Diff">
+                  {{ card.data }}
+                  <b-badge pill :variant="card.badgeType">{{card.operation}}</b-badge>
+                </p>
               </div>
             </Draggable>
           </Container>
@@ -158,6 +157,13 @@ const fs = require("fs");
 const monaco = require("monaco-editor");
 
 const columnNames = ["Lorem", "Ipsum", "Consectetur", "Eiusmod"];
+const badgeTypeMap = new Map([
+  ["Modified", "primary"],
+  ["Untracked", "success"],
+  ["Conflicted", "danger"],
+  ["Deleted", "secondary"],
+  ["Renamed", "info"]
+]);
 
 const cardColors = [
   "azure",
@@ -260,6 +266,10 @@ export default {
       console.log(...params);
     },
 
+    getBadgeType(operation) {
+      return badgeTypeMap.get(operation);
+    },
+
     //  prepare data by analyzing git repo
     analyzeGitRepo() {
       console.log("Analyzing git repo...");
@@ -287,6 +297,8 @@ export default {
                   className: "card",
                   style: { backgroundColor: pickColor() }
                 },
+                operation: res.nodes[j].operation,
+                badgeType: this.getBadgeType(res.nodes[j].operation),
                 data: res.nodes[j].path,
                 abs_path: res.nodes[j].abs_path,
                 language: res.nodes[j].lang
@@ -294,6 +306,7 @@ export default {
             }))
           };
           this.loading_status = false;
+          console.log(this.scene);
         })
         .catch(err => {
           this.loading_status = false;
