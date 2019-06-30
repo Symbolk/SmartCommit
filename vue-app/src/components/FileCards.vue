@@ -78,7 +78,7 @@
       </b-card>
     </sweet-modal>
 
-    <sweet-modal ref="alert" title="Alert" icon="warning">The commit message cannot be empty!</sweet-modal>
+    <sweet-modal ref="alert" title="Alert" icon="warning">{{alertMessage}}</sweet-modal>
 
     <!-- dialog to show diff -->
     <!-- sweet-modal-vue -->
@@ -211,6 +211,7 @@ export default {
       },
       // async analyzing git repo
       loading_status: true,
+      alertMessage: "",
 
       // diff editor options
       options: {
@@ -321,7 +322,9 @@ export default {
       this.diffViewTitle = abs_path;
       fs.readFile(abs_path, "utf-8", (err, data) => {
         if (err) {
-          alert("An error ocurred reading the file :" + err.message);
+          this.alertMessage =
+            "An error ocurred reading the file :" + err.message;
+          this.$refs.alert.open();
           return;
         }
         // this.language = language;
@@ -341,7 +344,9 @@ export default {
       this.diffViewTitle = abs_path;
       fs.readFile(abs_path, "utf-8", (err, data) => {
         if (err) {
-          alert("An error ocurred reading the file :" + err.message);
+          this.alertMessage =
+            "An error ocurred reading the file :" + err.message;
+          this.$refs.alert.open();
           return;
         }
         this.language = language;
@@ -356,7 +361,9 @@ export default {
       this.loadingDiff = true;
       fs.readFile(abs_path, "utf-8", (err, data) => {
         if (err) {
-          alert("An error ocurred reading the file :" + err.message);
+          this.alertMessage =
+            "An error ocurred reading the file :" + err.message;
+          this.$refs.alert.open();
           return;
         }
         this.language = language;
@@ -371,7 +378,11 @@ export default {
 
     // handle commit action
     readyToCommit(message, list) {
-      if (message === "") {
+      if (list.length == 0) {
+        this.alertMessage = "No files to commit in this group!";
+        this.$refs.alert.open();
+      } else if (message === "") {
+        this.alertMessage = "The commit message cannot be empty!";
         this.$refs.alert.open();
       } else {
         this.commitMessage = message;
