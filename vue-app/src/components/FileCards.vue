@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 <template>
   <div class="card-scene">
     <div v-if="loading_status">
@@ -59,7 +61,7 @@
                 @dblclick="showDiffWithSweet(card.abs_path, card.language)"
               >
                 <p class="no-select" v-b-tooltip.hover title="Double Click to Show Diff">
-                  {{ card.data }}
+                  {{ card.path }}
                   <b-badge pill :variant="card.badgeType">{{card.operation}}</b-badge>
                 </p>
               </div>
@@ -71,14 +73,18 @@
 
     <!-- dialog to confirm commit -->
     <sweet-modal ref="commitModal" title="Ready to Commit?">
-      <b-card :header="commitMessage">
+      <b-card :header="commitMessage" border-variant="success">
         <b-list-group>
-          <b-list-group-item v-for="file in commitFiles" :key="file.id">{{file.data}}</b-list-group-item>
+          <b-list-group-item v-for="file in commitFiles" :key="file.id">{{file.path}}</b-list-group-item>
         </b-list-group>
       </b-card>
+      <b-button class="right-button" variant="success" @click="reallyCommit()">Commit!</b-button>
+      <b-button class="right-button" variant="outline-primary" @click="cancelCommit()">Cancel</b-button>
     </sweet-modal>
 
+    <sweet-modal ref="success" title="Success" icon="success">{{successMessage}}</sweet-modal>
     <sweet-modal ref="alert" title="Alert" icon="warning">{{alertMessage}}</sweet-modal>
+    <sweet-modal ref="error" title="Error" icon="error">{{errorMessage}}</sweet-modal>
 
     <!-- dialog to show diff -->
     <!-- sweet-modal-vue -->
@@ -148,7 +154,7 @@
 <script>
 import { Container, Draggable } from "vue-smooth-dnd";
 import { applyDrag, generateItems } from "./utils/helpers";
-import { analyzeStatus } from "./utils/gitutils";
+import { analyzeStatus, doCommit } from "./utils/gitutils";
 import { SweetModal } from "sweet-modal-vue";
 
 // import MonacoEditor from "monaco-editor-vue";
@@ -211,7 +217,9 @@ export default {
       },
       // async analyzing git repo
       loading_status: true,
+      successMessage: "",
       alertMessage: "",
+      errorMessage: "",
 
       // diff editor options
       options: {
@@ -273,7 +281,7 @@ export default {
 
     //  prepare data by analyzing git repo
     analyzeGitRepo() {
-      console.log("Analyzing git repo...");
+      // console.log("Analyzing git repo "+ __dirname);
       analyzeStatus("")
         .then(res => {
           console.log(res);
@@ -300,7 +308,7 @@ export default {
                 },
                 operation: res.nodes[j].operation,
                 badgeType: this.getBadgeType(res.nodes[j].operation),
-                data: res.nodes[j].path,
+                path: res.nodes[j].path,
                 abs_path: res.nodes[j].abs_path,
                 language: res.nodes[j].lang
               }))
@@ -311,7 +319,8 @@ export default {
         })
         .catch(err => {
           this.loading_status = false;
-          console.log(err);
+          this.errorMessage = err.message;
+          this.$refs.error.open();
         });
     },
 
@@ -322,9 +331,9 @@ export default {
       this.diffViewTitle = abs_path;
       fs.readFile(abs_path, "utf-8", (err, data) => {
         if (err) {
-          this.alertMessage =
+          this.errorMessage =
             "An error ocurred reading the file :" + err.message;
-          this.$refs.alert.open();
+          this.$refs.error.open();
           return;
         }
         // this.language = language;
@@ -344,9 +353,9 @@ export default {
       this.diffViewTitle = abs_path;
       fs.readFile(abs_path, "utf-8", (err, data) => {
         if (err) {
-          this.alertMessage =
+          this.errorMessage =
             "An error ocurred reading the file :" + err.message;
-          this.$refs.alert.open();
+          this.$refs.error.open();
           return;
         }
         this.language = language;
@@ -361,9 +370,9 @@ export default {
       this.loadingDiff = true;
       fs.readFile(abs_path, "utf-8", (err, data) => {
         if (err) {
-          this.alertMessage =
+          this.errorMessage =
             "An error ocurred reading the file :" + err.message;
-          this.$refs.alert.open();
+          this.$refs.error.open();
           return;
         }
         this.language = language;
@@ -389,8 +398,31 @@ export default {
         this.commitFiles = list;
         this.$refs.commitModal.open();
       }
+    },
+    reallyCommit() {
+      let filePaths = new Array();
+      console.log(this.commitFiles);
+      for (let file of this.commitFiles) {
+        console.log(file);
+        filePaths.push(file.path);
+      }
+      doCommit("", this.commitMessage, filePaths)
+        .then(res => {
+          this.successMessage =
+            "Successfully commit " + res.commit + "to branch " + res.branch;
+          this.$refs.commitModal.close();
+          this.$refs.successModal.open();
+        })
+        .catch(err => {
+          this.errorMessage = err;
+          this.$refs.error.open();
+        });
+    },
+    cancelCommit() {
+      this.$refs.commitModal.close();
     }
   },
+
   created() {
     this.analyzeGitRepo();
   }
@@ -435,5 +467,11 @@ export default {
 
 .sweet-modal .sweet-title h2 {
   line-height: inherit;
+}
+
+.right-button {
+  float: right;
+  margin-top: 10px;
+  margin-right: 10px;
 }
 </style>

@@ -102,14 +102,14 @@ function getParentDir(path) {
 export const analyzeStatus = (repo_path) => {
     var git = require('simple-git');
     git = git(repo_path)
-    repo_path = getParentDir(git._baseDir);
-    // repo_path = git._baseDir + '/';
-    console.log("Repo: " + repo_path)
+    let workingDir = getParentDir(git._baseDir);
+    // let workingDir = git._baseDir + '/';
+    console.log("Working directory: " + workingDir)
     return new Promise((resolve, reject) => {
         git.status(async (err, status) => {
             try {
-                if (err) throw err;
-                var data = await formatStatus(repo_path, status);
+                if (err) reject(err);
+                var data = await formatStatus(workingDir, status);
                 // get the latest commit hash (uncessary since we can use HEAD instead)
                 // git.log((err, res) => {
                 // });
@@ -125,9 +125,7 @@ export const analyzeStatus = (repo_path) => {
 export const analyzeStatus2 = (repo_path, callback) => {
     var git = require('simple-git');
     git = git(repo_path)
-    repo_path = getParentDir(git._baseDir);
-    // repo_path = git._baseDir + '/';
-    console.log("Repo: " + repo_path)
+
     git.status(async (err, status) => {
         try {
             if (err) throw err;
@@ -139,5 +137,31 @@ export const analyzeStatus2 = (repo_path, callback) => {
         } catch (err) {
             console.log(err);
         }
+    })
+}
+
+/**
+ * Actually perform the commit
+ * @param {*} commit_message 
+ * @param {*} file_list 
+ */
+export const doCommit = (repo_path, commit_message, file_list) => {
+    // the optional options object can contain any other parameters to pass to the commit command, 
+    // setting the value of the property to be a string will add name=value to the command string, 
+    // setting any other type of value will result in just the key from the object being passed (ie: just name)
+    var git = require('simple-git')
+    git = git(repo_path)
+    // repo_path = getParentDir(git._baseDir);
+    let workingDir = git._baseDir + '/';
+    console.log("Target repo: " + workingDir)
+    var options = {}
+    return new Promise((resolve, reject) => {
+        git.commit(commit_message, file_list, options, (err, res) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res);
+            }
+        })
     })
 }

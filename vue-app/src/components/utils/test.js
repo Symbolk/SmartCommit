@@ -8,11 +8,20 @@ var file_list = ['src/components/utils/test.js']
 var options = {
     // '--author': '"Symbolk <symbolk@outlook.com>"'
 }
-git.commit(commit_message, file_list, options, (err, res) => {
+// git.commit(commit_message, file_list, options, (err, res) => {
+//     if (err) {
+//         console.log(err);
+//     }
+//     console.log(res);
+// })
+
+console.log(git._baseDir);
+git.status((err, res) => {
     if (err) {
         console.log(err);
     }
     console.log(res);
 })
+
 
 // git reset --soft HEAD^
