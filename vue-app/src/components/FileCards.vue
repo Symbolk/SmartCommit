@@ -3,66 +3,66 @@
 <template>
   <div class="card-scene">
     <div v-if="loading_status">
-      <b-button variant="primary" disabled>
+      <b-button disabled variant="primary">
         <b-spinner small type="grow"></b-spinner>Loading...
       </b-button>
     </div>
     <Container
-      v-else
-      orientation="horizontal"
+      :drop-placeholder="upperDropPlaceholderOptions"
       @drop="onColumnDrop($event)"
       drag-handle-selector=".column-drag-handle"
-      :drop-placeholder="upperDropPlaceholderOptions"
+      orientation="horizontal"
+      v-else
     >
-      <Draggable v-for="column in scene.children" :key="column.id">
+      <Draggable :key="column.id" v-for="column in scene.children">
         <div :class="column.props.className">
           <div class="card-column-header">
-            <span class="column-drag-handle" v-b-tooltip.hover title="Drag to Move">
-              <v-icon name="hand-spock"/>
+            <span class="column-drag-handle" title="Drag to Move" v-b-tooltip.hover>
+              <v-icon name="hand-spock" />
             </span>
             {{ column.name }}
           </div>
-          <b-input-group prepend class="mt-3">
+          <b-input-group class="mt-3" prepend>
             <b-form-input placeholder="Commit Message" v-model="column.message"></b-form-input>
             <b-input-group-append>
               <!-- disable button if the message is empty with: :disabled="!column.message" -->
               <b-button
-                variant="outline-success"
-                v-b-tooltip.hover
-                title="Ok"
                 @click="readyToCommit(column.message, column.children)"
+                title="Ok"
+                v-b-tooltip.hover
+                variant="outline-success"
               >
-                <v-icon name="check"/>
+                <v-icon name="check" />
               </b-button>
-              <b-button variant="info" v-b-tooltip.hover title="Clear" @click="column.message=''">
-                <v-icon name="eraser"/>
+              <b-button @click="column.message=''" title="Clear" v-b-tooltip.hover variant="info">
+                <v-icon name="eraser" />
               </b-button>
             </b-input-group-append>
           </b-input-group>
           <Container
-            group-name="col"
-            @drop="(e) => onCardDrop(column.id, e)"
+            :drop-placeholder="dropPlaceholderOptions"
             :get-child-payload="getCardPayload(column.id)"
+            @drop="(e) => onCardDrop(column.id, e)"
             drag-class="card-ghost"
             drop-class="card-ghost-drop"
-            :drop-placeholder="dropPlaceholderOptions"
+            group-name="col"
           >
             <Draggable
-              v-for="card in column.children"
               :key="card.id"
-              v-b-tooltip.hover
               title="Drag to Move"
+              v-b-tooltip.hover
+              v-for="card in column.children"
             >
               <!-- <b-tooltip :target="() => $refs['card']" placement="bottom">Drag to Move</b-tooltip> -->
               <div
                 :class="card.props.className"
                 :style="card.props.style"
-                class="no-select"
                 @dblclick="showDiffWithSweet(card.abs_path, card.language)"
+                class="no-select"
               >
-                <p class="no-select" v-b-tooltip.hover title="Double Click to Show Diff">
+                <p class="no-select" title="Double Click to Show Diff" v-b-tooltip.hover>
                   {{ card.path }}
-                  <b-badge pill :variant="card.badgeType">{{card.operation}}</b-badge>
+                  <b-badge :variant="card.badgeType" pill>{{card.operation}}</b-badge>
                 </p>
               </div>
             </Draggable>
@@ -75,46 +75,46 @@
     <sweet-modal ref="commitModal" title="Ready to Commit?">
       <b-card :header="commitMessage" border-variant="success">
         <b-list-group>
-          <b-list-group-item v-for="file in commitFiles" :key="file.id">{{file.path}}</b-list-group-item>
+          <b-list-group-item :key="file.id" v-for="file in commitFiles">{{file.path}}</b-list-group-item>
         </b-list-group>
       </b-card>
-      <b-button class="right-button" variant="success" @click="reallyCommit()">Commit!</b-button>
-      <b-button class="right-button" variant="outline-primary" @click="cancelCommit()">Cancel</b-button>
+      <b-button @click="reallyCommit()" class="right-button" variant="success">Commit!</b-button>
+      <b-button @click="cancelCommit()" class="right-button" variant="outline-primary">Cancel</b-button>
     </sweet-modal>
 
-    <sweet-modal ref="success" title="Success" icon="success">{{successMessage}}</sweet-modal>
-    <sweet-modal ref="alert" title="Alert" icon="warning">{{alertMessage}}</sweet-modal>
-    <sweet-modal ref="error" title="Error" icon="error">{{errorMessage}}</sweet-modal>
+    <sweet-modal icon="success" ref="success" title="Success">{{successMessage}}</sweet-modal>
+    <sweet-modal icon="warning" ref="alert" title="Alert">{{alertMessage}}</sweet-modal>
+    <sweet-modal icon="error" ref="error" title="Error">{{errorMessage}}</sweet-modal>
 
     <!-- dialog to show diff -->
     <!-- sweet-modal-vue -->
-    <sweet-modal ref="diffViewModal" :title="diffViewTitle" width="80%">
+    <sweet-modal :title="diffViewTitle" ref="diffViewModal" width="80%">
       <!-- <div v-if="loadingDiff">
         <b-spinner variant="success" label="Spinning"></b-spinner>
       </div>-->
       <!-- vue-monaco -->
       <MonacoEditor
-        ref="diffViewEditor"
-        class="editor"
-        :value="code_left"
-        :original="code_right"
         :diffEditor="true"
+        :original="code_right"
+        :value="code_left"
+        class="editor"
+        ref="diffViewEditor"
       />
     </sweet-modal>
     <!-- vodal -->
     <vodal
-      measure="em"
-      :show="showVodal"
-      animation="door"
-      :width="80"
-      :height="50"
       :duration="301"
-      class="my-dialog"
+      :height="50"
+      :show="showVodal"
+      :width="80"
       @hide="showVodal = false"
+      animation="door"
+      class="my-dialog"
+      measure="em"
     >
       <div class="header">{{diffViewTitle}}</div>
       <div v-if="loadingDiff">
-        <b-spinner variant="success" label="Spinning"></b-spinner>
+        <b-spinner label="Spinning" variant="success"></b-spinner>
       </div>
       <!-- monaco-editor-vue -->
       <!-- <MonacoEditor
@@ -129,14 +129,14 @@
     </vodal>
 
     <!-- vue-js-modal -->
-    <modal name="diffViewJSModal" :width="1000" :height="800" transition="nice-modal-fade">
+    <modal :height="800" :width="1000" name="diffViewJSModal" transition="nice-modal-fade">
       <div>
         <div slot="top-left">
           <button @click="hide()">x</button>
         </div>
       </div>
       <div v-if="loadingDiff">
-        <b-spinner variant="success" label="Spinning"></b-spinner>
+        <b-spinner label="Spinning" variant="success"></b-spinner>
       </div>
       <!-- <MonacoEditor
         v-else
@@ -152,53 +152,53 @@
 </template>
 
 <script>
-import { Container, Draggable } from "vue-smooth-dnd";
-import { applyDrag, generateItems } from "./utils/helpers";
-import { analyzeStatus, doCommit } from "./utils/gitutils";
-import { SweetModal } from "sweet-modal-vue";
+import { Container, Draggable } from 'vue-smooth-dnd'
+import { applyDrag, generateItems } from './utils/helpers'
+import { analyzeStatus, doCommit } from './utils/gitutils'
+import { SweetModal } from 'sweet-modal-vue'
 
 // import MonacoEditor from "monaco-editor-vue";
-import MonacoEditor from "vue-monaco";
-const fs = require("fs");
-const monaco = require("monaco-editor");
+import MonacoEditor from 'vue-monaco'
+const fs = require('fs')
+const monaco = require('monaco-editor')
 
-const columnNames = ["Lorem", "Ipsum", "Consectetur", "Eiusmod"];
+const columnNames = ['Lorem', 'Ipsum', 'Consectetur', 'Eiusmod']
 const badgeTypeMap = new Map([
-  ["Modified", "primary"],
-  ["Untracked", "success"],
-  ["Conflicted", "danger"],
-  ["Deleted", "secondary"],
-  ["Renamed", "info"]
-]);
+  ['Modified', 'primary'],
+  ['Untracked', 'success'],
+  ['Conflicted', 'danger'],
+  ['Deleted', 'secondary'],
+  ['Renamed', 'info']
+])
 
 const cardColors = [
-  "azure",
-  "beige",
-  "bisque",
-  "blanchedalmond",
-  "burlywood",
-  "cornsilk",
-  "gainsboro",
-  "ghostwhite",
-  "ivory",
-  "khaki"
-];
+  'azure',
+  'beige',
+  'bisque',
+  'blanchedalmond',
+  'burlywood',
+  'cornsilk',
+  'gainsboro',
+  'ghostwhite',
+  'ivory',
+  'khaki'
+]
 
 const pickColor = () => {
-  const rand = Math.floor(Math.random() * 10);
-  return cardColors[rand];
-};
+  const rand = Math.floor(Math.random() * 10)
+  return cardColors[rand]
+}
 
 var scene = {
-  type: "container",
+  type: 'container',
   props: {
-    orientation: "horizontal"
+    orientation: 'horizontal'
   },
   children: []
-};
+}
 
 export default {
-  name: "Cards",
+  name: 'Cards',
 
   components: { Container, Draggable, MonacoEditor, SweetModal },
 
@@ -206,20 +206,20 @@ export default {
     return {
       scene,
       upperDropPlaceholderOptions: {
-        className: "cards-drop-preview",
-        animationDuration: "150",
+        className: 'cards-drop-preview',
+        animationDuration: '150',
         showOnTop: true
       },
       dropPlaceholderOptions: {
-        className: "drop-preview",
-        animationDuration: "150",
+        className: 'drop-preview',
+        animationDuration: '150',
         showOnTop: true
       },
       // async analyzing git repo
       loading_status: true,
-      successMessage: "",
-      alertMessage: "",
-      errorMessage: "",
+      successMessage: '',
+      alertMessage: '',
+      errorMessage: '',
 
       // diff editor options
       options: {
@@ -228,38 +228,38 @@ export default {
       },
 
       // diff view contents
-      diffViewTitle: "",
+      diffViewTitle: '',
       showVodal: false, // only for vodal
       loadingDiff: true,
-      language: "",
-      code_left: "",
-      code_right: "",
+      language: '',
+      code_left: '',
+      code_right: '',
 
       // commit data
-      commitMessage: "",
+      commitMessage: '',
       commitFiles: []
-    };
+    }
   },
 
   methods: {
     // handle drag&drop
     onColumnDrop(dropResult) {
-      const scene = Object.assign({}, this.scene);
-      scene.children = applyDrag(scene.children, dropResult);
-      this.scene = scene;
+      const scene = Object.assign({}, this.scene)
+      scene.children = applyDrag(scene.children, dropResult)
+      this.scene = scene
     },
 
     onCardDrop(columnId, dropResult) {
       if (dropResult.removedIndex !== null || dropResult.addedIndex !== null) {
-        const scene = Object.assign({}, this.scene);
-        const column = scene.children.filter(p => p.id === columnId)[0];
-        const columnIndex = scene.children.indexOf(column);
+        const scene = Object.assign({}, this.scene)
+        const column = scene.children.filter(p => p.id === columnId)[0]
+        const columnIndex = scene.children.indexOf(column)
 
-        const newColumn = Object.assign({}, column);
-        newColumn.children = applyDrag(newColumn.children, dropResult);
-        scene.children.splice(columnIndex, 1, newColumn);
+        const newColumn = Object.assign({}, column)
+        newColumn.children = applyDrag(newColumn.children, dropResult)
+        scene.children.splice(columnIndex, 1, newColumn)
 
-        this.scene = scene;
+        this.scene = scene
       }
     },
 
@@ -267,43 +267,43 @@ export default {
       return index => {
         return this.scene.children.filter(p => p.id === columnId)[0].children[
           index
-        ];
-      };
+        ]
+      }
     },
 
     log(...params) {
-      console.log(...params);
+      console.log(...params)
     },
 
     getBadgeType(operation) {
-      return badgeTypeMap.get(operation);
+      return badgeTypeMap.get(operation)
     },
 
     //  prepare data by analyzing git repo
     analyzeGitRepo() {
       // console.log("Analyzing git repo "+ __dirname);
-      analyzeStatus("")
+      analyzeStatus('')
         .then(res => {
-          console.log(res);
+          console.log(res)
           this.scene = {
-            type: "container",
+            type: 'container',
             props: {
-              orientation: "horizontal"
+              orientation: 'horizontal'
             },
             children: generateItems(4, i => ({
               id: `column${i}`,
-              type: "container",
+              type: 'container',
               name: columnNames[i],
               props: {
-                orientation: "vertical",
-                className: "card-container"
+                orientation: 'vertical',
+                className: 'card-container'
               },
-              message: "",
+              message: '',
               children: generateItems(res.nodes.length, j => ({
-                type: "draggable",
+                type: 'draggable',
                 id: `${i}${j}`,
                 props: {
-                  className: "card",
+                  className: 'card',
                   style: { backgroundColor: pickColor() }
                 },
                 operation: res.nodes[j].operation,
@@ -313,126 +313,126 @@ export default {
                 language: res.nodes[j].lang
               }))
             }))
-          };
-          this.loading_status = false;
-          console.log(this.scene);
+          }
+          this.loading_status = false
+          console.log(this.scene)
         })
         .catch(err => {
-          this.loading_status = false;
-          this.errorMessage = err.message;
-          this.$refs.error.open();
-        });
+          this.loading_status = false
+          this.errorMessage = err.message
+          this.$refs.error.open()
+        })
     },
 
     // show diffs with alternative modal
     showDiffWithSweet(abs_path, language) {
-      this.$refs.diffViewModal.open();
-      this.loadingDiff = true;
-      this.diffViewTitle = abs_path;
-      fs.readFile(abs_path, "utf-8", (err, data) => {
+      this.$refs.diffViewModal.open()
+      this.loadingDiff = true
+      this.diffViewTitle = abs_path
+      fs.readFile(abs_path, 'utf-8', (err, data) => {
         if (err) {
           this.errorMessage =
-            "An error ocurred reading the file :" + err.message;
-          this.$refs.error.open();
-          return;
+            'An error ocurred reading the file :' + err.message
+          this.$refs.error.open()
+          return
         }
         // this.language = language;
-        this.loadingDiff = false;
+        this.loadingDiff = false
         monaco.editor.setModelLanguage(
           this.$refs.diffViewEditor.getModifiedEditor().getModel(),
           language
-        );
-        this.code_left = data;
-        this.code_right = data;
-      });
+        )
+        this.code_left = data
+        this.code_right = data
+      })
     },
 
     showDiffWithVodal(abs_path, language) {
-      this.showVodal = true;
-      this.loadingDiff = true;
-      this.diffViewTitle = abs_path;
-      fs.readFile(abs_path, "utf-8", (err, data) => {
+      this.showVodal = true
+      this.loadingDiff = true
+      this.diffViewTitle = abs_path
+      fs.readFile(abs_path, 'utf-8', (err, data) => {
         if (err) {
           this.errorMessage =
-            "An error ocurred reading the file :" + err.message;
-          this.$refs.error.open();
-          return;
+            'An error ocurred reading the file :' + err.message
+          this.$refs.error.open()
+          return
         }
-        this.language = language;
-        this.code_left = data;
-        this.code_right = data;
-        this.loadingDiff = false;
-      });
+        this.language = language
+        this.code_left = data
+        this.code_right = data
+        this.loadingDiff = false
+      })
     },
 
     showDiffWithJSModal(abs_path, language) {
-      this.$modal.show("diffViewJSModal");
-      this.loadingDiff = true;
-      fs.readFile(abs_path, "utf-8", (err, data) => {
+      this.$modal.show('diffViewJSModal')
+      this.loadingDiff = true
+      fs.readFile(abs_path, 'utf-8', (err, data) => {
         if (err) {
           this.errorMessage =
-            "An error ocurred reading the file :" + err.message;
-          this.$refs.error.open();
-          return;
+            'An error ocurred reading the file :' + err.message
+          this.$refs.error.open()
+          return
         }
-        this.language = language;
-        this.code_left = data;
-        this.code_right = data;
-        this.loadingDiff = false;
-      });
+        this.language = language
+        this.code_left = data
+        this.code_right = data
+        this.loadingDiff = false
+      })
     },
     hide() {
-      this.$modal.hide("diffViewJSModal");
+      this.$modal.hide('diffViewJSModal')
     },
 
     // handle commit action
     readyToCommit(message, list) {
       if (list.length == 0) {
-        this.alertMessage = "No files to commit in this group!";
-        this.$refs.alert.open();
-      } else if (message === "") {
-        this.alertMessage = "The commit message cannot be empty!";
-        this.$refs.alert.open();
+        this.alertMessage = 'No files to commit in this group!'
+        this.$refs.alert.open()
+      } else if (message === '') {
+        this.alertMessage = 'The commit message cannot be empty!'
+        this.$refs.alert.open()
       } else {
-        this.commitMessage = message;
-        this.commitFiles = list;
-        this.$refs.commitModal.open();
+        this.commitMessage = message
+        this.commitFiles = list
+        this.$refs.commitModal.open()
       }
     },
     reallyCommit() {
-      let filePaths = new Array();
-      console.log(this.commitFiles);
+      let filePaths = new Array()
+      console.log(this.commitFiles)
       for (let file of this.commitFiles) {
-        console.log(file);
-        filePaths.push(file.path);
+        console.log(file)
+        filePaths.push(file.path)
       }
-      doCommit("", this.commitMessage, filePaths)
+      doCommit('', this.commitMessage, filePaths)
         .then(res => {
           this.successMessage =
-            "Successfully commit " + res.commit + "to branch " + res.branch;
-          this.$refs.commitModal.close();
-          this.$refs.successModal.open();
+            'Successfully commit ' + res.commit + 'to branch ' + res.branch
+          this.$refs.commitModal.close()
+          this.$refs.successModal.open()
         })
         .catch(err => {
-          this.errorMessage = err;
-          this.$refs.error.open();
-        });
+          this.errorMessage = err
+          this.$refs.error.open()
+        })
     },
     cancelCommit() {
-      this.$refs.commitModal.close();
+      this.$refs.commitModal.close()
     }
   },
 
   created() {
-    this.analyzeGitRepo();
+    this.analyzeGitRepo()
   }
-};
+}
 </script>
 
 <style>
-@import "../assets/common.css";
-@import "../assets/slide-down.css";
-@import "../assets/door.css";
+@import '../assets/common.css';
+@import '../assets/slide-down.css';
+@import '../assets/door.css';
 
 .no-select {
   -webkit-touch-callout: none;

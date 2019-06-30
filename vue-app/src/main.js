@@ -20,5 +20,5 @@ Vue.use(BootstrapVue)
 Vue.use(VModal)
 
 new Vue({
-  render: h => h(App),
+  render: h => h(App)
 }).$mount('#app')

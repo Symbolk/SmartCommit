@@ -7,23 +7,23 @@
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
-import FileCards from "./components/FileCards.vue";
-import Header from "./components/Header.vue";
+import HelloWorld from './components/HelloWorld.vue'
+import FileCards from './components/FileCards.vue'
+import Header from './components/Header.vue'
 
 export default {
-  name: "app",
+  name: 'app',
   components: {
     Header,
     HelloWorld,
     FileCards
   }
-};
+}
 </script>
 
 <style>
 #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* text-align: center; */

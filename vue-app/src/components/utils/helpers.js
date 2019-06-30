@@ -1,4 +1,3 @@
-
 export const applyDrag = (arr, dragResult) => {
   const { removedIndex, addedIndex, payload } = dragResult
   if (removedIndex === null && addedIndex === null) return arr
