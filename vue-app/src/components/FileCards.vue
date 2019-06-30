@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ eslint-disable no-console */
 
 <template>
   <div class="card-scene">
@@ -22,23 +22,43 @@
             </span>
             {{ column.name }}
           </div>
-          <b-input-group class="mt-3" prepend>
-            <b-form-input placeholder="Commit Message" v-model="column.message"></b-form-input>
-            <b-input-group-append>
-              <!-- disable button if the message is empty with: :disabled="!column.message" -->
-              <b-button
-                @click="readyToCommit(column.message, column.children)"
-                title="Ok"
-                v-b-tooltip.hover
-                variant="outline-success"
+          <div id="message-container">
+            <b-input-group :id="`message-${column.id}`" class="mt-3" prepend>
+              <b-form-input placeholder="Commit Message" v-model="column.message"></b-form-input>
+              <b-popover
+                :target="`message-${column.id}`"
+                @hidden="onHidden"
+                @show="onShow"
+                @shown="onShown"
+                container="message-container"
+                placement="auto"
+                ref="popover"
+                triggers="focus"
               >
-                <v-icon name="check" />
-              </b-button>
-              <b-button @click="column.message=''" title="Clear" v-b-tooltip.hover variant="info">
-                <v-icon name="eraser" />
-              </b-button>
-            </b-input-group-append>
-          </b-input-group>
+                <template slot="title">
+                  <!-- <b-button @click="onClose" aria-label="Close" class="close">
+                    <span aria-hidden="true" class="d-inline-block">&times;</span>
+                  </b-button>-->
+                  Recommended Words
+                </template>
+              </b-popover>
+              <b-input-group-append>
+                <!-- disable button if the message is empty with: :disabled="!column.message" -->
+                <b-button
+                  @click="readyToCommit(column.message, column.children)"
+                  title="Ok"
+                  v-b-tooltip.hover
+                  variant="outline-success"
+                >
+                  <v-icon name="check" />
+                </b-button>
+                <b-button @click="column.message=''" title="Clear" v-b-tooltip.hover variant="info">
+                  <v-icon name="eraser" />
+                </b-button>
+              </b-input-group-append>
+            </b-input-group>
+          </div>
+
           <Container
             :drop-placeholder="dropPlaceholderOptions"
             :get-child-payload="getCardPayload(column.id)"
@@ -269,6 +289,36 @@ export default {
           index
         ]
       }
+    },
+
+    // methods for commit message tags popover
+    onClose() {
+      // this.$refs.popover.$emit('close')
+      // this.popoverShow = false
+    },
+    onOk() {},
+    onShow() {
+      // This is called just before the popover is shown
+      // Reset our popover form variables
+    },
+    onShown() {
+      // Called just after the popover has been shown
+      // Transfer focus to the first input
+    },
+    onHidden() {
+      // Called just after the popover has finished hiding
+      // Bring focus back to the button
+    },
+    focusRef(ref) {
+      // Some references may be a component, functional component, or plain element
+      // This handles that check before focusing, assuming a `focus()` method exists
+      // We do this in a double `$nextTick()` to ensure components have
+      // updated & popover positioned first
+      this.$nextTick(() => {
+        this.$nextTick(() => {
+          // ;(ref.$el || ref).focus()
+        })
+      })
     },
 
     log(...params) {
