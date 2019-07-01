@@ -388,10 +388,10 @@ export default {
         }
         // this.language = language;
         this.loadingDiff = false
-        monaco.editor.setModelLanguage(
-          this.$refs.diffViewEditor.getModifiedEditor().getModel(),
-          language
-        )
+        // monaco.editor.setModelLanguage(
+        //   this.$refs.diffViewEditor.getModifiedEditor().getModel(),
+        //   language
+        // )
         this.code_left = data
         this.code_right = data
       })
