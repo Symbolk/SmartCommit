@@ -1,7 +1,7 @@
  eslint-disable no-console */
 
 <template>
-  <div class="card-scene">
+  <div :key="refreshKey" class="card-scene">
     <div v-if="loadingStatus">
       <b-button disabled variant="primary">
         <b-spinner small type="grow"></b-spinner>Loading...
@@ -207,6 +207,7 @@ export default {
   data() {
     return {
       scene,
+      refreshKey: 0,
       upperDropPlaceholderOptions: {
         className: 'cards-drop-preview',
         animationDuration: '150',
@@ -304,6 +305,11 @@ export default {
       })
     },
 
+    // a trick to refresh the component
+    refreshCards() {
+      this.refreshKey += 1
+    },
+
     log(...params) {
       console.log(...params)
     },
@@ -319,6 +325,7 @@ export default {
         .then(rootPath => {
           this.REPO_PATH = rootPath + '/'
           console.log('Repo root path: ' + this.REPO_PATH)
+          this.refreshCards()
           this.analyzeGitRepo()
         })
         .catch(err => {
@@ -429,6 +436,7 @@ export default {
             'Successfully commit ' + res.commit + ' to branch ' + res.branch
           this.$refs.commitModal.close()
           this.$refs.success.open()
+          this.refreshCards()
         })
         .catch(err => {
           this.errorMessage = err
