@@ -137,6 +137,13 @@ export default {
 
     focus() {
       this.editor.focus()
+    },
+
+    setLanguage(lang) {
+      if (this.editor) {
+        const editor = this.getModifiedEditor()
+        this.monaco.editor.setModelLanguage(editor.getModel(), lang)
+      }
     }
   },
 

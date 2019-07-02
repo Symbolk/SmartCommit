@@ -115,10 +115,10 @@
       <!-- vue-monaco -->
       <MonacoEditor
         :diffEditor="true"
+        :language="language"
         :original="codeRight"
         :value="codeLeft"
         class="editor"
-        language="javascript"
         ref="diffViewEditor"
         v-else
       />
@@ -134,7 +134,7 @@ import { SweetModal } from 'sweet-modal-vue'
 import MonacoEditor from './vue-monaco'
 
 const fs = require('fs')
-const monaco = require('monaco-editor')
+// const monaco = require('monaco-editor')
 const REPO_PATH = ''
 
 const columnNames = ['Lorem', 'Ipsum', 'Consectetur', 'Eiusmod']
@@ -199,14 +199,13 @@ export default {
       // diff editor options
       options: {
         // selectOnLineNumbers: true
-        language: 'javascript'
       },
 
       // diff view contents
       diffViewTitle: '',
-      showVodal: false, // only for vodal
+
       loadingDiff: true,
-      language: '',
+      language: 'javascript',
       codeLeft: '',
       codeRight: '',
 
@@ -341,11 +340,9 @@ export default {
           this.$refs.error.open()
           return
         }
-        // this.language = language;
-        // monaco.editor.setModelLanguage(
-        //   this.$refs.diffViewEditor.getModifiedEditor().getModel(),
-        //   language
-        // )
+        this.language = language
+        // this.$refs.diffViewEditor.setLanguage(language)
+
         this.codeRight = data
 
         showAtHEAD(REPO_PATH, path)
@@ -406,10 +403,6 @@ export default {
 </script>
 
 <style>
-@import '../assets/common.css';
-@import '../assets/slide-down.css';
-@import '../assets/door.css';
-
 .no-select {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
