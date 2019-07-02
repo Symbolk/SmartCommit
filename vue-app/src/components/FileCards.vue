@@ -313,51 +313,55 @@ export default {
     },
 
     //  prepare data by analyzing git repo
-    analyzeGitRepo() {
+    init() {
       // console.log("Analyzing git repo "+ __dirname);
       getRootPath('')
         .then(rootPath => {
           this.REPO_PATH = rootPath + '/'
-          console.log('Repo root dir: ' + this.REPO_PATH)
-
-          analyzeStatus(this.REPO_PATH)
-            .then(res => {
-              console.log(res)
-              this.scene = {
-                type: 'container',
+          console.log('Repo root path: ' + this.REPO_PATH)
+          this.analyzeGitRepo()
+        })
+        .catch(err => {
+          this.loadingStatus = false
+          this.errorMessage = err.message
+          this.$refs.error.open()
+        })
+    },
+    analyzeGitRepo() {
+      analyzeStatus(this.REPO_PATH)
+        .then(res => {
+          console.log(res)
+          this.scene = {
+            type: 'container',
+            props: {
+              orientation: 'horizontal'
+            },
+            children: generateItems(4, i => ({
+              id: `column${i}`,
+              type: 'container',
+              name: columnNames[i],
+              props: {
+                orientation: 'vertical',
+                className: 'card-container'
+              },
+              message: '',
+              children: generateItems(res.nodes.length, j => ({
+                type: 'draggable',
+                id: `${i}${j}`,
                 props: {
-                  orientation: 'horizontal'
+                  className: 'card',
+                  style: { backgroundColor: pickColor() }
                 },
-                children: generateItems(4, i => ({
-                  id: `column${i}`,
-                  type: 'container',
-                  name: columnNames[i],
-                  props: {
-                    orientation: 'vertical',
-                    className: 'card-container'
-                  },
-                  message: '',
-                  children: generateItems(res.nodes.length, j => ({
-                    type: 'draggable',
-                    id: `${i}${j}`,
-                    props: {
-                      className: 'card',
-                      style: { backgroundColor: pickColor() }
-                    },
-                    operation: res.nodes[j].operation,
-                    badgeType: this.getBadgeType(res.nodes[j].operation),
-                    path: res.nodes[j].path,
-                    abs_path: res.nodes[j].abs_path,
-                    language: res.nodes[j].lang
-                  }))
-                }))
-              }
-              this.loadingStatus = false
-              console.log(this.scene)
-            })
-            .catch(err => {
-              throw err
-            })
+                operation: res.nodes[j].operation,
+                badgeType: this.getBadgeType(res.nodes[j].operation),
+                path: res.nodes[j].path,
+                abs_path: res.nodes[j].abs_path,
+                language: res.nodes[j].lang
+              }))
+            }))
+          }
+          this.loadingStatus = false
+          console.log(this.scene)
         })
         .catch(err => {
           this.loadingStatus = false
@@ -422,7 +426,7 @@ export default {
       doCommit(this.REPO_PATH, this.commitMessage, filePaths)
         .then(res => {
           this.successMessage =
-            'Successfully commit ' + res.commit + 'to branch ' + res.branch
+            'Successfully commit ' + res.commit + ' to branch ' + res.branch
           this.$refs.commitModal.close()
           this.$refs.success.open()
         })
@@ -437,7 +441,7 @@ export default {
   },
 
   created() {
-    this.analyzeGitRepo()
+    this.init()
   }
 }
 </script>
