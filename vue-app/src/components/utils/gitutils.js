@@ -92,26 +92,37 @@ function getParentDir(path) {
   return path.substring(0, path.lastIndexOf('\\') + 1)
 }
 
+var git = require('simple-git')
+
+/**
+ * Get the absolute path of the root directory of the git repo
+ */
+export const getRootPath = repo_path => {
+  const gitt = git(repo_path)
+  return new Promise((resolve, reject) => {
+    gitt.revparse(['--show-toplevel'], function(err, topLevel) {
+      if (err) {
+        reject(err)
+      }
+      resolve(topLevel)
+    })
+  })
+}
+
 /**
  * Analyze the status of a git repo to get changed files sets
  * promise way
  * @param {} repo_path empty means the cu working directory
  */
 export const analyzeStatus = repo_path => {
-  var git = require('simple-git')
-  git = git(repo_path)
-  // since simple-git outputs a little different with git ()
-  let workingDir = getParentDir(git._baseDir)
-  // let workingDir = git._baseDir + '/';
-  console.log('Working directory: ' + workingDir)
+  const gitt = git(repo_path)
   return new Promise((resolve, reject) => {
-    git.status(async (err, status) => {
+    gitt.status(async (err, status) => {
+      // const topLevel = await getRootPath(repo_path)
+      // let workingDir = topLevel + '/'
       try {
         if (err) reject(err)
-        var data = await formatStatus(workingDir, status)
-        // get the latest commit hash (uncessary since we can use HEAD instead)
-        // git.log((err, res) => {
-        // });
+        var data = await formatStatus(repo_path, status)
         resolve(data)
       } catch (err) {
         reject(err)
@@ -122,10 +133,8 @@ export const analyzeStatus = repo_path => {
 
 // callback way (deprecated)
 export const analyzeStatus2 = (repo_path, callback) => {
-  var git = require('simple-git')
-  git = git(repo_path)
-
-  git.status(async (err, status) => {
+  const gitt = git(repo_path)
+  gitt.status(async (err, status) => {
     try {
       if (err) throw err
       var data = await formatStatus(repo_path, status)
@@ -148,14 +157,12 @@ export const doCommit = (repo_path, commit_message, file_list) => {
   // the optional options object can contain any other parameters to pass to the commit command,
   // setting the value of the property to be a string will add name=value to the command string,
   // setting any other type of value will result in just the key from the object being passed (ie: just name)
-  var git = require('simple-git')
-  git = git(repo_path)
-  let workingDir = getParentDir(git._baseDir)
+  const gitt = git(repo_path)
   // let workingDir = git._baseDir + '/'
-  console.log('Working dir: ' + workingDir)
+  console.log('Working dir: ' + repo_path)
   var options = {}
   return new Promise((resolve, reject) => {
-    git.commit(commit_message, file_list, options, (err, res) => {
+    gitt.commit(commit_message, file_list, options, (err, res) => {
       if (err) {
         reject(err)
       } else {
@@ -171,11 +178,11 @@ export const doCommit = (repo_path, commit_message, file_list) => {
  * @param {*} file_path
  */
 export const showAtHEAD = (repo_path, file_path) => {
-  var git = require('simple-git')
-  git = git(repo_path)
+  const gitt = git(repo_path)
+  console.log('Working dir: ' + repo_path)
   let arg = 'HEAD:' + file_path
   return new Promise((resolve, reject) => {
-    git.show([arg], (err, res) => {
+    gitt.show([arg], (err, res) => {
       if (err) {
         reject(err)
       } else {

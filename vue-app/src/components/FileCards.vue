@@ -151,13 +151,18 @@
 <script>
 import { Container, Draggable } from 'vue-smooth-dnd'
 import { applyDrag, generateItems } from './utils/helpers'
-import { analyzeStatus, doCommit, showAtHEAD } from './utils/gitutils'
+import {
+  getRootPath,
+  analyzeStatus,
+  doCommit,
+  showAtHEAD
+} from './utils/gitutils'
 import { SweetModal } from 'sweet-modal-vue'
 import MonacoEditor from './vue-monaco'
 // import MonacoEditor from 'monaco-editor-vue'
 
 const fs = require('fs')
-const REPO_PATH = ''
+var git = require('simple-git')
 
 const columnNames = ['Lorem', 'Ipsum', 'Consectetur', 'Eiusmod']
 const badgeTypeMap = new Map([
@@ -212,6 +217,8 @@ export default {
         animationDuration: '150',
         showOnTop: true
       },
+
+      REPO_PATH: '',
       // async analyzing git repo
       loadingStatus: true,
       successMessage: '',
@@ -308,40 +315,49 @@ export default {
     //  prepare data by analyzing git repo
     analyzeGitRepo() {
       // console.log("Analyzing git repo "+ __dirname);
-      analyzeStatus(REPO_PATH)
-        .then(res => {
-          console.log(res)
-          this.scene = {
-            type: 'container',
-            props: {
-              orientation: 'horizontal'
-            },
-            children: generateItems(4, i => ({
-              id: `column${i}`,
-              type: 'container',
-              name: columnNames[i],
-              props: {
-                orientation: 'vertical',
-                className: 'card-container'
-              },
-              message: '',
-              children: generateItems(res.nodes.length, j => ({
-                type: 'draggable',
-                id: `${i}${j}`,
+      getRootPath('')
+        .then(rootPath => {
+          this.REPO_PATH = rootPath + '/'
+          console.log('Repo root dir: ' + this.REPO_PATH)
+
+          analyzeStatus(this.REPO_PATH)
+            .then(res => {
+              console.log(res)
+              this.scene = {
+                type: 'container',
                 props: {
-                  className: 'card',
-                  style: { backgroundColor: pickColor() }
+                  orientation: 'horizontal'
                 },
-                operation: res.nodes[j].operation,
-                badgeType: this.getBadgeType(res.nodes[j].operation),
-                path: res.nodes[j].path,
-                abs_path: res.nodes[j].abs_path,
-                language: res.nodes[j].lang
-              }))
-            }))
-          }
-          this.loadingStatus = false
-          console.log(this.scene)
+                children: generateItems(4, i => ({
+                  id: `column${i}`,
+                  type: 'container',
+                  name: columnNames[i],
+                  props: {
+                    orientation: 'vertical',
+                    className: 'card-container'
+                  },
+                  message: '',
+                  children: generateItems(res.nodes.length, j => ({
+                    type: 'draggable',
+                    id: `${i}${j}`,
+                    props: {
+                      className: 'card',
+                      style: { backgroundColor: pickColor() }
+                    },
+                    operation: res.nodes[j].operation,
+                    badgeType: this.getBadgeType(res.nodes[j].operation),
+                    path: res.nodes[j].path,
+                    abs_path: res.nodes[j].abs_path,
+                    language: res.nodes[j].lang
+                  }))
+                }))
+              }
+              this.loadingStatus = false
+              console.log(this.scene)
+            })
+            .catch(err => {
+              throw err
+            })
         })
         .catch(err => {
           this.loadingStatus = false
@@ -359,6 +375,7 @@ export default {
         if (err) {
           this.errorMessage =
             'An error ocurred reading the file :' + err.message
+          this.$refs.diffViewModal.close()
           this.$refs.error.open()
           return
         }
@@ -367,7 +384,7 @@ export default {
 
         this.codeRight = data
 
-        showAtHEAD(REPO_PATH, path)
+        showAtHEAD(this.REPO_PATH, path)
           .then(res => {
             this.codeLeft = res
             this.loadingDiff = false
@@ -375,6 +392,7 @@ export default {
           .catch(err => {
             this.errorMessage =
               'An error ocurred reading the file :' + err.message
+            this.$refs.diffViewModal.close()
             this.$refs.error.open()
           })
       })
@@ -401,12 +419,12 @@ export default {
         console.log(file)
         filePaths.push(file.path)
       }
-      doCommit(REPO_PATH, this.commitMessage, filePaths)
+      doCommit(this.REPO_PATH, this.commitMessage, filePaths)
         .then(res => {
           this.successMessage =
             'Successfully commit ' + res.commit + 'to branch ' + res.branch
           this.$refs.commitModal.close()
-          this.$refs.successModal.open()
+          this.$refs.success.open()
         })
         .catch(err => {
           this.errorMessage = err
