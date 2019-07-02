@@ -28,6 +28,7 @@
     "language-detect": "^1.1.0",
     "language-map": "^1.4.0",
     "monaco-editor": "^0.17.1",
+    "monaco-editor-vue": "^1.0.7",
     "monaco-editor-webpack-plugin": "^1.7.0",
     "nano-assign": "^1.0.1",
     "node-sass": "^4.12.0",

@@ -25,23 +25,7 @@
           <div id="message-container">
             <b-input-group :id="`message-${column.id}`" class="mt-3" prepend>
               <b-form-input placeholder="Commit Message" v-model="column.message"></b-form-input>
-              <b-popover
-                :target="`message-${column.id}`"
-                @hidden="onHidden"
-                @show="onShow"
-                @shown="onShown"
-                container="message-container"
-                placement="auto"
-                ref="popover"
-                triggers="focus"
-              >
-                <template slot="title">
-                  <!-- <b-button @click="onClose" aria-label="Close" class="close">
-                    <span aria-hidden="true" class="d-inline-block">&times;</span>
-                  </b-button>-->
-                  Recommended Words
-                </template>
-              </b-popover>
+
               <b-input-group-append>
                 <!-- disable button if the message is empty with: :disabled="!column.message" -->
                 <b-button
@@ -57,6 +41,33 @@
                 </b-button>
               </b-input-group-append>
             </b-input-group>
+            <b-popover
+              :target="`message-${column.id}`"
+              @hidden="onHidden"
+              @show="onShow"
+              @shown="onShown"
+              container="message-container"
+              placement="auto"
+              ref="popover"
+              triggers="focus"
+            >
+              <template slot="title">
+                <!-- <b-button @click="onClose" aria-label="Close" class="close">
+                    <span aria-hidden="true" class="d-inline-block">&times;</span>
+                </b-button>-->
+                Recommended Words
+              </template>
+              <div class="words">
+                <b-badge pill variant="primary">Primary</b-badge>
+                <b-badge pill variant="secondary">Secondary</b-badge>
+                <b-badge pill variant="success">Success</b-badge>
+                <b-badge pill variant="danger">Danger</b-badge>
+                <b-badge pill variant="warning">Warning</b-badge>
+                <b-badge pill variant="info">Info</b-badge>
+                <b-badge pill variant="light">Light</b-badge>
+                <b-badge pill variant="dark">Dark</b-badge>
+              </div>
+            </b-popover>
           </div>
 
           <Container
@@ -112,6 +123,17 @@
       <div v-if="loadingDiff">
         <b-spinner label="Spinning" variant="success"></b-spinner>
       </div>
+      <!-- monaco-editor-vue -->
+      <!-- <MonacoEditor
+        :diffEditor="true"
+        :options="options"
+        :original="codeLeft"
+        :value="codeRight"
+        height="800"
+        language="javascript"
+        theme="vs-light"
+        v-else
+      ></MonacoEditor>-->
       <!-- vue-monaco -->
       <MonacoEditor
         :diffEditor="true"
@@ -132,9 +154,9 @@ import { applyDrag, generateItems } from './utils/helpers'
 import { analyzeStatus, doCommit, showAtHEAD } from './utils/gitutils'
 import { SweetModal } from 'sweet-modal-vue'
 import MonacoEditor from './vue-monaco'
+// import MonacoEditor from 'monaco-editor-vue'
 
 const fs = require('fs')
-// const monaco = require('monaco-editor')
 const REPO_PATH = ''
 
 const columnNames = ['Lorem', 'Ipsum', 'Consectetur', 'Eiusmod']
@@ -428,6 +450,10 @@ export default {
   cursor: grabbing;
   cursor: -moz-grabbing;
   cursor: -webkit-grabbing;
+}
+
+.words {
+  cursor: pointer;
 }
 
 .editor {
