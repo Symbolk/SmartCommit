@@ -1,0 +1,127 @@
+/***
+  ** Backup code for after trying multiple libs
+  **/
+
+// FileCards.vue
+// import MonacoEditor from 'monaco-editor-vue'
+// import MonacoEditor from 'vue-monaco'
+
+<template>
+<!-- vodal -->
+    <vodal
+      :duration="301"
+      :height="50"
+      :show="showVodal"
+      :width="80"
+      @hide="showVodal = false"
+      animation="door"
+      class="my-dialog"
+      measure="em"
+    >
+      <div class="header">{{diffViewTitle}}</div>
+      <div v-if="loadingDiff">
+        <b-spinner label="Spinning" variant="success"></b-spinner>
+      </div>
+      <!-- monaco-editor-vue -->
+      <!-- <MonacoEditor
+        :diffEditor="true"
+        :language="language"
+        :options="options"
+        :original="codeLeft"
+        :value="codeRight"
+        theme="vs-light"
+        v-else
+      ></MonacoEditor>-->
+      <MonacoEditor
+        :diffEditor="true"
+        :original="codeRight"
+        :value="codeLeft"
+        class="editor"
+        language="javascript"
+        v-else
+      />
+    </vodal>
+
+    <!-- vue-js-modal -->
+    <modal :height="800" :width="1000" name="diffViewJSModal" transition="nice-modal-fade">
+      <div>
+        <div slot="top-left">
+          <button @click="hide()">x</button>
+        </div>
+      </div>
+      <div v-if="loadingDiff">
+        <b-spinner label="Spinning" variant="success"></b-spinner>
+      </div>
+      <!-- <MonacoEditor
+        v-else
+        theme="vs-light"
+        :language="language"
+        :options="options"
+        :diffEditor="true"
+        :original="codeLeft"
+        :value="codeRight"
+      ></MonacoEditor>-->
+    </modal>
+    </template>
+
+methods:{
+    showDiffWithVodal(path, abs_path, language) {
+    this.showVodal = true
+    this.loadingDiff = true
+    this.diffViewTitle = abs_path
+    fs.readFile(abs_path, 'utf-8', (err, data) => {
+      if (err) {
+        this.errorMessage =
+          'An error ocurred reading the file :' + err.message
+        this.$refs.error.open()
+        return
+      }
+      this.language = language
+      this.codeRight = data
+      showAtHEAD(REPO_PATH, path)
+        .then(res => {
+          this.codeLeft = res
+          this.loadingDiff = false
+        })
+        .catch(err => {
+          this.errorMessage =
+            'An error ocurred reading the file :' + err.message
+          this.$refs.error.open()
+        })
+    })
+  },
+
+  showDiffWithJSModal(path, abs_path, language) {
+    this.$modal.show('diffViewJSModal')
+    this.loadingDiff = true
+    fs.readFile(abs_path, 'utf-8', (err, data) => {
+      if (err) {
+        this.errorMessage =
+          'An error ocurred reading the file :' + err.message
+        this.$refs.error.open()
+        return
+      }
+      this.language = language
+      this.codeRight = data
+      showAtHEAD(REPO_PATH, path)
+        .then(res => {
+          this.codeLeft = res
+          this.loadingDiff = false
+        })
+        .catch(err => {
+          this.errorMessage =
+            'An error ocurred reading the file :' + err.message
+          this.$refs.error.open()
+        })
+    })
+  },
+
+  hide() {
+    this.$modal.hide('diffViewJSModal')
+  }}
+
+
+// package.json
+    "vodal": "^2.4.0",
+    "vue-js-modal": "^1.3.31",
+    "monaco-editor-vue": "^1.0.5",

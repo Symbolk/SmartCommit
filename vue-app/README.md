@@ -1,4 +1,4 @@
-# vue-app
+# SmartCommit: vue-app
 
 ## Project setup
 ```
