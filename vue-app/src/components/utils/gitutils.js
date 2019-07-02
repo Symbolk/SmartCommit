@@ -100,6 +100,7 @@ function getParentDir(path) {
 export const analyzeStatus = repo_path => {
   var git = require('simple-git')
   git = git(repo_path)
+  // since simple-git outputs a little different with git ()
   let workingDir = getParentDir(git._baseDir)
   // let workingDir = git._baseDir + '/';
   console.log('Working directory: ' + workingDir)
@@ -139,7 +140,7 @@ export const analyzeStatus2 = (repo_path, callback) => {
 }
 
 /**
- * Actually perform the commit
+ * Actually perform the commit function
  * @param {*} commit_message
  * @param {*} file_list
  */
@@ -149,12 +150,32 @@ export const doCommit = (repo_path, commit_message, file_list) => {
   // setting any other type of value will result in just the key from the object being passed (ie: just name)
   var git = require('simple-git')
   git = git(repo_path)
-  // repo_path = getParentDir(git._baseDir);
-  let workingDir = git._baseDir + '/'
-  console.log('Target repo: ' + workingDir)
+  let workingDir = getParentDir(git._baseDir)
+  // let workingDir = git._baseDir + '/'
+  console.log('Working dir: ' + workingDir)
   var options = {}
   return new Promise((resolve, reject) => {
     git.commit(commit_message, file_list, options, (err, res) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(res)
+      }
+    })
+  })
+}
+
+/**
+ * Show file content at the HEAD
+ * @param {*} repo_path
+ * @param {*} file_path
+ */
+export const showAtHEAD = (repo_path, file_path) => {
+  var git = require('simple-git')
+  git = git(repo_path)
+  let arg = 'HEAD:' + file_path
+  return new Promise((resolve, reject) => {
+    git.show([arg], (err, res) => {
       if (err) {
         reject(err)
       } else {

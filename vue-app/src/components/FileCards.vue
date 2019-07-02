@@ -2,7 +2,7 @@
 
 <template>
   <div class="card-scene">
-    <div v-if="loading_status">
+    <div v-if="loadingStatus">
       <b-button disabled variant="primary">
         <b-spinner small type="grow"></b-spinner>Loading...
       </b-button>
@@ -77,7 +77,7 @@
               <div
                 :class="card.props.className"
                 :style="card.props.style"
-                @dblclick="showDiffWithSweet(card.abs_path, card.language)"
+                @dblclick="showDiffWithSweet(card.path, card.abs_path, card.language)"
                 class="no-select"
               >
                 <p class="no-select" title="Double Click to Show Diff" v-b-tooltip.hover>
@@ -109,78 +109,33 @@
     <!-- dialog to show diff -->
     <!-- sweet-modal-vue -->
     <sweet-modal :title="diffViewTitle" ref="diffViewModal" width="80%">
-      <!-- <div v-if="loadingDiff">
-        <b-spinner variant="success" label="Spinning"></b-spinner>
-      </div>-->
+      <div v-if="loadingDiff">
+        <b-spinner label="Spinning" variant="success"></b-spinner>
+      </div>
       <!-- vue-monaco -->
       <MonacoEditor
         :diffEditor="true"
-        :original="code_right"
-        :value="code_left"
+        :original="codeRight"
+        :value="codeLeft"
         class="editor"
+        language="javascript"
         ref="diffViewEditor"
+        v-else
       />
     </sweet-modal>
-    <!-- vodal -->
-    <vodal
-      :duration="301"
-      :height="50"
-      :show="showVodal"
-      :width="80"
-      @hide="showVodal = false"
-      animation="door"
-      class="my-dialog"
-      measure="em"
-    >
-      <div class="header">{{diffViewTitle}}</div>
-      <div v-if="loadingDiff">
-        <b-spinner label="Spinning" variant="success"></b-spinner>
-      </div>
-      <!-- monaco-editor-vue -->
-      <!-- <MonacoEditor
-        v-else
-        theme="vs-light"
-        :language="language"
-        :options="options"
-        :diffEditor="true"
-        :original="code_left"
-        :value="code_right"
-      ></MonacoEditor>-->
-    </vodal>
-
-    <!-- vue-js-modal -->
-    <modal :height="800" :width="1000" name="diffViewJSModal" transition="nice-modal-fade">
-      <div>
-        <div slot="top-left">
-          <button @click="hide()">x</button>
-        </div>
-      </div>
-      <div v-if="loadingDiff">
-        <b-spinner label="Spinning" variant="success"></b-spinner>
-      </div>
-      <!-- <MonacoEditor
-        v-else
-        theme="vs-light"
-        :language="language"
-        :options="options"
-        :diffEditor="true"
-        :original="code_left"
-        :value="code_right"
-      ></MonacoEditor>-->
-    </modal>
   </div>
 </template>
 
 <script>
 import { Container, Draggable } from 'vue-smooth-dnd'
 import { applyDrag, generateItems } from './utils/helpers'
-import { analyzeStatus, doCommit } from './utils/gitutils'
+import { analyzeStatus, doCommit, showAtHEAD } from './utils/gitutils'
 import { SweetModal } from 'sweet-modal-vue'
+import MonacoEditor from './vue-monaco'
 
-// import MonacoEditor from "monaco-editor-vue";
-import MonacoEditor from 'vue-monaco'
 const fs = require('fs')
 const monaco = require('monaco-editor')
+const REPO_PATH = ''
 
 const columnNames = ['Lorem', 'Ipsum', 'Consectetur', 'Eiusmod']
 const badgeTypeMap = new Map([
@@ -236,7 +191,7 @@ export default {
         showOnTop: true
       },
       // async analyzing git repo
-      loading_status: true,
+      loadingStatus: true,
       successMessage: '',
       alertMessage: '',
       errorMessage: '',
@@ -244,7 +199,7 @@ export default {
       // diff editor options
       options: {
         // selectOnLineNumbers: true
-        // language: "json"
+        language: 'javascript'
       },
 
       // diff view contents
@@ -252,8 +207,8 @@ export default {
       showVodal: false, // only for vodal
       loadingDiff: true,
       language: '',
-      code_left: '',
-      code_right: '',
+      codeLeft: '',
+      codeRight: '',
 
       // commit data
       commitMessage: '',
@@ -332,7 +287,7 @@ export default {
     //  prepare data by analyzing git repo
     analyzeGitRepo() {
       // console.log("Analyzing git repo "+ __dirname);
-      analyzeStatus('')
+      analyzeStatus(REPO_PATH)
         .then(res => {
           console.log(res)
           this.scene = {
@@ -364,18 +319,18 @@ export default {
               }))
             }))
           }
-          this.loading_status = false
+          this.loadingStatus = false
           console.log(this.scene)
         })
         .catch(err => {
-          this.loading_status = false
+          this.loadingStatus = false
           this.errorMessage = err.message
           this.$refs.error.open()
         })
     },
 
     // show diffs with alternative modal
-    showDiffWithSweet(abs_path, language) {
+    showDiffWithSweet(path, abs_path, language) {
       this.$refs.diffViewModal.open()
       this.loadingDiff = true
       this.diffViewTitle = abs_path
@@ -387,52 +342,23 @@ export default {
           return
         }
         // this.language = language;
-        this.loadingDiff = false
         // monaco.editor.setModelLanguage(
         //   this.$refs.diffViewEditor.getModifiedEditor().getModel(),
         //   language
         // )
-        this.code_left = data
-        this.code_right = data
-      })
-    },
+        this.codeRight = data
 
-    showDiffWithVodal(abs_path, language) {
-      this.showVodal = true
-      this.loadingDiff = true
-      this.diffViewTitle = abs_path
-      fs.readFile(abs_path, 'utf-8', (err, data) => {
-        if (err) {
-          this.errorMessage =
-            'An error ocurred reading the file :' + err.message
-          this.$refs.error.open()
-          return
-        }
-        this.language = language
-        this.code_left = data
-        this.code_right = data
-        this.loadingDiff = false
+        showAtHEAD(REPO_PATH, path)
+          .then(res => {
+            this.codeLeft = res
+            this.loadingDiff = false
+          })
+          .catch(err => {
+            this.errorMessage =
+              'An error ocurred reading the file :' + err.message
+            this.$refs.error.open()
+          })
       })
-    },
-
-    showDiffWithJSModal(abs_path, language) {
-      this.$modal.show('diffViewJSModal')
-      this.loadingDiff = true
-      fs.readFile(abs_path, 'utf-8', (err, data) => {
-        if (err) {
-          this.errorMessage =
-            'An error ocurred reading the file :' + err.message
-          this.$refs.error.open()
-          return
-        }
-        this.language = language
-        this.code_left = data
-        this.code_right = data
-        this.loadingDiff = false
-      })
-    },
-    hide() {
-      this.$modal.hide('diffViewJSModal')
     },
 
     // handle commit action
@@ -456,7 +382,7 @@ export default {
         console.log(file)
         filePaths.push(file.path)
       }
-      doCommit('', this.commitMessage, filePaths)
+      doCommit(REPO_PATH, this.commitMessage, filePaths)
         .then(res => {
           this.successMessage =
             'Successfully commit ' + res.commit + 'to branch ' + res.branch

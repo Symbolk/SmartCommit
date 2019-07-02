@@ -1,26 +1,29 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <b-button variant="primary" @click="setLang('javascript')"></b-button>
+    <b-button @click="setLang('javascript')" variant="primary"></b-button>
     <!-- testing -->
     <!-- <MonacoEditor height="200" theme="vs-light" language="javascript" :value="code"></MonacoEditor> -->
     <MonacoEditor
-      ref="diffViewEditor"
-      class="editor"
-      :value="code_left"
-      :original="code_right"
       :diffEditor="true"
+      :original="codeRight"
+      :value="codeLeft"
+      class="editor"
+      language="javascript"
+      ref="diffViewEditor"
     />
   </div>
 </template>
 
 <script>
 // import MonacoEditor from "monaco-editor-vue";
-import MonacoEditor from "vue-monaco";
-const monaco = require("monaco-editor");
+// import MonacoEditor from "vue-monaco";
+import MonacoEditor from './vue-monaco'
+
+const monaco = require('monaco-editor')
 
 export default {
-  name: "HelloWorld",
+  name: 'HelloWorld',
 
   components: { MonacoEditor },
 
@@ -30,11 +33,11 @@ export default {
 
   data() {
     return {
-      code_left: "const noop = () => {}",
-      code_right: `function foo() {
+      codeLeft: 'const noop = () => {}',
+      codeRight: `function foo() {
   return 'foo'
     }`
-    };
+    }
   },
 
   methods: {
@@ -42,10 +45,10 @@ export default {
       monaco.editor.setModelLanguage(
         this.$refs.diffViewEditor.getModifiedEditor().getModel(),
         lang
-      );
+      )
     }
   }
-};
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
