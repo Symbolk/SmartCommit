@@ -5,9 +5,11 @@
     <!-- refreshKey is used as a trick to forcely refresh this component -->
     <div :key="refreshKey" class="card-scene">
       <div v-if="loadingStatus">
-        <b-button disabled variant="primary">
-          <b-spinner small type="grow"></b-spinner>Loading...
-        </b-button>
+        <center>
+          <b-button disabled variant="primary">
+            <b-spinner small type="grow"></b-spinner>Loading...
+          </b-button>
+        </center>
       </div>
       <Container
         :drop-placeholder="upperDropPlaceholderOptions"
@@ -129,19 +131,41 @@
     <!-- dialog to show diff -->
     <!-- sweet-modal-vue -->
     <sweet-modal :title="diffViewTitle" ref="diffViewModal" width="80%">
-      <div v-if="loadingDiff">
-        <b-spinner label="Spinning" variant="success"></b-spinner>
-      </div>
-      <!-- vue-monaco -->
-      <MonacoEditor
-        :diffEditor="true"
-        :language="language"
-        :original="codeRight"
-        :value="codeLeft"
-        class="editor"
-        ref="diffViewEditor"
-        v-else
-      />
+      <template slot="box-action">
+        <b-badge pill variant="info">{{language}}</b-badge>&nbsp;
+      </template>
+      <sweet-modal-tab id="sideDiff" title="Side by Side">
+        <div v-if="loadingDiff">
+          <b-spinner label="Spinning" variant="success"></b-spinner>
+        </div>
+        <!-- vue-monaco -->
+        <MonacoEditor
+          :diffEditor="true"
+          :language="language"
+          :options="sideOptions"
+          :original="codeRight"
+          :value="codeLeft"
+          class="editor"
+          ref="sideDiffEditor"
+          v-else
+        />
+      </sweet-modal-tab>
+      <sweet-modal-tab id="inlineDiff" title="Inline Diff">
+        <div v-if="loadingDiff">
+          <b-spinner label="Spinning" variant="success"></b-spinner>
+        </div>
+        <!-- vue-monaco -->
+        <MonacoEditor
+          :diffEditor="true"
+          :language="language"
+          :options="inlineOptions"
+          :original="codeRight"
+          :value="codeLeft"
+          class="editor"
+          ref="inlineDiffEditor"
+          v-else
+        />
+      </sweet-modal-tab>
     </sweet-modal>
   </div>
 </template>
@@ -155,7 +179,7 @@ import {
   doCommit,
   showAtHEAD
 } from './utils/gitutils'
-import { SweetModal } from 'sweet-modal-vue'
+import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
 import MonacoEditor from './vue-monaco'
 
 const fs = require('fs')
@@ -199,7 +223,7 @@ var scene = {
 export default {
   name: 'Cards',
 
-  components: { Container, Draggable, MonacoEditor, SweetModal },
+  components: { Container, Draggable, MonacoEditor, SweetModal, SweetModalTab },
 
   data() {
     return {
@@ -224,8 +248,13 @@ export default {
       errorMessage: '',
 
       // diff editor options
-      options: {
+      sideOptions: {
         // selectOnLineNumbers: true
+        renderSideBySide: true
+      },
+      inlineOptions: {
+        // selectOnLineNumbers: true
+        renderSideBySide: false
       },
 
       // diff view contents
@@ -378,7 +407,7 @@ export default {
 
     // show diffs with alternative modal
     showDiffWithSweet(path, abs_path, language) {
-      this.$refs.diffViewModal.open()
+      this.$refs.diffViewModal.open('sideDiff')
       this.loadingDiff = true
       this.diffViewTitle = abs_path
       fs.readFile(abs_path, 'utf-8', (err, data) => {
@@ -390,7 +419,7 @@ export default {
           return
         }
         this.language = language
-        // this.$refs.diffViewEditor.setLanguage(language)
+        // this.$refs.sideDiffEditor.setLanguage(language)
 
         this.codeRight = data
 
