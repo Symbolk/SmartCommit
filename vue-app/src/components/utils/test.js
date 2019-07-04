@@ -58,4 +58,5 @@ getRootPath2('').then(rootPath => {
 //   console.log(res)
 // })
 
+// git reset HEAD^
 // git reset --soft HEAD^

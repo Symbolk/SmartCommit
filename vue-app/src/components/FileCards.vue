@@ -1,106 +1,114 @@
- eslint-disable no-console */
+ /* eslint-disable no-console */
 
 <template>
-  <div :key="refreshKey" class="card-scene">
-    <div v-if="loadingStatus">
-      <b-button disabled variant="primary">
-        <b-spinner small type="grow"></b-spinner>Loading...
-      </b-button>
-    </div>
-    <Container
-      :drop-placeholder="upperDropPlaceholderOptions"
-      @drop="onColumnDrop($event)"
-      drag-handle-selector=".column-drag-handle"
-      orientation="horizontal"
-      v-else
-    >
-      <Draggable :key="column.id" v-for="column in scene.children">
-        <div :class="column.props.className">
-          <div class="card-column-header">
-            <span class="column-drag-handle" title="Drag to Move" v-b-tooltip.hover>
-              <v-icon name="hand-spock" />
-            </span>
-            {{ column.name }}
-          </div>
-          <div id="message-container">
-            <b-input-group :id="`message-${column.id}`" class="mt-3" prepend>
-              <b-form-input placeholder="Commit Message" v-model="column.message"></b-form-input>
+  <div>
+    <!-- refreshKey is used as a trick to forcely refresh this component -->
+    <div :key="refreshKey" class="card-scene">
+      <div v-if="loadingStatus">
+        <b-button disabled variant="primary">
+          <b-spinner small type="grow"></b-spinner>Loading...
+        </b-button>
+      </div>
+      <Container
+        :drop-placeholder="upperDropPlaceholderOptions"
+        @drop="onColumnDrop($event)"
+        drag-handle-selector=".column-drag-handle"
+        orientation="horizontal"
+        v-else
+      >
+        <Draggable :key="column.id" v-for="column in scene.children">
+          <div :class="column.props.className">
+            <div class="card-column-header">
+              <span class="column-drag-handle" title="Drag to Move" v-b-tooltip.hover>
+                <v-icon name="hand-spock" />
+              </span>
+              {{ column.name }}
+            </div>
+            <div id="message-container">
+              <b-input-group :id="`message-${column.id}`" class="mt-3" prepend>
+                <b-form-input placeholder="Commit Message" v-model="column.message"></b-form-input>
 
-              <b-input-group-append>
-                <!-- disable button if the message is empty with: :disabled="!column.message" -->
-                <b-button
-                  @click="readyToCommit(column.message, column.children)"
-                  title="Ok"
-                  v-b-tooltip.hover
-                  variant="outline-success"
-                >
-                  <v-icon name="check" />
-                </b-button>
-                <b-button @click="column.message=''" title="Clear" v-b-tooltip.hover variant="info">
-                  <v-icon name="eraser" />
-                </b-button>
-              </b-input-group-append>
-            </b-input-group>
-            <b-popover
-              :target="`message-${column.id}`"
-              @hidden="onHidden"
-              @show="onShow"
-              @shown="onShown"
-              container="message-container"
-              placement="auto"
-              ref="popover"
-              triggers="focus"
-            >
-              <template slot="title">
-                <!-- <b-button @click="onClose" aria-label="Close" class="close">
-                    <span aria-hidden="true" class="d-inline-block">&times;</span>
-                </b-button>-->
-                Recommended Words
-              </template>
-              <div class="words">
-                <b-badge pill variant="primary">Primary</b-badge>
-                <b-badge pill variant="secondary">Secondary</b-badge>
-                <b-badge pill variant="success">Success</b-badge>
-                <b-badge pill variant="danger">Danger</b-badge>
-                <b-badge pill variant="warning">Warning</b-badge>
-                <b-badge pill variant="info">Info</b-badge>
-                <b-badge pill variant="light">Light</b-badge>
-                <b-badge pill variant="dark">Dark</b-badge>
-              </div>
-            </b-popover>
-          </div>
-
-          <Container
-            :drop-placeholder="dropPlaceholderOptions"
-            :get-child-payload="getCardPayload(column.id)"
-            @drop="(e) => onCardDrop(column.id, e)"
-            drag-class="card-ghost"
-            drop-class="card-ghost-drop"
-            group-name="col"
-          >
-            <Draggable
-              :key="card.id"
-              title="Drag to Move"
-              v-b-tooltip.hover
-              v-for="card in column.children"
-            >
-              <!-- <b-tooltip :target="() => $refs['card']" placement="bottom">Drag to Move</b-tooltip> -->
-              <div
-                :class="card.props.className"
-                :style="card.props.style"
-                @dblclick="showDiffWithSweet(card.path, card.abs_path, card.language)"
-                class="no-select"
+                <b-input-group-append>
+                  <!-- disable button if the message is empty with: :disabled="!column.message" -->
+                  <b-button
+                    @click="readyToCommit(column.id, column.message, column.children)"
+                    title="Ok"
+                    v-b-tooltip.hover
+                    variant="outline-success"
+                  >
+                    <v-icon name="check" />
+                  </b-button>
+                  <b-button
+                    @click="column.message=''"
+                    title="Clear"
+                    v-b-tooltip.hover
+                    variant="info"
+                  >
+                    <v-icon name="eraser" />
+                  </b-button>
+                </b-input-group-append>
+              </b-input-group>
+              <b-popover
+                :target="`message-${column.id}`"
+                @hidden="onHidden"
+                @show="onShow"
+                @shown="onShown"
+                container="message-container"
+                placement="auto"
+                ref="popover"
+                triggers="focus"
               >
-                <p class="no-select" title="Double Click to Show Diff" v-b-tooltip.hover>
-                  {{ card.path }}
-                  <b-badge :variant="card.badgeType" pill>{{card.operation}}</b-badge>
-                </p>
-              </div>
-            </Draggable>
-          </Container>
-        </div>
-      </Draggable>
-    </Container>
+                <template slot="title">
+                  <!-- <b-button @click="onClose" aria-label="Close" class="close">
+                    <span aria-hidden="true" class="d-inline-block">&times;</span>
+                  </b-button>-->
+                  Recommended Words
+                </template>
+                <div class="words">
+                  <b-badge pill variant="primary">Primary</b-badge>
+                  <b-badge pill variant="secondary">Secondary</b-badge>
+                  <b-badge pill variant="success">Success</b-badge>
+                  <b-badge pill variant="danger">Danger</b-badge>
+                  <b-badge pill variant="warning">Warning</b-badge>
+                  <b-badge pill variant="info">Info</b-badge>
+                  <b-badge pill variant="light">Light</b-badge>
+                  <b-badge pill variant="dark">Dark</b-badge>
+                </div>
+              </b-popover>
+            </div>
+
+            <Container
+              :drop-placeholder="dropPlaceholderOptions"
+              :get-child-payload="getCardPayload(column.id)"
+              @drop="(e) => onCardDrop(column.id, e)"
+              drag-class="card-ghost"
+              drop-class="card-ghost-drop"
+              group-name="col"
+            >
+              <Draggable
+                :key="card.id"
+                title="Drag to Move"
+                v-b-tooltip.hover
+                v-for="card in column.children"
+              >
+                <!-- <b-tooltip :target="() => $refs['card']" placement="bottom">Drag to Move</b-tooltip> -->
+                <div
+                  :class="card.props.className"
+                  :style="card.props.style"
+                  @dblclick="showDiffWithSweet(card.path, card.abs_path, card.language)"
+                  class="no-select"
+                >
+                  <p class="no-select" title="Double Click to Show Diff" v-b-tooltip.hover>
+                    {{ card.path }}
+                    <b-badge :variant="card.badgeType" pill>{{card.operation}}</b-badge>
+                  </p>
+                </div>
+              </Draggable>
+            </Container>
+          </div>
+        </Draggable>
+      </Container>
+    </div>
 
     <!-- dialog to confirm commit -->
     <sweet-modal ref="commitModal" title="Ready to Commit?">
@@ -113,6 +121,7 @@
       <b-button @click="cancelCommit()" class="right-button" variant="outline-primary">Cancel</b-button>
     </sweet-modal>
 
+    <!-- use 'hide-close-button blocking' to force user action -->
     <sweet-modal icon="success" ref="success" title="Success">{{successMessage}}</sweet-modal>
     <sweet-modal icon="warning" ref="alert" title="Alert">{{alertMessage}}</sweet-modal>
     <sweet-modal icon="error" ref="error" title="Error">{{errorMessage}}</sweet-modal>
@@ -123,17 +132,6 @@
       <div v-if="loadingDiff">
         <b-spinner label="Spinning" variant="success"></b-spinner>
       </div>
-      <!-- monaco-editor-vue -->
-      <!-- <MonacoEditor
-        :diffEditor="true"
-        :options="options"
-        :original="codeLeft"
-        :value="codeRight"
-        height="800"
-        language="javascript"
-        theme="vs-light"
-        v-else
-      ></MonacoEditor>-->
       <!-- vue-monaco -->
       <MonacoEditor
         :diffEditor="true"
@@ -159,7 +157,6 @@ import {
 } from './utils/gitutils'
 import { SweetModal } from 'sweet-modal-vue'
 import MonacoEditor from './vue-monaco'
-// import MonacoEditor from 'monaco-editor-vue'
 
 const fs = require('fs')
 var git = require('simple-git')
@@ -240,6 +237,7 @@ export default {
       codeRight: '',
 
       // commit data
+      columnID: -1, // to remove and refresh the successfully committed column
       commitMessage: '',
       commitFiles: []
     }
@@ -305,7 +303,7 @@ export default {
       })
     },
 
-    // a trick to refresh the component
+    // a trick to forcely refresh the component
     refreshCards() {
       this.refreshKey += 1
     },
@@ -325,7 +323,6 @@ export default {
         .then(rootPath => {
           this.REPO_PATH = rootPath + '/'
           console.log('Repo root path: ' + this.REPO_PATH)
-          this.refreshCards()
           this.analyzeGitRepo()
         })
         .catch(err => {
@@ -352,6 +349,7 @@ export default {
                 className: 'card-container'
               },
               message: '',
+              committed: 0, // whether the group has been committed, 0 or 1
               children: generateItems(res.nodes.length, j => ({
                 type: 'draggable',
                 id: `${i}${j}`,
@@ -369,6 +367,7 @@ export default {
           }
           this.loadingStatus = false
           console.log(this.scene)
+          this.refreshCards()
         })
         .catch(err => {
           this.loadingStatus = false
@@ -410,7 +409,7 @@ export default {
     },
 
     // handle commit action
-    readyToCommit(message, list) {
+    readyToCommit(id, message, list) {
       if (list.length == 0) {
         this.alertMessage = 'No files to commit in this group!'
         this.$refs.alert.open()
@@ -420,6 +419,7 @@ export default {
       } else {
         this.commitMessage = message
         this.commitFiles = list
+        this.columnID = id
         this.$refs.commitModal.open()
       }
     },
@@ -436,12 +436,28 @@ export default {
             'Successfully commit ' + res.commit + ' to branch ' + res.branch
           this.$refs.commitModal.close()
           this.$refs.success.open()
+          // clear data (no necessary but for safety)
+          this.commitMessage = ''
+          this.commitFiles = []
+          // remove the committed column from scene
+          this.removeColumnByID(this.columnID)
           this.refreshCards()
+          console.log(this.refreshKey)
         })
         .catch(err => {
           this.errorMessage = err
           this.$refs.error.open()
         })
+    },
+    removeColumnByID(id) {
+      const scene = Object.assign({}, this.scene)
+      scene.children = []
+      for (let child of this.scene.children) {
+        if (child.id != id) {
+          scene.children.push(child)
+        }
+      }
+      this.scene = scene
     },
     cancelCommit() {
       this.$refs.commitModal.close()
