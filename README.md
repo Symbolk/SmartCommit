@@ -43,7 +43,7 @@ yarn run electron:serve
 
 ```
 
-### Build the executable for production
+### [OR] Build the executable for production
 
 ```
 
@@ -75,6 +75,7 @@ SmartCommit is powered by multiple nice open source projects.
 [sweet-modal-vue]: https://github.com/adeptoas/sweet-modal-vue
 [vue-awesome]: https://github.com/Justineo/vue-awesome
 [vue-smooth-dnd]: https://github.com/kutlugsahin/vue-smooth-dnd
+[git-js]: https://github.com/steveukx/git-js
 
 ## License
 
