@@ -128,7 +128,7 @@
     <sweet-modal icon="warning" ref="alert" title="Alert">{{alertMessage}}</sweet-modal>
     <sweet-modal icon="error" ref="error" title="Error">{{errorMessage}}</sweet-modal>
 
-    <!-- dialog to show diff -->
+    <!-- modal to show diff view-->
     <!-- sweet-modal-vue -->
     <sweet-modal :title="diffViewTitle" ref="diffViewModal" width="80%">
       <template slot="box-action">
@@ -138,7 +138,6 @@
         <div v-if="loadingDiff">
           <b-spinner label="Spinning" variant="success"></b-spinner>
         </div>
-        <!-- vue-monaco -->
         <MonacoEditor
           :diffEditor="true"
           :language="language"
@@ -154,7 +153,6 @@
         <div v-if="loadingDiff">
           <b-spinner label="Spinning" variant="success"></b-spinner>
         </div>
-        <!-- vue-monaco -->
         <MonacoEditor
           :diffEditor="true"
           :language="language"
@@ -250,10 +248,12 @@ export default {
       // diff editor options
       sideOptions: {
         // selectOnLineNumbers: true
+        readOnly: true,
         renderSideBySide: true
       },
       inlineOptions: {
         // selectOnLineNumbers: true
+        readOnly: true,
         renderSideBySide: false
       },
 
