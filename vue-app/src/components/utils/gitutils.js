@@ -5,26 +5,29 @@
  * @param {} status
  */
 async function formatStatus(repo_path, status) {
-  // vertices and edges
+  // data parsed from status summary
   let data = {
-    nodes: [],
-    links: []
+    Modified: new Array(),
+    Untracked: new Array(),
+    Created: new Array(),
+    Conflicted: new Array(),
+    Deleted: new Array(),
+    Renamed: new Array()
   }
-  let nodes = new Array()
-  let temp = new Array()
 
-  temp = await formatEntries(repo_path, status.modified, 'Modified')
-  Array.prototype.push.apply(nodes, temp)
-  temp = await formatEntries(repo_path, status.not_added, 'Untracked')
-  Array.prototype.push.apply(nodes, temp)
-  temp = await formatEntries(repo_path, status.conflicted, 'Conflicted')
-  Array.prototype.push.apply(nodes, temp)
-  temp = await formatEntries(repo_path, status.deleted, 'Deleted')
-  Array.prototype.push.apply(nodes, temp)
-  temp = await formatEntries(repo_path, status.renamed, 'Renamed')
-  Array.prototype.push.apply(nodes, temp)
+  data.Modified = await formatEntries(repo_path, status.modified, 'Modified')
+  data.Untracked = await formatEntries(repo_path, status.not_added, 'Untracked')
+  data.Created = await formatEntries(repo_path, status.created, 'Created')
+  data.Conflicted = await formatEntries(
+    repo_path,
+    status.conflicted,
+    'Conflicted'
+  )
+  data.Deleted = await formatEntries(repo_path, status.deleted, 'Deleted')
+  data.Renamed = await formatEntries(repo_path, status.renamed, 'Renamed')
+  // temp = await formatEntries(repo_path, status.staged, 'Staged')
+  // Array.prototype.push.apply(nodes, temp)
 
-  data.nodes = nodes
   return data
 }
 

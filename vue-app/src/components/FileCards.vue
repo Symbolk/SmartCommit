@@ -360,42 +360,52 @@ export default {
           this.$refs.error.open()
         })
     },
+    filterStatus(status) {
+      let res = []
+      for (let k in status) {
+        if (status[k].length > 0) {
+          res.push(status[k])
+        }
+      }
+      return res
+    },
     analyzeGitRepo() {
       analyzeStatus(this.REPO_PATH)
-        .then(res => {
-          console.log(res)
+        .then(status => {
+          let res = this.filterStatus(status)
           this.scene = {
             type: 'container',
             props: {
               orientation: 'horizontal'
             },
-            children: generateItems(4, i => ({
+            // group changes according to the operation, then generate the code
+            children: generateItems(res.length, i => ({
               id: `column${i}`,
               type: 'container',
-              name: columnNames[i],
+              name: `Group ${i}`,
               props: {
                 orientation: 'vertical',
                 className: 'card-container'
               },
               message: '',
               committed: 0, // whether the group has been committed, 0 or 1
-              children: generateItems(res.nodes.length, j => ({
+              children: generateItems(res[i].length, j => ({
                 type: 'draggable',
                 id: `${i}${j}`,
                 props: {
                   className: 'card',
                   style: { backgroundColor: pickColor() }
                 },
-                operation: res.nodes[j].operation,
-                badgeType: this.getBadgeType(res.nodes[j].operation),
-                path: res.nodes[j].path,
-                abs_path: res.nodes[j].abs_path,
-                language: res.nodes[j].lang
+                operation: res[i][j].operation,
+                badgeType: this.getBadgeType(res[i][j].operation),
+                path: res[i][j].path,
+                abs_path: res[i][j].abs_path,
+                language: res[i][j].lang
               }))
             }))
           }
           this.loadingStatus = false
-          console.log(this.scene)
+          // console.log(this.scene)
           this.refreshCards()
         })
         .catch(err => {
