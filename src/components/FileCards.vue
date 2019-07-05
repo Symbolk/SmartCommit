@@ -1,5 +1,3 @@
- /* eslint-disable no-console */
-
 <template>
   <div>
     <!-- refreshKey is used as a trick to forcely refresh this component -->
@@ -119,7 +117,11 @@
           <b-list-group-item :key="file.id" v-for="file in commitFiles">{{file.path}}</b-list-group-item>
         </b-list-group>
       </b-card>
-      <b-button @click="reallyCommit()" class="right-button" variant="success">Commit!</b-button>
+      <b-button class="right-button" disabled v-if="committing" variant="success">
+        <b-spinner small></b-spinner>&nbsp;Committing...
+      </b-button>
+      <b-button @click="reallyCommit()" class="right-button" v-else variant="success">Commit!</b-button>
+
       <b-button @click="cancelCommit()" class="right-button" variant="outline-primary">Cancel</b-button>
     </sweet-modal>
 
@@ -266,7 +268,8 @@ export default {
       // commit data
       columnID: -1, // to remove and refresh the successfully committed column
       commitMessage: '',
-      commitFiles: []
+      commitFiles: [],
+      committing: false // processing the commit action
     }
   },
 
@@ -494,11 +497,13 @@ export default {
         this.commitFiles = list
         this.columnID = id
         this.$refs.commitModal.open()
+        this.committing = false
       }
     },
     reallyCommit() {
       let filePaths = new Array()
-      console.log(this.commitFiles)
+      this.committing = true
+      console.log('Committing following files:')
       for (let file of this.commitFiles) {
         console.log(file)
         filePaths.push(file.path)
@@ -510,12 +515,12 @@ export default {
           this.$refs.commitModal.close()
           this.$refs.success.open()
           // clear data (no necessary but for safety)
+          this.committing = false
           this.commitMessage = ''
           this.commitFiles = []
           // remove the committed column from scene
           this.removeColumnByID(this.columnID)
           this.refreshCards()
-          console.log(this.refreshKey)
         })
         .catch(err => {
           this.errorMessage = err
