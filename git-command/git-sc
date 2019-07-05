@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 
 import os
-# path = "C:/Documents and Settings/Program Files/"
-# os.chdir(path)
-# repo_path = os.getcwd()
-# -r repo_path
-# os.system("F:/workspace/dev/SmartCommit/dist/SmartCommit-win32-x64/SmartCommit.exe --repo=%s" % repo_path)
 
-os.system("./dist_electron/win-unpacked/SmartCommit.exe")
+binaryPath = os.getcwd() + "/dist_electron/win-unpacked/SmartCommit.exe"
+os.system(binaryPath)
 print("Farewell~")
