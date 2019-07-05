@@ -97,7 +97,7 @@
                 <div
                   :class="card.props.className"
                   :style="card.props.style"
-                  @dblclick="showDiffWithSweet(card.path, card.abs_path, card.language)"
+                  @dblclick="showDiffWithSweet(card.path, card.abs_path, card.operation, card.language)"
                   class="no-select"
                 >
                   <p class="no-select" title="Double Click to Show Diff" v-b-tooltip.hover>
@@ -142,8 +142,8 @@
           :diffEditor="true"
           :language="language"
           :options="sideOptions"
-          :original="codeRight"
-          :value="codeLeft"
+          :original="codeLeft"
+          :value="codeRight"
           class="editor"
           ref="sideDiffEditor"
           v-else
@@ -181,9 +181,7 @@ import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
 import MonacoEditor from './vue-monaco'
 
 const fs = require('fs')
-var git = require('simple-git')
 
-const columnNames = ['Lorem', 'Ipsum', 'Consectetur', 'Eiusmod']
 const badgeTypeMap = new Map([
   ['Modified', 'primary'],
   ['Untracked', 'success'],
@@ -416,22 +414,31 @@ export default {
     },
 
     // show diffs with alternative modal
-    showDiffWithSweet(path, abs_path, language) {
+    showDiffWithSweet(path, abs_path, operation, language) {
       this.$refs.diffViewModal.open('sideDiff')
       this.loadingDiff = true
       this.diffViewTitle = abs_path
-      fs.readFile(abs_path, 'utf-8', (err, data) => {
-        if (err) {
-          this.errorMessage =
-            'An error ocurred reading the file :' + err.message
-          this.$refs.diffViewModal.close()
-          this.$refs.error.open()
-          return
-        }
-        this.language = language
-        // this.$refs.sideDiffEditor.setLanguage(language)
+      if (operation == 'Untracked' || operation == 'Created') {
+        // when the file is newly added
+        this.codeLeft = ''
+        fs.readFile(abs_path, 'utf-8', (err, data) => {
+          if (err) {
+            this.errorMessage =
+              'An error ocurred reading the file :' + err.message
+            this.$refs.diffViewModal.close()
+            this.$refs.error.open()
+            return
+          }
+          this.language = language
+          // this.$refs.sideDiffEditor.setLanguage(language)
+          this.loadingDiff = false
 
-        this.codeRight = data
+          this.codeRight = data
+        })
+      } else if (operation == 'Deleted') {
+        // when the file is deleted
+        this.language = language
+        this.codeRight = ''
 
         showAtHEAD(this.REPO_PATH, path)
           .then(res => {
@@ -444,7 +451,34 @@ export default {
             this.$refs.diffViewModal.close()
             this.$refs.error.open()
           })
-      })
+      } else {
+        // when the file is Modified/Conflicted/Renamed
+        fs.readFile(abs_path, 'utf-8', (err, data) => {
+          if (err) {
+            this.errorMessage =
+              'An error ocurred reading the file :' + err.message
+            this.$refs.diffViewModal.close()
+            this.$refs.error.open()
+            return
+          }
+          this.language = language
+          // this.$refs.sideDiffEditor.setLanguage(language)
+
+          this.codeRight = data
+
+          showAtHEAD(this.REPO_PATH, path)
+            .then(res => {
+              this.codeLeft = res
+              this.loadingDiff = false
+            })
+            .catch(err => {
+              this.errorMessage =
+                'An error ocurred reading the file :' + err.message
+              this.$refs.diffViewModal.close()
+              this.$refs.error.open()
+            })
+        })
+      }
     },
 
     // handle commit action

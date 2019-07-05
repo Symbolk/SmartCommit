@@ -57,25 +57,38 @@ function generateNode(repo_path, path, operation) {
   return new Promise((resolve, reject) => {
     let lang = 'unknown' // unknown files will not be diff
     let abs_path = repo_path + path
-    langDetector(abs_path, (err, language) => {
-      // suppose the path is relative to the curren folder
-      if (err) {
-        console.log(err)
-        lang = 'plaintext'
-      } else {
-        lang = langMapper[language].aceMode
-      }
-
+    if (operation == 'Deleted') {
+      lang = 'plaintext'
       let node = {
         operation: operation,
         type: 'text', // TODO: the file type (text, binary, link, etc)
         lang: lang,
         name: getFileName(path),
-        path: path,
-        abs_path: abs_path // relative path
+        path: path, // relative path by git
+        abs_path: abs_path
       }
       resolve(node)
-    })
+    } else {
+      langDetector(abs_path, (err, language) => {
+        // suppose the path is relative to the curren folder
+        if (err) {
+          console.log(err)
+          lang = 'plaintext'
+        } else {
+          lang = langMapper[language].aceMode
+        }
+
+        let node = {
+          operation: operation,
+          type: 'text', // TODO: the file type (text, binary, link, etc)
+          lang: lang,
+          name: getFileName(path),
+          path: path, // relative path by git
+          abs_path: abs_path
+        }
+        resolve(node)
+      })
+    }
   })
 }
 
