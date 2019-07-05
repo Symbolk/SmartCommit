@@ -7,5 +7,5 @@ import os
 # -r repo_path
 # os.system("F:/workspace/dev/SmartCommit/dist/SmartCommit-win32-x64/SmartCommit.exe --repo=%s" % repo_path)
 
-os.system("F:/workspace/dev/SmartCommit/vue-app/dist_electron/win-unpacked/SmartCommit.exe")
+os.system("./dist_electron/win-unpacked/SmartCommit.exe")
 print("Farewell~")

@@ -24,7 +24,7 @@ module.exports = {
         productName: 'SmartCommit',
         copyright: 'Copyright © 2019 Bo Shen',
         directories: {
-          buildResources: 'build'
+          buildResources: 'assets'
         }
       }
     }

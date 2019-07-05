@@ -77,6 +77,7 @@ SmartCommit is powered by multiple nice open source projects.
 [vue-smooth-dnd]: https://github.com/kutlugsahin/vue-smooth-dnd
 [git-js]: https://github.com/steveukx/git-js
 
+
 ## License
 
 [MIT](http://opensource.org/licenses/MIT)
