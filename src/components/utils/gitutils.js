@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+const fs = require('fs')
 
 /**
  * Format the git statusinto graph data in json format
@@ -54,40 +55,59 @@ async function formatEntries(repo_path, file_list, operation) {
 function generateNode(repo_path, path, operation) {
   const langDetector = require('language-detect')
   const langMapper = require('language-map')
+  const isBinaryFileSync = require('isbinaryfile').isBinaryFileSync
   return new Promise((resolve, reject) => {
     let lang = 'unknown' // unknown files will not be diff
     let abs_path = repo_path + path
-    if (operation == 'Deleted') {
-      lang = 'plaintext'
+    let isBinary = isBinaryFileSync(
+      fs.readFileSync(abs_path),
+      fs.lstatSync(abs_path).size
+    )
+    let fileType = isBinary ? 'binary' : 'text'
+    if (isBinary) {
       let node = {
         operation: operation,
-        type: 'text', // TODO: the file type (text, binary, link, etc)
-        lang: lang,
+        type: fileType,
+        lang: 'binary',
         name: getFileName(path),
         path: path, // relative path by git
         abs_path: abs_path
       }
       resolve(node)
     } else {
-      langDetector(abs_path, (err, language) => {
-        // suppose the path is relative to the curren folder
-        if (err) {
-          console.log(err)
-          lang = 'plaintext'
-        } else {
-          lang = langMapper[language].aceMode
-        }
-
+      // detect lang only for text file
+      if (operation == 'Deleted') {
+        lang = 'plaintext'
         let node = {
           operation: operation,
-          type: 'text', // TODO: the file type (text, binary, link, etc)
+          type: fileType,
           lang: lang,
           name: getFileName(path),
           path: path, // relative path by git
           abs_path: abs_path
         }
         resolve(node)
-      })
+      } else {
+        langDetector(abs_path, (err, language) => {
+          // suppose the path is relative to the curren folder
+          if (err) {
+            console.log(err)
+            lang = 'plaintext'
+          } else {
+            lang = langMapper[language].aceMode
+          }
+
+          let node = {
+            operation: operation,
+            type: fileType,
+            lang: lang,
+            name: getFileName(path),
+            path: path, // relative path by git
+            abs_path: abs_path
+          }
+          resolve(node)
+        })
+      }
     }
   })
 }

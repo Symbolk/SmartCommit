@@ -95,7 +95,7 @@
                 <div
                   :class="card.props.className"
                   :style="card.props.style"
-                  @dblclick="showDiffWithSweet(card.path, card.abs_path, card.operation, card.language)"
+                  @dblclick="showDiffWithSweet(card.path, card.abs_path, card.type, card.operation, card.language)"
                   class="no-select"
                 >
                   <p class="no-select" title="Double Click to Show Diff" v-b-tooltip.hover>
@@ -401,6 +401,7 @@ export default {
                 badgeType: this.getBadgeType(res[i][j].operation),
                 path: res[i][j].path,
                 abs_path: res[i][j].abs_path,
+                type: res[i][j].type,
                 language: res[i][j].lang
               }))
             }))
@@ -417,57 +418,33 @@ export default {
     },
 
     // show diffs with alternative modal
-    showDiffWithSweet(path, abs_path, operation, language) {
+    showDiffWithSweet(path, abs_path, type, operation, language) {
       this.$refs.diffViewModal.open('sideDiff')
       this.loadingDiff = true
       this.diffViewTitle = abs_path
-      if (operation == 'Untracked' || operation == 'Created') {
-        // when the file is newly added
-        this.codeLeft = ''
-        fs.readFile(abs_path, 'utf-8', (err, data) => {
-          if (err) {
-            this.errorMessage =
-              'An error ocurred reading the file :' + err.message
-            this.$refs.diffViewModal.close()
-            this.$refs.error.open()
-            return
-          }
-          this.language = language
-          // this.$refs.sideDiffEditor.setLanguage(language)
-          this.loadingDiff = false
-
-          this.codeRight = data
-        })
-      } else if (operation == 'Deleted') {
-        // when the file is deleted
-        this.language = language
-        this.codeRight = ''
-
-        showAtHEAD(this.REPO_PATH, path)
-          .then(res => {
-            this.codeLeft = res
+      // if the file is binary, just tell the user it is a binary file
+      if (type == 'text') {
+        if (operation == 'Untracked' || operation == 'Created') {
+          // when the file is newly added
+          this.codeLeft = ''
+          fs.readFile(abs_path, 'utf-8', (err, data) => {
+            if (err) {
+              this.errorMessage =
+                'An error ocurred reading the file :' + err.message
+              this.$refs.diffViewModal.close()
+              this.$refs.error.open()
+              return
+            }
+            this.language = language
+            // this.$refs.sideDiffEditor.setLanguage(language)
             this.loadingDiff = false
-          })
-          .catch(err => {
-            this.errorMessage =
-              'An error ocurred reading the file :' + err.message
-            this.$refs.diffViewModal.close()
-            this.$refs.error.open()
-          })
-      } else {
-        // when the file is Modified/Conflicted/Renamed
-        fs.readFile(abs_path, 'utf-8', (err, data) => {
-          if (err) {
-            this.errorMessage =
-              'An error ocurred reading the file :' + err.message
-            this.$refs.diffViewModal.close()
-            this.$refs.error.open()
-            return
-          }
-          this.language = language
-          // this.$refs.sideDiffEditor.setLanguage(language)
 
-          this.codeRight = data
+            this.codeRight = data
+          })
+        } else if (operation == 'Deleted') {
+          // when the file is deleted
+          this.language = language
+          this.codeRight = ''
 
           showAtHEAD(this.REPO_PATH, path)
             .then(res => {
@@ -480,7 +457,47 @@ export default {
               this.$refs.diffViewModal.close()
               this.$refs.error.open()
             })
-        })
+        } else {
+          // when the file is Modified/Conflicted/Renamed
+          fs.readFile(abs_path, 'utf-8', (err, data) => {
+            if (err) {
+              this.errorMessage =
+                'An error ocurred reading the file :' + err.message
+              this.$refs.diffViewModal.close()
+              this.$refs.error.open()
+              return
+            }
+            this.language = language
+            // this.$refs.sideDiffEditor.setLanguage(language)
+
+            this.codeRight = data
+
+            showAtHEAD(this.REPO_PATH, path)
+              .then(res => {
+                this.codeLeft = res
+                this.loadingDiff = false
+              })
+              .catch(err => {
+                this.errorMessage =
+                  'An error ocurred reading the file :' + err.message
+                this.$refs.diffViewModal.close()
+                this.$refs.error.open()
+              })
+          })
+        }
+      } else {
+        this.language = language
+        if (operation == 'Untracked' || operation == 'Created') {
+          this.codeLeft = ''
+          this.codeRight = 'This is a ' + type + ' file.'
+        } else if (operation == 'Deleted') {
+          this.codeLeft = 'This is a ' + type + ' file.'
+          this.codeRight = ''
+        } else {
+          this.codeLeft = 'This is a ' + type + ' file.'
+          this.codeRight = 'This is a ' + type + ' file.'
+        }
+        this.loadingDiff = false
       }
     },
 
