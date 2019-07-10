@@ -26,8 +26,8 @@
             </div>
             <div id="message-container">
               <b-input-group :id="`message-${column.id}`" class="mt-3" prepend>
-                <b-form-input placeholder="Commit Message" v-model="column.message"></b-form-input>
-
+                <!-- <b-form-input placeholder="Commit Message" v-model="column.message"></b-form-input> -->
+                <b-form-textarea placeholder="Commit Message" v-model="column.message"></b-form-textarea>
                 <b-input-group-append>
                   <!-- disable button if the message is empty with: :disabled="!column.message" -->
                   <b-button
