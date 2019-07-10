@@ -57,7 +57,7 @@ function generateNode(repo_path, path, operation) {
   const langMapper = require('language-map')
   const isBinaryFileSync = require('isbinaryfile').isBinaryFileSync
   return new Promise((resolve, reject) => {
-    let lang = 'unknown' // unknown files will not be diff
+    let lang = 'plaintext'
     let abs_path = repo_path + path
     let isBinary = isBinaryFileSync(
       fs.readFileSync(abs_path),
@@ -88,25 +88,37 @@ function generateNode(repo_path, path, operation) {
         }
         resolve(node)
       } else {
-        langDetector(abs_path, (err, language) => {
-          // suppose the path is relative to the curren folder
-          if (err) {
-            console.log(err)
-            lang = 'plaintext'
-          } else {
-            lang = langMapper[language].aceMode
-          }
+        // async way
+        // langDetector(abs_path, (err, language) => {
+        //   // suppose the path is relative to the curren folder
+        //   if (err) {
+        //     console.log(err)
+        //     lang = 'plaintext'
+        //   } else {
+        //     lang = langMapper[language].aceMode
+        //   }
 
-          let node = {
-            operation: operation,
-            type: fileType,
-            lang: lang,
-            name: getFileName(path),
-            path: path, // relative path by git
-            abs_path: abs_path
-          }
-          resolve(node)
-        })
+        //   let node = {
+        //     operation: operation,
+        //     type: fileType,
+        //     lang: lang,
+        //     name: getFileName(path),
+        //     path: path, // relative path by git
+        //     abs_path: abs_path
+        //   }
+        //   resolve(node)
+        // })
+        // sync way
+        lang = langMapper[langDetector.sync(abs_path)].aceMode
+        let node = {
+          operation: operation,
+          type: fileType,
+          lang: lang,
+          name: getFileName(path),
+          path: path, // relative path by git
+          abs_path: abs_path
+        }
+        resolve(node)
       }
     }
   })
