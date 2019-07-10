@@ -27,7 +27,7 @@
             <div id="message-container">
               <b-input-group :id="`message-${column.id}`" class="mt-3" prepend>
                 <!-- <b-form-input placeholder="Commit Message" v-model="column.message"></b-form-input> -->
-                <b-form-textarea placeholder="Commit Message" v-model="column.message"></b-form-textarea>
+                <b-form-textarea placeholder="Commit Message" v-model="column.message" rows="3" max-rows="10"></b-form-textarea>
                 <b-input-group-append>
                   <!-- disable button if the message is empty with: :disabled="!column.message" -->
                   <b-button
@@ -59,10 +59,9 @@
                 triggers="focus"
               >
                 <template slot="title">
-                  <!-- <b-button @click="onClose" aria-label="Close" class="close">
+                  <b-button @click="onClose" aria-label="Close" class="close">
                     <span aria-hidden="true" class="d-inline-block">&times;</span>
-                  </b-button>-->
-                  Recommended Words
+                  </b-button>Recommended Words
                 </template>
                 <div class="words">
                   <b-badge pill variant="primary">Primary</b-badge>
@@ -76,7 +75,7 @@
                 </div>
               </b-popover>
             </div>
-
+            <br>
             <Container
               :drop-placeholder="dropPlaceholderOptions"
               :get-child-payload="getCardPayload(column.id)"
@@ -305,8 +304,8 @@ export default {
 
     // methods for commit message tags popover
     onClose() {
-      // this.$refs.popover.$emit('close')
-      // this.popoverShow = false
+      // this.$root.$emit('bv::hide::popover', 'msg_popover')
+      this.$root.$emit('bv::hide::popover')
     },
     onOk() {},
     onShow() {
