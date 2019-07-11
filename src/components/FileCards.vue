@@ -487,6 +487,7 @@ export default {
       } else {
         this.language = language
         if (operation == 'Untracked' || operation == 'Created') {
+          // TODO a strange bug here: code left is what is last diffed instead of empty
           this.codeLeft = ''
           this.codeRight = 'This is a ' + type + ' file.'
         } else if (operation == 'Deleted') {

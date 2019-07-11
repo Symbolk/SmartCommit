@@ -59,35 +59,56 @@ function generateNode(repo_path, path, operation) {
   return new Promise((resolve, reject) => {
     let lang = 'plaintext'
     let abs_path = repo_path + path
-    let isBinary = isBinaryFileSync(
-      fs.readFileSync(abs_path),
-      fs.lstatSync(abs_path).size
-    )
-    let fileType = isBinary ? 'binary' : 'text'
-    if (isBinary) {
-      let node = {
-        operation: operation,
-        type: fileType,
-        lang: 'binary',
-        name: getFileName(path),
-        path: path, // relative path by git
-        abs_path: abs_path
-      }
-      resolve(node)
+    if (operation == 'Deleted') {
+      // deleted, the file does not exist on the disk, so detect binary with indexed content,
+      // and detect lang with file name only if the file type is text
+      showAtHEAD(repo_path, path)
+        .then(res => {
+          let buf = Buffer.from(res, 'utf8')
+          let isBinary = isBinaryFileSync(buf)
+          let fileType = isBinary ? 'binary' : 'text'
+          if (isBinary) {
+            let node = {
+              operation: 'Deleted',
+              type: 'binary',
+              lang: 'binary',
+              name: getFileName(path),
+              path: path, // relative path by git
+              abs_path: abs_path
+            }
+            resolve(node)
+          } else {
+            lang = langMapper[langDetector.filename(abs_path)].aceMode
+            let node = {
+              operation: operation,
+              type: fileType,
+              lang: lang,
+              name: getFileName(path),
+              path: path, // relative path by git
+              abs_path: abs_path
+            }
+            resolve(node)
+          }
+        })
+        .catch(err => {
+          reject(err)
+        })
     } else {
-      // detect lang only for text file
-      if (operation == 'Deleted') {
-        lang = 'plaintext'
+      // check if the file is binary first
+      let isBinary = isBinaryFileSync(abs_path)
+      let fileType = isBinary ? 'binary' : 'text'
+      if (isBinary) {
         let node = {
           operation: operation,
-          type: fileType,
-          lang: lang,
+          type: 'binary',
+          lang: 'binary',
           name: getFileName(path),
           path: path, // relative path by git
           abs_path: abs_path
         }
         resolve(node)
       } else {
+        // only detect lang for text file
         // async way
         // langDetector(abs_path, (err, language) => {
         //   // suppose the path is relative to the curren folder
