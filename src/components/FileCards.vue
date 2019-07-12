@@ -118,7 +118,7 @@
                 </Container>
               </div>
             </Draggable>
-            <b-button variant="outline-success" @click="appendNewGroup">New Group</b-button>
+            <b-button @click="appendNewGroup" variant="outline-success">New Group</b-button>
           </Container>
         </div>
       </b-col>
@@ -126,6 +126,10 @@
 
     <!-- dialog to confirm commit -->
     <sweet-modal ref="commitModal" title="Ready to Commit?">
+      <template slot="box-action">
+        <b-badge pill variant="info">{{currentBranch}}</b-badge>&nbsp;->
+        <b-badge pill variant="warning">{{trackingBranch}}</b-badge>&nbsp;
+      </template>
       <b-card :header="commitMessage" border-variant="success">
         <b-list-group>
           <b-list-group-item :key="file.id" v-for="file in commitFiles">{{file.path}}</b-list-group-item>
@@ -264,12 +268,15 @@ export default {
         }
       ],
 
-      REPO_PATH: '',
-      // async analyzing git repo
-      loadingStatus: true,
       successMessage: '',
       alertMessage: '',
       errorMessage: '',
+
+      // repo data
+      REPO_PATH: '',
+      currentBranch: '',
+      trackingBranch: '',
+      loadingStatus: true,
 
       // diff editor options
       sideOptions: {
@@ -387,11 +394,11 @@ export default {
           this.$refs.error.open()
         })
     },
-    filterStatus(status) {
+    filterDiffs(diffs) {
       let res = []
-      for (let k in status) {
-        if (status[k].length > 0) {
-          res.push(status[k])
+      for (let k in diffs) {
+        if (diffs[k].length > 0) {
+          res.push(diffs[k])
         }
       }
       return res
@@ -400,7 +407,9 @@ export default {
     analyzeGitRepo() {
       analyzeStatus(this.REPO_PATH)
         .then(status => {
-          let res = this.filterStatus(status)
+          this.currentBranch = status.current
+          this.trackingBranch = status.tracking
+          let res = this.filterDiffs(status.diffs)
           this.uncommittedFilesNum = res.length
           this.scene = {
             type: 'container',
@@ -588,7 +597,6 @@ export default {
     appendNewGroup() {
       const scene = Object.assign({}, this.scene)
       let i = this.scene.children.length
-      console.log(i)
       scene.children.push({
         id: `column${i}`,
         type: 'container',
