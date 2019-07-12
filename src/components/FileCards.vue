@@ -118,6 +118,7 @@
                 </Container>
               </div>
             </Draggable>
+            <b-button variant="outline-success" @click="appendNewGroup">New Group</b-button>
           </Container>
         </div>
       </b-col>
@@ -416,7 +417,7 @@ export default {
                 className: 'card-container'
               },
               message: '',
-              committed: 0, // whether the group has been committed, 0 or 1
+              committed: false, // whether the group has been committed
               children: generateItems(res[i].length, j => ({
                 type: 'draggable',
                 id: `${i}${j}`,
@@ -572,6 +573,7 @@ export default {
           this.$refs.error.open()
         })
     },
+
     removeColumnByID(id) {
       const scene = Object.assign({}, this.scene)
       scene.children = []
@@ -580,6 +582,25 @@ export default {
           scene.children.push(child)
         }
       }
+      this.scene = scene
+    },
+
+    appendNewGroup() {
+      const scene = Object.assign({}, this.scene)
+      let i = this.scene.children.length
+      console.log(i)
+      scene.children.push({
+        id: `column${i}`,
+        type: 'container',
+        name: `Group ${i}`,
+        props: {
+          orientation: 'vertical',
+          className: 'card-container'
+        },
+        message: '',
+        committed: false,
+        children: []
+      })
       this.scene = scene
     },
 
@@ -606,9 +627,7 @@ export default {
       develop.commit('Add TypeScript')
 
       const aFeature = gitgraph.branch('a-feature')
-      aFeature
-        .commit('Make it right')
-        .commit('Make it fast')
+      aFeature.commit('Make it right').commit('Make it fast')
 
       develop.merge(aFeature)
       develop.commit('Prepare v1')
