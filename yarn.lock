@@ -672,6 +672,11 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
+"@fabien0102/git2json@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@fabien0102/git2json/-/git2json-1.4.0.tgz#5a8e9e901b28d344a7a09acf3f3b77f4d84b374a"
+  integrity sha512-qxV229fHZoL+qS6BgCd7y2MrWR1RhPQNYLgtMl0ZIdzAV3ivlzbZG3hSxOFdf/H8/AMyAfsQypQPX7KS73eB9A==
+
 "@hapi/address@2.x.x":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.0.0.tgz#9f05469c88cb2fd3dcd624776b54ee95c312126a"

@@ -20,6 +20,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@fabien0102/git2json": "^1.4.0",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.24",
     "core-js": "^2.6.5",
