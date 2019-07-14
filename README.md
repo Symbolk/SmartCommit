@@ -66,6 +66,7 @@ SmartCommit is powered by multiple nice open source projects.
 | Git Function | [git-js] | ^1.118.0 |
 | Diff View | [vue-monaco] | ^1.0.1|
 | Language Detector | [language-detect] | ^1.1.0 |
+| Git Graph | [gitgraph.js] | ^1.3.0 |
 
 [Vue]: https://github.com/vuejs/vue
 [bootstrap-vue]: https://github.com/bootstrap-vue/bootstrap-vue
@@ -76,6 +77,7 @@ SmartCommit is powered by multiple nice open source projects.
 [vue-awesome]: https://github.com/Justineo/vue-awesome
 [vue-smooth-dnd]: https://github.com/kutlugsahin/vue-smooth-dnd
 [git-js]: https://github.com/steveukx/git-js
+[gitgraph.js]: https://github.com/nicoespeon/gitgraph.js
 
 
 ## License

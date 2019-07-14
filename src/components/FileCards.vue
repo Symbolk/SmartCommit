@@ -602,7 +602,7 @@ export default {
       this.committing = true
       console.log('Committing following files:')
       for (let file of this.commitFiles) {
-        console.log(file)
+        console.log(file.path)
         filePaths.push(file.path)
       }
       doCommit(this.REPO_PATH, this.commitMessage, filePaths)
@@ -698,7 +698,9 @@ export default {
     createGraph(graphContainer) {
       // Instantiate the graph.
       let options = {
-        mode: GitgraphJS.Mode.Compact
+        mode: GitgraphJS.Mode.Compact,
+        template: GitgraphJS.TemplateName.BlackArrow,
+        reverseArrow: true,
       }
       const gitgraph = GitgraphJS.createGitgraph(graphContainer, options)
 
@@ -707,19 +709,14 @@ export default {
       //   gitgraph.import(myGitLogJSON)
       // })
       // Simulate git commands with Gitgraph API.
-      const master = gitgraph.branch('master')
-      master.commit('Initial commit')
-
-      const develop = gitgraph.branch('develop')
-      develop.commit('Add TypeScript')
-
-      const aFeature = gitgraph.branch('a-feature')
-      aFeature.commit('Make it right').commit('Make it fast')
-
-      develop.merge(aFeature)
-      develop.commit('Prepare v1')
-
-      master.merge(develop).tag('v1.0.0')
+      var master = gitgraph
+        .branch('master')
+        .commit('one')
+        .commit('two')
+        .commit('three');
+      var develop = gitgraph.branch('develop').commit('four');
+      master.commit('five');
+      master.merge(develop);
     }
   },
 
@@ -785,6 +782,7 @@ export default {
   /* overflow: auto; */
   height: 100%;
   width: 100%;
+  /* width: 320px; */
   padding: 50px;
 }
 
@@ -793,4 +791,6 @@ export default {
   padding-top: 20px;
   align-items: center;
 }
+
+
 </style>
