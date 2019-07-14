@@ -191,8 +191,13 @@ export const analyzeStatus = repo_path => {
       // let workingDir = topLevel + '/'
       try {
         if (err) reject(err)
-        var data = await formatStatus(repo_path, status)
-        resolve(data)
+        let diffs = await formatStatus(repo_path, status)
+        let res = {
+          current: status.current,
+          tracking: status.tracking,
+          diffs: diffs
+        }
+        resolve(res)
       } catch (err) {
         reject(err)
       }
@@ -218,7 +223,7 @@ export const analyzeStatus2 = (repo_path, callback) => {
 }
 
 /**
- * Actually perform the commit function
+ * Actually perform the commit action
  * @param {*} commit_message
  * @param {*} file_list
  */
@@ -238,6 +243,43 @@ export const doCommit = (repo_path, commit_message, file_list) => {
         resolve(res)
       }
     })
+  })
+}
+
+/**
+ * Actually perform the push action
+ * @param {*} currentBranch
+ * @param {*} trackingBranch
+ */
+export const doPush = (repo_path, currentBranch, trackingBranch) => {
+  const gitt = git(repo_path)
+  console.log('Working dir: ' + repo_path)
+  var options = {}
+  return new Promise((resolve, reject) => {
+    // simply push with the default config, equivalent to 'git push'
+    gitt.push([], (err, res) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(res)
+      }
+    })
+    // gitt.listRemote(['--get-url'], (err, res) => {
+    //   if (err) {
+    //     reject(err)
+    //   } else {
+    //   console.log('Remote: ' + repo_path)
+    //     gitt
+    //       .addRemote('origin', res)
+    //       .push(trackingBranch, currentBranch, options, (err, res) => {
+    //         if (err) {
+    //           reject(err)
+    //         } else {
+    //           resolve(res)
+    //         }
+    //       })
+    //   }
+    // })
   })
 }
 

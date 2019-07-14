@@ -2,6 +2,9 @@
   <div>
     <b-form-row>
       <b-col cols="3">
+        <div class="center-area">
+          <b-button @click="readyToPush" variant="outline-primary">Push to Remote</b-button>
+        </div>
         <div class="scroll-area">
           <div id="container" ref="container"></div>
         </div>
@@ -118,7 +121,7 @@
                 </Container>
               </div>
             </Draggable>
-            <b-button @click="appendNewGroup" variant="outline-success">New Group</b-button>
+            <b-button @click="appendNewGroup" variant="outline-success">Create new Group</b-button>
           </Container>
         </div>
       </b-col>
@@ -139,8 +142,37 @@
         <b-spinner small></b-spinner>&nbsp;Committing...
       </b-button>
       <b-button @click="reallyCommit()" class="right-button" v-else variant="success">Commit!</b-button>
-
       <b-button @click="cancelCommit()" class="right-button" variant="outline-primary">Cancel</b-button>
+    </sweet-modal>
+
+    <!-- dialog to confirm push -->
+    <sweet-modal ref="pushModal" title="Ready to Push?">
+      <template slot="box-action">
+        <b-badge pill variant="info">{{currentBranch}}</b-badge>&nbsp;->
+        <b-badge pill variant="warning">{{trackingBranch}}</b-badge>&nbsp;
+      </template>
+      <b-card border-variant="success" header="Commits within the tool:">
+        <b-list-group>
+          <b-list-group-item
+            :key="commit.hash"
+            v-for="commit in successCommits"
+          >{{commit.hash + ": " + commit.msg}}</b-list-group-item>
+        </b-list-group>
+      </b-card>
+      <b-progress
+        :animated="animate"
+        :value="pushProgress"
+        striped
+        v-if="pushing"
+        variant="success"
+      ></b-progress>
+      <!-- <b-button class="right-button" disabled v-if="pushing" variant="success">
+        <b-spinner small></b-spinner>&nbsp;Pushing...
+      </b-button>-->
+      <div v-else>
+        <b-button @click="reallyPush()" class="right-button" variant="success">Push!</b-button>
+        <b-button @click="cancelPush()" class="right-button" variant="outline-primary">Cancel</b-button>
+      </div>
     </sweet-modal>
 
     <!-- use 'hide-close-button blocking' to force user action -->
@@ -195,6 +227,7 @@ import {
   getRootPath,
   analyzeStatus,
   doCommit,
+  doPush,
   showAtHEAD
 } from './utils/gitutils'
 import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
@@ -298,11 +331,19 @@ export default {
       codeLeft: '',
       codeRight: '',
 
-      // commit data
+      // commit
       columnID: -1, // to remove and refresh the successfully committed column
+      // temp message container
       commitMessage: '',
       commitFiles: [],
-      committing: false // processing the commit action
+      committing: false, // processing the commit action
+      // persistent messages container
+      successCommits: [],
+
+      // push
+      animate: true,
+      pushing: false,
+      pushProgress: 0
     }
   },
 
@@ -555,6 +596,7 @@ export default {
         this.committing = false
       }
     },
+
     reallyCommit() {
       let filePaths = new Array()
       this.committing = true
@@ -571,6 +613,10 @@ export default {
           this.$refs.success.open()
           // clear data (no necessary but for safety)
           this.committing = false
+          this.successCommits.push({
+            hash: res.commit,
+            msg: this.commitMessage
+          })
           this.commitMessage = ''
           this.commitFiles = []
           // remove the committed column from scene
@@ -581,6 +627,43 @@ export default {
           this.errorMessage = err
           this.$refs.error.open()
         })
+    },
+
+    cancelCommit() {
+      this.$refs.commitModal.close()
+    },
+
+    // handle push operation
+    readyToPush() {
+      this.$refs.pushModal.open()
+    },
+    moveOn() {
+      this.pushProgress += 10
+    },
+    reallyPush() {
+      this.pushing = true
+      setInterval(this.moveOn, 1000)
+      doPush(this.REPO_PATH, this.currentBranch, this.trackingBranch)
+        .then(res => {
+          console.log(res)
+          this.successMessage =
+            'Successfully push ' +
+            this.currentBranch +
+            ' to ' +
+            this.trackingBranch
+          this.$refs.pushModal.close()
+          this.$refs.success.open()
+          this.pushing = false
+          this.successCommits = []
+        })
+        .catch(err => {
+          this.errorMessage = err
+          this.$refs.error.open()
+        })
+    },
+
+    cancelPush() {
+      this.$refs.pushModal.close()
     },
 
     removeColumnByID(id) {
@@ -610,10 +693,6 @@ export default {
         children: []
       })
       this.scene = scene
-    },
-
-    cancelCommit() {
-      this.$refs.commitModal.close()
     },
 
     createGraph(graphContainer) {
@@ -707,5 +786,11 @@ export default {
   height: 100%;
   width: 100%;
   padding: 50px;
+}
+
+.center-area {
+  text-align: center;
+  padding-top: 20px;
+  align-items: center;
 }
 </style>
