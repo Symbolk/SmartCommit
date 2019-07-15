@@ -79,14 +79,13 @@
                       </b-button>Recommended Words
                     </template>
                     <div class="words">
-                      <b-badge pill variant="primary">Primary</b-badge>
-                      <b-badge pill variant="secondary">Secondary</b-badge>
-                      <b-badge pill variant="success">Success</b-badge>
-                      <b-badge pill variant="danger">Danger</b-badge>
-                      <b-badge pill variant="warning">Warning</b-badge>
-                      <b-badge pill variant="info">Info</b-badge>
-                      <b-badge pill variant="light">Light</b-badge>
-                      <b-badge pill variant="dark">Dark</b-badge>
+                      <b-badge
+                        :key="word.id"
+                        :variant="word.type"
+                        @click="column.message=appendWord(column.message, word.content)"
+                        pill
+                        v-for="word in hintWords"
+                      >{{word.content}}</b-badge>
                     </div>
                   </b-popover>
                 </div>
@@ -340,6 +339,9 @@ export default {
       // persistent messages container
       successCommits: [],
 
+      // recommended words in commit message
+      hintWords: [],
+
       // push
       animate: true,
       pushing: false,
@@ -402,7 +404,7 @@ export default {
       // updated & popover positioned first
       this.$nextTick(() => {
         this.$nextTick(() => {
-          // ;(ref.$el || ref).focus()
+          ;(ref.$el || ref).focus()
         })
       })
     },
@@ -420,8 +422,50 @@ export default {
       return badgeTypeMap.get(operation)
     },
 
+    // TODO refresh hint words according to column.children
+    getHintWords() {
+      this.hintWords.push({
+        id: '0',
+        type: 'success',
+        content: 'Add'
+      })
+      this.hintWords.push({
+        id: '1',
+        type: 'danger',
+        content: 'Delete'
+      })
+      this.hintWords.push({
+        id: '2',
+        type: 'success',
+        content: 'Add'
+      })
+      this.hintWords.push({
+        id: '3',
+        type: 'primary',
+        content: 'Refactor'
+      })
+      this.hintWords.push({
+        id: '4',
+        type: 'warning',
+        content: 'Format'
+      })
+      this.hintWords.push({
+        id: '5',
+        type: 'secondary',
+        content: 'Update'
+      })
+    },
+    appendWord(msg, word) {
+      if (msg.endsWith(' ')) {
+        return msg + word
+      } else {
+        return msg + ' ' + word
+      }
+    },
+
     //  prepare data by analyzing git repo
     init() {
+      this.getHintWords()
       // console.log("Analyzing git repo "+ __dirname);
       getRootPath('')
         .then(rootPath => {
@@ -431,6 +475,7 @@ export default {
         })
         .catch(err => {
           this.loadingStatus = false
+          console.log(err)
           this.errorMessage = err.message
           this.$refs.error.open()
         })
@@ -490,6 +535,7 @@ export default {
         })
         .catch(err => {
           this.loadingStatus = false
+          console.log(err)
           this.errorMessage = err.message
           this.$refs.error.open()
         })
@@ -530,6 +576,7 @@ export default {
               this.loadingDiff = false
             })
             .catch(err => {
+              console.log(err)
               this.errorMessage =
                 'An error ocurred reading the file :' + err.message
               this.$refs.diffViewModal.close()
@@ -556,6 +603,7 @@ export default {
                 this.loadingDiff = false
               })
               .catch(err => {
+                console.log(err)
                 this.errorMessage =
                   'An error ocurred reading the file :' + err.message
                 this.$refs.diffViewModal.close()
@@ -624,6 +672,7 @@ export default {
           this.refreshCards(filePaths.length)
         })
         .catch(err => {
+          console.log(err)
           this.errorMessage = err
           this.$refs.error.open()
         })
@@ -657,6 +706,7 @@ export default {
           this.successCommits = []
         })
         .catch(err => {
+          console.log(err)
           this.errorMessage = err
           this.$refs.error.open()
         })
@@ -700,7 +750,7 @@ export default {
       let options = {
         mode: GitgraphJS.Mode.Compact,
         template: GitgraphJS.TemplateName.BlackArrow,
-        reverseArrow: true,
+        reverseArrow: true
       }
       const gitgraph = GitgraphJS.createGitgraph(graphContainer, options)
 
@@ -713,10 +763,10 @@ export default {
         .branch('master')
         .commit('one')
         .commit('two')
-        .commit('three');
-      var develop = gitgraph.branch('develop').commit('four');
-      master.commit('five');
-      master.merge(develop);
+        .commit('three')
+      var develop = gitgraph.branch('develop').commit('four')
+      master.commit('five')
+      master.merge(develop)
     }
   },
 
@@ -791,6 +841,4 @@ export default {
   padding-top: 20px;
   align-items: center;
 }
-
-
 </style>
