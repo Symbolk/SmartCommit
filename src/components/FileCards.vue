@@ -322,13 +322,16 @@ export default {
         renderSideBySide: false
       },
 
-      // diff view contents
+      // diff view data
       diffViewTitle: '',
-
       loadingDiff: true,
       language: 'javascript',
       codeLeft: '',
       codeRight: '',
+
+      // graph view data
+      gitGraph: '',
+      graphBranch: '',
 
       // commit
       columnID: -1, // to remove and refresh the successfully committed column
@@ -495,6 +498,10 @@ export default {
         .then(status => {
           this.currentBranch = status.current
           this.trackingBranch = status.tracking
+
+          this.graphBranch = this.gitGraph.branch(String(this.currentBranch))
+          this.graphBranch.commit('Last commit')
+
           let res = this.filterDiffs(status.diffs)
           this.uncommittedFilesNum = res.length
           this.scene = {
@@ -659,6 +666,7 @@ export default {
             'Successfully commit ' + res.commit + ' to branch ' + res.branch
           this.$refs.commitModal.close()
           this.$refs.success.open()
+          this.commitOnGraph(this.commitMessage)
           // clear data (no necessary but for safety)
           this.committing = false
           this.successCommits.push({
@@ -752,21 +760,19 @@ export default {
         template: GitgraphJS.TemplateName.BlackArrow,
         reverseArrow: true
       }
-      const gitgraph = GitgraphJS.createGitgraph(graphContainer, options)
-
+      this.gitGraph = GitgraphJS.createGitgraph(graphContainer, options)
       // const git2json = require('@fabien0102/git2json')
       // git2json.run().then(myGitLogJSON => {
       //   gitgraph.import(myGitLogJSON)
       // })
+    },
+
+    commitOnGraph(msg) {
       // Simulate git commands with Gitgraph API.
-      var master = gitgraph
-        .branch('master')
-        .commit('one')
-        .commit('two')
-        .commit('three')
-      var develop = gitgraph.branch('develop').commit('four')
-      master.commit('five')
-      master.merge(develop)
+      this.graphBranch.commit(msg)
+      // var develop = this.gitgraph.branch('develop').commit('four')
+      // master.commit('five')
+      // master.merge(develop)
     }
   },
 
