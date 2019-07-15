@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 import os
+import sys
 
-binaryPath = os.getcwd() + "/dist_electron/win-unpacked/SmartCommit.exe"
+binaryPath = sys.path[0] + "/../dist_electron/win-unpacked/SmartCommit.exe"
 os.system(binaryPath)
 print("Farewell~")
