@@ -1,52 +1,93 @@
 # <center>SmartCommit</center>
 
-#### SmartCommit makes committing code in git both an elegant and decent daily work.
+#### SmartCommit makes committing both an elegant and decent daily work.
 
-Many developers are used to add all changed files to stage together and commit once, though multiple tasks might have been done. It is no good practice, saving time to type dozens of git commands but bringing trouble to the code review, continuous integration, reverting and cherry-picking. 
+Developers are encouraged to submit cohesive and self-contained commits, with clear and uniform commit messages. That's exactly what SmartCommit tries to do, by firstly taking over the job of `git-status`, `git-diff`, `git-add`, `git-commit` and `git-push` commands. 
 
-Community encourages developers to submit self-contained and focused commits, with clear and decent commit messages. That's exactly what SmartCommit tries to do, by taking the work of `git-diff`, `git-add`, `git-commit` commands. 
+To live up to the name, SmartCommit will gradually provide more advanced features to make it a real smart assistant for developers. Suggestions and Issues are welcomed!
 
 ---
+## Features
+
+- Stage&Commit changes in groups
+- Diff&Compare diff code side by side or line by line
+- Suggest words for commit message
+- Push to the remote
+- Customizable template for commit message (developing)
+
+---
+
 ## As a User
+
+> Currently the app only support Windows x64, Linux and macOS version will be released when the :-)
+
+### Requirements
+
+- Windows
+- Git
 
 ### Installation
 
-> Currently the app only support Windows x64, Linux and macOS will be supported pretty soon :-)
-
 1. Download the latest release zip package;
-2. Unzip the zip package to a folder, copy the path of this folder, which contains the file SmartCommit.exe;
-3. Append the path to PATH of your environment variable.
+2. Unzip the zip package to a folder, copy the path of this folder, in which you can find the file `SmartCommit.exe`;
+3. Append the path to `PATH` of your environment variable.
+
 
 ### Usage:
 
-1. Open CMD or Git-bash, switch to any git project;
-2. Do some development work as you always do;
-3. When you want to commit, type the command `git sc` then you are ready to go!
+When you have some changes to commit:
+
+1. Open CMD or Git-bash, `cd` to the git repo directory;
+2. Type the command `git sc` then you are ready to go!
+
+## Screenshots
+
+##### Repo status
+![status](https://github.com/Symbolk/SmartCommit/blob/master/screenshots/status.png)
+
+##### Side by side diff
+![side_diff](https://github.com/Symbolk/SmartCommit/blob/master/screenshots/side_diff.png)
+
+##### Inline diff
+![inline_diff](https://github.com/Symbolk/SmartCommit/blob/master/screenshots/inline_diff.png)
+
+##### Commit
+![commit](https://github.com/Symbolk/SmartCommit/blob/master/screenshots/commit.png)
+
+##### Push
+![push](https://github.com/Symbolk/SmartCommit/blob/master/screenshots/push.png)
+![push_ok](https://github.com/Symbolk/SmartCommit/blob/master/screenshots/push_ok.png)
 
 ---
 
 ## As a Developer
 
-### Project setup
+### Requirements
+
+- Windows
+- Git ^2.18.0
+- Node.js ^v10.16.0
+- Yarn ~v1.16.0
+- Vue-cli ~v3.8.4
+
+### Setup
+
+1. Run the following command under the root directory of the cloned repo to install dependencies:
 
 ```
-
 yarn install
 
 ```
-
-### Compiles and hot-reloads for development
+2. Compiles and hot-reloads for development:
 
 ```
-
 yarn run electron:serve
 
 ```
 
-### [OR] Build the executable for production
+3. [OR] Build the executable for production:
 
 ```
-
 yarn run electron:build
 
 ```
