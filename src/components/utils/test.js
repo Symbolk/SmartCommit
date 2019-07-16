@@ -2,7 +2,7 @@
 // const gitutils = require('./gitutils');
 var git = require('simple-git')
 
-git = git('')
+git = git('f:/workspace/dev/IntelliMerge')
 var commit_message = 'Testing commit function.'
 var file_list = ['src/components/utils/test.js']
 var options = {
@@ -51,12 +51,34 @@ var options = {
 //   console.log('4' + rootPath)
 // })
 
-git.status((err, res) => {
-  if (err) {
-    console.log(err)
-  }
-  console.log(res)
+// git.status((err, res) => {
+//   if (err) {
+//     console.log(err)
+//   }
+//   console.log(res)
+// })
+
+git.getRemotes(true, (err, res)=>{
+    if (err) {
+      console.log(err)
+    }
+    console.log(res)
 })
+
+// git.listRemote(['--get-url'], (err, res)=>{
+//   if(err){
+//     console.log(err);
+//   }else{
+//     console.log(res);
+//   }
+// })
+// git.addRemote('origin', 'https://github.com/user/repo.git')
+// .push('origin/master', 'master', (err, res) => {
+//   if (err) {
+//     console.log(err)
+//   }
+//   console.log(res)
+// })
 
 // git reset HEAD^
 // git reset --soft HEAD^
