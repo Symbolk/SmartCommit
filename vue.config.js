@@ -25,6 +25,11 @@ module.exports = {
         copyright: 'Copyright © 2019 Bo Shen',
         directories: {
           buildResources: 'assets'
+        },
+        "nsis": {
+          "oneClick": false,
+          "perMachine": true,
+          "allowToChangeInstallationDirectory": true
         }
       }
     }
