@@ -110,36 +110,36 @@ function generateNode(repo_path, path, operation) {
       } else {
         // only detect lang for text file
         // async way
-        // langDetector(abs_path, (err, language) => {
-        //   // suppose the path is relative to the curren folder
-        //   if (err) {
-        //     console.log(err)
-        //     lang = 'plaintext'
-        //   } else {
-        //     lang = langMapper[language].aceMode
-        //   }
+        langDetector(abs_path, (err, language) => {
+          // suppose the path is relative to the curren folder
+          if (err) {
+            console.log(err)
+            lang = 'plaintext'
+          } else {
+            lang = langMapper[language].aceMode
+          }
 
-        //   let node = {
-        //     operation: operation,
-        //     type: fileType,
-        //     lang: lang,
-        //     name: getFileName(path),
-        //     path: path, // relative path by git
-        //     abs_path: abs_path
-        //   }
-        //   resolve(node)
-        // })
+          let node = {
+            operation: operation,
+            type: fileType,
+            lang: lang,
+            name: getFileName(path),
+            path: path, // relative path by git
+            abs_path: abs_path
+          }
+          resolve(node)
+        })
         // sync way
-        lang = langMapper[langDetector.sync(abs_path)].aceMode
-        let node = {
-          operation: operation,
-          type: fileType,
-          lang: lang,
-          name: getFileName(path),
-          path: path, // relative path by git
-          abs_path: abs_path
-        }
-        resolve(node)
+        // lang = langMapper[langDetector.sync(abs_path)].aceMode
+        // let node = {
+        //   operation: operation,
+        //   type: fileType,
+        //   lang: lang,
+        //   name: getFileName(path),
+        //   path: path, // relative path by git
+        //   abs_path: abs_path
+        // }
+        // resolve(node)
       }
     }
   })
@@ -234,13 +234,20 @@ export const doCommit = (repo_path, commit_message, file_list) => {
   const gitt = git(repo_path)
   // let workingDir = git._baseDir + '/'
   console.log('Working dir: ' + repo_path)
-  var options = {}
   return new Promise((resolve, reject) => {
-    gitt.commit(commit_message, file_list, options, (err, res) => {
+    gitt.add(file_list, (err, result) => {
       if (err) {
         reject(err)
       } else {
-        resolve(res)
+        console.log('Add ' + file_list.length + ' files to stage.')
+        console.log(result)
+        gitt.commit(commit_message, (err, res) => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve(res)
+          }
+        })
       }
     })
   })
