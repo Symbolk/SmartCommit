@@ -439,8 +439,8 @@ export default {
       })
       this.hintWords.push({
         id: '2',
-        type: 'success',
-        content: 'Add'
+        type: 'info',
+        content: 'Modify'
       })
       this.hintWords.push({
         id: '3',
@@ -459,6 +459,9 @@ export default {
       })
     },
     appendWord(msg, word) {
+      if (msg == '') {
+        return word
+      }
       if (msg.endsWith(' ')) {
         return msg + word
       } else {
@@ -655,9 +658,7 @@ export default {
     reallyCommit() {
       let filePaths = new Array()
       this.committing = true
-      console.log('Committing following files:')
       for (let file of this.commitFiles) {
-        console.log(file.path)
         filePaths.push(file.path)
       }
       doCommit(this.REPO_PATH, this.commitMessage, filePaths)
