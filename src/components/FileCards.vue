@@ -120,7 +120,7 @@
                 </Container>
               </div>
             </Draggable>
-            <b-button @click="appendNewGroup" variant="outline-success">Create new Group</b-button>
+            <b-button v-if="uncommittedFilesNum>0" @click="appendNewGroup" variant="outline-success">Create new Group</b-button>
           </Container>
         </div>
       </b-col>

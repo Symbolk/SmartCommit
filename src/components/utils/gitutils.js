@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-const fs = require('fs')
 
 /**
  * Format the git statusinto graph data in json format
