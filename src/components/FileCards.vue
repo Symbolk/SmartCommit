@@ -514,7 +514,7 @@ export default {
             },
             // group changes according to the operation, then generate the code
             children: generateItems(res.length, i => ({
-              id: `column${i}`,
+              id: i,
               type: 'container',
               name: `Group ${i}`,
               props: {
@@ -738,9 +738,13 @@ export default {
 
     appendNewGroup() {
       const scene = Object.assign({}, this.scene)
-      let i = this.scene.children.length
+      let maxID=-1
+      for(let child of this.scene.children){
+        maxID = child.id > maxID ? child.id : maxID
+      }
+      let i = maxID + 1
       scene.children.push({
-        id: `column${i}`,
+        id: i,
         type: 'container',
         name: `Group ${i}`,
         props: {
