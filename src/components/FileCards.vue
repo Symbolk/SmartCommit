@@ -842,7 +842,8 @@ export default {
 .scroll-area {
   /* overflow: auto; */
   height: 100%;
-  width: 100%;
+  position: fixed;
+  z-index: 2;
   /* width: 320px; */
   padding: 50px;
 }
