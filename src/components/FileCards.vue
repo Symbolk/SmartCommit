@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-form-row>
-      <b-col cols="3">
+      <b-col cols="2">
         <div class="center-area">
           <b-button @click="readyToPush" variant="outline-primary">Push to Remote</b-button>
         </div>
@@ -9,7 +9,7 @@
           <div id="container" ref="container"></div>
         </div>
       </b-col>
-      <b-col cols="9">
+      <b-col cols="10">
         <!-- uncommittedFilesNum is originaly used as a trick to forcely refresh this component, now it records whether working dir is clean -->
         <div :key="uncommittedFilesNum" class="card-scene">
           <div v-if="loadingStatus">
@@ -507,6 +507,7 @@ export default {
 
           let res = this.filterDiffs(status.diffs)
           this.uncommittedFilesNum = res.length
+          console.log('Uncommitted files: ' + this.uncommittedFilesNum)
           this.scene = {
             type: 'container',
             props: {
