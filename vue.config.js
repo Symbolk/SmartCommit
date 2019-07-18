@@ -26,14 +26,18 @@ module.exports = {
         directories: {
           buildResources: 'assets'
         },
+        extraFiles: [
+          'git-sc'
+        ],
         compression: 'maximum',
         nsis: {
           oneClick: false,
-          perMachine: true,
+          perMachine: false,
           allowToChangeInstallationDirectory: true,
           displayLanguageSelector: true,
+          // only run with command
           createDesktopShortcut: false,
-          createStartMenuShortcut: true
+          createStartMenuShortcut: false
         }
       }
     }

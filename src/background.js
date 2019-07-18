@@ -1,6 +1,7 @@
 'use strict'
 
 const electron = require('electron')
+const log = require("electron-log")
 import { autoUpdater } from 'electron-updater'
 import { app, protocol, BrowserWindow } from 'electron'
 import {
@@ -9,6 +10,8 @@ import {
 } from 'vue-cli-plugin-electron-builder/lib'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
+autoUpdater.logger = log
+autoUpdater.logger.transports.file.level = "info"
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
@@ -42,6 +45,7 @@ function createWindow() {
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
+    // win.setMenu(null)
     createProtocol('app')
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
@@ -54,7 +58,7 @@ function createWindow() {
 
 // auto-updating events
 autoUpdater.on('update-available', info => {
-  console.log('Update available: ' + info)
+  console.log('Update available.')
 })
 
 autoUpdater.on('update-not-available', info => {
@@ -62,7 +66,7 @@ autoUpdater.on('update-not-available', info => {
 })
 
 autoUpdater.on('error', err => {
-  console.log('Error in auto-updater. ' + err)
+  log.error('Error in auto-updater. ' + err)
 })
 
 autoUpdater.on('download-progress', progressObj => {
@@ -70,11 +74,11 @@ autoUpdater.on('download-progress', progressObj => {
   log_message = log_message + ' - Downloaded ' + progressObj.percent + '%'
   log_message =
     log_message + ' (' + progressObj.transferred + '/' + progressObj.total + ')'
-  console.log(log_message)
+  log.info(log_message)
 })
 
-autoUpdater.on('before-quit-for-update', err => {
-  console.log('Updates available and will be installed. ' + err)
+autoUpdater.on('update-downloaded', (info) => {
+  console.log('Update downloaded and will be installed after quitting.')
 })
 
 // Quit when all windows are closed.
