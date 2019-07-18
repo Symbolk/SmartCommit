@@ -26,10 +26,14 @@ module.exports = {
         directories: {
           buildResources: 'assets'
         },
-        "nsis": {
-          "oneClick": false,
-          "perMachine": true,
-          "allowToChangeInstallationDirectory": true
+        compression: 'maximum',
+        nsis: {
+          oneClick: false,
+          perMachine: true,
+          allowToChangeInstallationDirectory: true,
+          displayLanguageSelector: true,
+          createDesktopShortcut: false,
+          createStartMenuShortcut: true
         }
       }
     }
