@@ -1,6 +1,7 @@
 'use strict'
 
 const electron = require('electron')
+import { autoUpdater } from 'electron-updater'
 import { app, protocol, BrowserWindow } from 'electron'
 import {
   createProtocol,
@@ -51,6 +52,31 @@ function createWindow() {
   })
 }
 
+// auto-updating events
+autoUpdater.on('update-available', info => {
+  console.log('Update available:' + info)
+})
+
+autoUpdater.on('update-not-available', info => {
+  console.log('Current is the latest version.')
+})
+
+autoUpdater.on('error', err => {
+  console.log('Error in auto-updater. ' + err)
+})
+
+autoUpdater.on('download-progress', progressObj => {
+  let log_message = 'Download speed: ' + progressObj.bytesPerSecond
+  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%'
+  log_message =
+    log_message + ' (' + progressObj.transferred + '/' + progressObj.total + ')'
+  console.log(log_message)
+})
+
+autoUpdater.on('before-quit-for-update', err => {
+  console.log('Updates available and will be installed. ' + err)
+})
+
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
@@ -81,6 +107,11 @@ app.on('ready', async () => {
     }
   }
   createWindow()
+})
+
+app.on('ready', () => {
+  console.log('Checking updates...')
+  autoUpdater.checkForUpdatesAndNotify()
 })
 
 // Exit cleanly on request from parent process in development mode.
