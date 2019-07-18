@@ -11,7 +11,7 @@ import {
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 autoUpdater.logger = log
-autoUpdater.logger.transports.file.level = "info"
+autoUpdater.logger.transports.file.level = "debug"
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
@@ -66,7 +66,7 @@ autoUpdater.on('update-not-available', info => {
 })
 
 autoUpdater.on('error', err => {
-  log.error('Error in auto-updater. ' + err)
+  autoUpdater.logger.error('Error in auto-updater. ' + err)
 })
 
 autoUpdater.on('download-progress', progressObj => {
@@ -74,7 +74,7 @@ autoUpdater.on('download-progress', progressObj => {
   log_message = log_message + ' - Downloaded ' + progressObj.percent + '%'
   log_message =
     log_message + ' (' + progressObj.transferred + '/' + progressObj.total + ')'
-  log.info(log_message)
+  autoUpdater.logger.info(log_message)
 })
 
 autoUpdater.on('update-downloaded', (info) => {
