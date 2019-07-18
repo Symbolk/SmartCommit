@@ -46,20 +46,20 @@
                     <b-input-group-append>
                       <!-- disable button if the message is empty with: :disabled="!column.message" -->
                       <b-button
+                        @click="column.message=''"
+                        title="Clear"
+                        v-b-tooltip.hover
+                        variant="outline-danger"
+                      >
+                        <v-icon name="eraser" />
+                      </b-button>
+                      <b-button
                         @click="readyToCommit(column.id, column.message, column.children)"
                         title="Ok"
                         v-b-tooltip.hover
                         variant="outline-success"
                       >
                         <v-icon name="check" />
-                      </b-button>
-                      <b-button
-                        @click="column.message=''"
-                        title="Clear"
-                        v-b-tooltip.hover
-                        variant="info"
-                      >
-                        <v-icon name="eraser" />
                       </b-button>
                     </b-input-group-append>
                   </b-input-group>
@@ -120,7 +120,11 @@
                 </Container>
               </div>
             </Draggable>
-            <b-button v-if="uncommittedFilesNum>0" @click="appendNewGroup" variant="outline-success">Create new Group</b-button>
+            <b-button
+              @click="appendNewGroup"
+              v-if="uncommittedFilesNum>0"
+              variant="outline-success"
+            >Create new Group</b-button>
           </Container>
         </div>
       </b-col>
@@ -454,8 +458,8 @@ export default {
       })
       this.hintWords.push({
         id: '5',
-        type: 'secondary',
-        content: 'Update'
+        type: 'success',
+        content: 'Fix'
       })
     },
     appendWord(msg, word) {
@@ -506,7 +510,11 @@ export default {
           this.graphBranch.commit('Last commit')
 
           let res = this.filterDiffs(status.diffs)
-          this.uncommittedFilesNum = res.length
+          let num = 0
+          for (let i of res) {
+            num += i.length
+          }
+          this.uncommittedFilesNum = num
           console.log('Uncommitted files: ' + this.uncommittedFilesNum)
           this.scene = {
             type: 'container',
@@ -739,8 +747,8 @@ export default {
 
     appendNewGroup() {
       const scene = Object.assign({}, this.scene)
-      let maxID=-1
-      for(let child of this.scene.children){
+      let maxID = -1
+      for (let child of this.scene.children) {
         maxID = child.id > maxID ? child.id : maxID
       }
       let i = maxID + 1
