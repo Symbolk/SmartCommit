@@ -54,7 +54,7 @@ function createWindow() {
 
 // auto-updating events
 autoUpdater.on('update-available', info => {
-  console.log('Update available:' + info)
+  console.log('Update available: ' + info)
 })
 
 autoUpdater.on('update-not-available', info => {
@@ -110,7 +110,6 @@ app.on('ready', async () => {
 })
 
 app.on('ready', () => {
-  console.log('Checking updates...')
   autoUpdater.checkForUpdatesAndNotify()
 })
 
