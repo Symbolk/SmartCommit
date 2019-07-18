@@ -237,6 +237,7 @@ import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
 import MonacoEditor from './vue-monaco'
 
 const fs = require('fs')
+var git = require('simple-git')
 
 const badgeTypeMap = new Map([
   ['Modified', 'primary'],
@@ -555,7 +556,7 @@ export default {
         .catch(err => {
           this.loadingStatus = false
           console.log(err)
-          this.errorMessage = err.message
+          this.errorMessage = err
           this.$refs.error.open()
         })
     },
@@ -791,7 +792,22 @@ export default {
   },
 
   created() {
-    this.init()
+    const gitt = git(this.REPO_PATH)
+
+    gitt.checkIsRepo((err, res) => {
+      if (err) {
+        this.alertMessage = err
+        this.$refs.alert.open()
+      } else {
+        if (res) {
+          this.init()
+        } else {
+          this.alertMessage =
+            'Not a git repo, please run `git sc` under a git repo!'
+          this.$refs.alert.open()
+        }
+      }
+    })
   },
 
   mounted() {
