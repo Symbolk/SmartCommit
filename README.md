@@ -25,6 +25,7 @@ To live up to the name, SmartCommit will gradually provide more advanced feature
 
 - Windows
 - Git
+- Network access
 
 ### Installation
 
@@ -48,7 +49,7 @@ When you have some changes to commit:
 1. Open the terminal (CMD or Git-bash), `cd` to the git repo directory;
 2. Type the command `git sc` then you are ready to go!
 > In case of error: `git: 'sc' is not a git command. See 'git --help'.`
-> This is because the `PATH` environment variable is not reloaded, please restar the terminal after 3 mins or so.
+> This is because the `PATH` environment variable is not reloaded, please restart the terminal after 3 mins or so.
 
 ## Screenshots
 
