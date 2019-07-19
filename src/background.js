@@ -11,7 +11,8 @@ import {
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 autoUpdater.logger = log
-autoUpdater.logger.transports.file.level = "debug"
+autoUpdater.logger.transports.file.level = 'info'
+autoUpdater.logger.transports.console.level = false
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
