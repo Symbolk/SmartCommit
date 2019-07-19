@@ -28,17 +28,27 @@ To live up to the name, SmartCommit will gradually provide more advanced feature
 
 ### Installation
 
-1. Download the latest release zip package;
-2. Unzip the zip package to a folder, copy the path of this folder, in which you can find the file `SmartCommit.exe`;
-3. Append the path to `PATH` of your environment variable.
+#### Installer
+1. Download the latest release installer `SmartCommit-Setup-x.y.z.exe` from https://github.com/Symbolk/SmartCommit/releases/latest ;
+2. Double click it to install on your machine;
+> Security software like 360 may report warnings, it is safe to ignore.
+3. Choose&**Copy** the path to install it;
+> After the installation, better not choose to directly run it, see the following Usage.
+4. Append the path to `PATH` of your environment variable.
 
+#### Portable
+1. Download the latest release portable package `SmartCommit-Portable-x.y.z.zip` from https://github.com/Symbolk/SmartCommit/releases/latest ;
+2. Unzip the zip package to a folder, **copy** the path of this folder, in which you can find the file `SmartCommit.exe`;
+3. Append the path to `PATH` of your environment variable.
 
 ### Usage:
 
 When you have some changes to commit:
 
-1. Open CMD or Git-bash, `cd` to the git repo directory;
+1. Open the terminal (CMD or Git-bash), `cd` to the git repo directory;
 2. Type the command `git sc` then you are ready to go!
+> In case of error: `git: 'sc' is not a git command. See 'git --help'.`
+> This is because the `PATH` environment variable is not reloaded, please restar the terminal after 3 mins or so.
 
 ## Screenshots
 
