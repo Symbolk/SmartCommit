@@ -3,7 +3,14 @@
     <b-form-row>
       <b-col cols="3">
         <div class="button-area">
-          <b-button :variant="highlightPush" @click="readyToPush">Push to Remote</b-button>
+          <div class="center-area" v-if="loadingHistory">
+            <center>
+              <b-button disabled variant="primary">
+                <b-spinner small type="grow"></b-spinner>Loading Commit History...
+              </b-button>
+            </center>
+          </div>
+          <b-button :variant="highlightPush" @click="readyToPush" v-else>Push to Remote</b-button>
         </div>
         <div class="scroll-area">
           <vuescroll>
@@ -16,8 +23,8 @@
         <div :key="uncommittedFilesNum" class="card-scene">
           <div class="center-area" v-if="loadingStatus">
             <center>
-              <b-button disabled variant="primary">
-                <b-spinner small type="grow"></b-spinner>Loading...
+              <b-button disabled variant="success">
+                <b-spinner small type="grow"></b-spinner>Loading Working Directory...
               </b-button>
             </center>
           </div>
@@ -356,6 +363,7 @@ export default {
       codeRight: '',
 
       // graph view data
+      loadingHistory: true,
       gitGraph: '',
       graphBranch: '',
       highlightPush: 'outline-primary',
@@ -809,7 +817,15 @@ export default {
       // not working for the defect of git2json
       // git2json.run(repoPath).then(gitlog => {
       git2json.run().then(gitlog => {
-        this.gitGraph.import(gitlog)
+        // display at most 20 commits for performance
+        this.loadingHistory = false
+        if (gitlog.length <= 20) {
+          this.gitGraph.import(gitlog)
+        } else {
+          let slicedLog = gitlog.slice(0, 20)
+          slicedLog[slicedLog.length - 1].parents = []
+          this.gitGraph.import(slicedLog)
+        }
       })
     }
   },
@@ -907,6 +923,7 @@ export default {
 } */
 
 .center-area {
+  padding-top: 20px;
   margin: 0;
   position: absolute;
   top: 50%;
