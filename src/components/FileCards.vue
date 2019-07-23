@@ -2,19 +2,19 @@
   <div>
     <b-form-row>
       <b-col cols="3">
-        <div class="center-area">
+        <div class="button-area">
           <b-button @click="readyToPush" variant="outline-primary">Push to Remote</b-button>
         </div>
         <div class="scroll-area">
           <vuescroll>
-            <div id="container" ref="container"></div>
+            <div id="graph-container" ref="graph-container"></div>
           </vuescroll>
         </div>
       </b-col>
       <b-col cols="9">
         <!-- uncommittedFilesNum is originaly used as a trick to forcely refresh this component, now it records whether working dir is clean -->
         <div :key="uncommittedFilesNum" class="card-scene">
-          <div v-if="loadingStatus">
+          <div class="center-area" v-if="loadingStatus">
             <center>
               <b-button disabled variant="primary">
                 <b-spinner small type="grow"></b-spinner>Loading...
@@ -131,6 +131,16 @@
         </div>
       </b-col>
     </b-form-row>
+
+    <div class="center-area" v-if="loadingStatus==false && uncommittedFilesNum==0">
+      <center>
+        <b-button-group>
+          <b-button variant="info">Working Directory is</b-button>
+          <b-button variant="success">Clean</b-button>
+          <b-button variant="warning">🐶</b-button>
+        </b-button-group>
+      </center>
+    </div>
 
     <!-- dialog to confirm commit -->
     <sweet-modal ref="commitModal" title="Ready to Commit?">
@@ -820,7 +830,7 @@ export default {
   },
 
   mounted() {
-    const graphContainer = document.querySelector('#container')
+    const graphContainer = document.querySelector('#graph-container')
     // const graphContainer = this.$refs['container']
     this.createGraph(graphContainer)
   }
@@ -882,9 +892,22 @@ export default {
   padding: 10px;
 }
 
-.center-area {
+.button-area {
   text-align: center;
   padding-top: 20px;
   align-items: center;
+}
+
+/* .container {
+  position: relative;
+} */
+
+.center-area {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
 </style>
