@@ -41,7 +41,8 @@
     "sweet-modal-vue": "^2.0.0",
     "vue": "^2.6.10",
     "vue-awesome": "^3.5.4",
-    "vue-smooth-dnd": "^0.8.0"
+    "vue-smooth-dnd": "^0.8.0",
+    "vuescroll": "^4.13.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.8.0",

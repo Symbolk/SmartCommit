@@ -1,15 +1,17 @@
 <template>
   <div>
     <b-form-row>
-      <b-col cols="2">
+      <b-col cols="3">
         <div class="center-area">
           <b-button @click="readyToPush" variant="outline-primary">Push to Remote</b-button>
         </div>
         <div class="scroll-area">
-          <div id="container" ref="container"></div>
+          <vuescroll>
+            <div id="container" ref="container"></div>
+          </vuescroll>
         </div>
       </b-col>
-      <b-col cols="10">
+      <b-col cols="9">
         <!-- uncommittedFilesNum is originaly used as a trick to forcely refresh this component, now it records whether working dir is clean -->
         <div :key="uncommittedFilesNum" class="card-scene">
           <div v-if="loadingStatus">
@@ -225,6 +227,7 @@
 
 <script>
 import { Container, Draggable } from 'vue-smooth-dnd'
+import vuescroll from 'vuescroll'
 import { applyDrag, generateItems } from './utils/helpers'
 import {
   getRootPath,
@@ -238,6 +241,7 @@ import MonacoEditor from './vue-monaco'
 
 const fs = require('fs')
 var git = require('simple-git')
+const git2json = require('@fabien0102/git2json')
 
 const badgeTypeMap = new Map([
   ['Modified', 'primary'],
@@ -276,7 +280,14 @@ var scene = {
 export default {
   name: 'Cards',
 
-  components: { Container, Draggable, MonacoEditor, SweetModal, SweetModalTab },
+  components: {
+    Container,
+    Draggable,
+    MonacoEditor,
+    SweetModal,
+    SweetModalTab,
+    vuescroll
+  },
 
   data() {
     return {
@@ -478,7 +489,7 @@ export default {
     init() {
       this.getHintWords()
       // console.log("Analyzing git repo "+ __dirname);
-      getRootPath('')
+      getRootPath(this.REPO_PATH)
         .then(rootPath => {
           this.REPO_PATH = rootPath + '/'
           console.log('Repo root path: ' + this.REPO_PATH)
@@ -508,7 +519,7 @@ export default {
           this.trackingBranch = status.tracking
 
           this.graphBranch = this.gitGraph.branch(String(this.currentBranch))
-          this.graphBranch.commit('Last commit')
+          // this.graphBranch.commit('Last commit')
 
           let res = this.filterDiffs(status.diffs)
           let num = 0
@@ -677,7 +688,7 @@ export default {
             'Successfully commit ' + res.commit + ' to branch ' + res.branch
           this.$refs.commitModal.close()
           this.$refs.success.open()
-          this.commitOnGraph(this.commitMessage)
+          this.refreshGraph()
           // clear data (no necessary but for safety)
           this.committing = false
           this.successCommits.push({
@@ -776,18 +787,16 @@ export default {
         reverseArrow: true
       }
       this.gitGraph = GitgraphJS.createGitgraph(graphContainer, options)
-      // const git2json = require('@fabien0102/git2json')
-      // git2json.run().then(myGitLogJSON => {
-      //   gitgraph.import(myGitLogJSON)
-      // })
+      this.refreshGraph()
     },
 
-    commitOnGraph(msg) {
-      // Simulate git commands with Gitgraph API.
-      this.graphBranch.commit(msg)
-      // var develop = this.gitgraph.branch('develop').commit('four')
-      // master.commit('five')
-      // master.merge(develop)
+    refreshGraph() {
+      // let repoPath = this.REPO_PATH
+      // not working for the defect of git2json
+      // git2json.run(repoPath).then(gitlog => {
+      git2json.run().then(gitlog => {
+        this.gitGraph.import(gitlog)
+      })
     }
   },
 
@@ -851,7 +860,7 @@ export default {
 }
 
 .editor {
-  height: 800px;
+  height: 80vh;
 }
 
 .sweet-modal .sweet-title h2 {
@@ -866,11 +875,11 @@ export default {
 
 .scroll-area {
   /* overflow: auto; */
-  height: 100%;
+  height: 100vh;
   position: fixed;
-  z-index: 2;
-  /* width: 320px; */
-  padding: 50px;
+  /* z-index: 2; */
+  width: 26vw; /* 3/12 + 10px */
+  padding: 10px;
 }
 
 .center-area {

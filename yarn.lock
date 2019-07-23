@@ -9793,6 +9793,11 @@ vue@^2.6.10:
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.10.tgz#a72b1a42a4d82a721ea438d1b6bf55e66195c637"
   integrity sha512-ImThpeNU9HbdZL3utgMCq0oiMzAkt1mcgy3/E6zWC/G6AaQoeuFdsl9nDhTDU3X1R6FK7nsIUuRACVcjI+A2GQ==
 
+vuescroll@^4.13.1:
+  version "4.13.1"
+  resolved "https://registry.yarnpkg.com/vuescroll/-/vuescroll-4.13.1.tgz#af6c4e35fb690faca31d8a8d77973a61229adf8f"
+  integrity sha512-cwp+ptQHZRYwjlDjwxDYMypYzML1e6Y7XhDVWrkz274OxbpAnoXW0zLUaMN0Yvgquf81CgksEXSZgD/Ae/xQ3w==
+
 watchpack@^1.5.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/watchpack/-/watchpack-1.6.0.tgz#4bc12c2ebe8aa277a71f1d3f14d685c7b446cd00"
