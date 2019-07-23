@@ -13,17 +13,24 @@
       v-model="slide"
     >
       <!-- Main image -->
-      <b-carousel-slide img-src="https://picsum.photos/1024/200/?image=24">
+      <!-- <b-carousel-slide img-src="https://picsum.photos/1024/200/?image=24"> -->
+      <!-- <b-carousel-slide img-src="http://localhost:8999/main.jpg"> -->
+      <b-carousel-slide>
+        <img
+          alt="image slot"
+          class="d-block img-fluid w-100"
+          height="200"
+          slot="img"
+          src="../assets/main.jpg"
+          width="1024"
+        />
         <h2>Smart Commit</h2>
         <h4>An assistant to help you commit elegantly.</h4>
       </b-carousel-slide>
 
       <!-- Slides with release notes -->
-      <b-carousel-slide
-        caption="Release Notes"
-        img-src="https://picsum.photos/1024/200/?image=24"
-      ></b-carousel-slide>
-        <!-- text="An assistant to help you commit elegantly." -->
+      <b-carousel-slide caption="Release Notes" img-src="https://picsum.photos/1024/200/?image=24"></b-carousel-slide>
+      <!-- text="An assistant to help you commit elegantly." -->
 
       <!-- Note the classes .d-block and .img-fluid to prevent browser default image alignment -->
       <b-carousel-slide>
@@ -36,8 +43,7 @@
           width="1024"
         />
       </b-carousel-slide>
-
-    </b-carousel> 
+    </b-carousel>
 
     <a @click="openGithub()" class="github-corner" href>
       <svg
