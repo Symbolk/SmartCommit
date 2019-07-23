@@ -3,7 +3,7 @@
     <b-form-row>
       <b-col cols="3">
         <div class="button-area">
-          <b-button @click="readyToPush" variant="outline-primary">Push to Remote</b-button>
+          <b-button :variant="highlightPush" @click="readyToPush">Push to Remote</b-button>
         </div>
         <div class="scroll-area">
           <vuescroll>
@@ -358,6 +358,7 @@ export default {
       // graph view data
       gitGraph: '',
       graphBranch: '',
+      highlightPush: 'outline-primary',
 
       // commit
       columnID: -1, // to remove and refresh the successfully committed column
@@ -441,6 +442,9 @@ export default {
     // a trick to forcely refresh the component
     refreshCards(committedFilesNum) {
       this.uncommittedFilesNum -= committedFilesNum
+      if (this.uncommittedFilesNum <= 0) {
+        this.highlightPush = 'success'
+      }
     },
 
     log(...params) {
