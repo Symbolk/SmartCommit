@@ -1,7 +1,7 @@
 'use strict'
 
 const electron = require('electron')
-const log = require("electron-log")
+const log = require('electron-log')
 import { autoUpdater } from 'electron-updater'
 import { app, protocol, BrowserWindow } from 'electron'
 import {
@@ -60,18 +60,19 @@ function createWindow() {
 
 // auto-updating events
 autoUpdater.on('update-available', info => {
-  console.log('Update available.')
+  console.log('Update available: ' + info.version)
 })
 
 autoUpdater.on('update-not-available', info => {
-  console.log('Current is the latest version.')
+  console.log('Current is the latest version: ' + app.getVersion())
 })
 
 autoUpdater.on('error', err => {
-  autoUpdater.logger.error('Error in auto-updater. ' + err)
+  autoUpdater.logger.error('Error in auto-updater: ' + err)
 })
 
 autoUpdater.on('download-progress', progressObj => {
+  console.log('Downloading the update...');
   let log_message = 'Download speed: ' + progressObj.bytesPerSecond
   log_message = log_message + ' - Downloaded ' + progressObj.percent + '%'
   log_message =
@@ -79,7 +80,7 @@ autoUpdater.on('download-progress', progressObj => {
   autoUpdater.logger.info(log_message)
 })
 
-autoUpdater.on('update-downloaded', (info) => {
+autoUpdater.on('update-downloaded', info => {
   console.log('Update downloaded and will be installed after quitting.')
 })
 
