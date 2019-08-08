@@ -122,7 +122,7 @@
                     >
                       <p class="no-select" title="Double Click to Show Diff" v-b-tooltip.hover>
                         {{ card.path }}
-                        <b-badge :variant="card.badgeType" pill>{{card.operation}}</b-badge>
+                        <b-badge style="float:right" :variant="card.badgeType" pill>{{card.operation}}</b-badge>
                       </p>
                     </div>
                   </Draggable>
@@ -157,7 +157,10 @@
       </template>
       <b-card :header="commitMessage" border-variant="success">
         <b-list-group>
-          <b-list-group-item :key="file.id" v-for="file in commitFiles">{{file.path}}</b-list-group-item>
+          <b-list-group-item :key="file.id" href="#" v-for="file in commitFiles">
+            {{file.short_path}}
+            <b-badge style="float:right" :variant="file.badgeType" pill>{{file.operation}}</b-badge>
+          </b-list-group-item>
         </b-list-group>
       </b-card>
       <b-button class="right-button" disabled v-if="committing" variant="success">
@@ -245,7 +248,7 @@
 <script>
 import { Container, Draggable } from 'vue-smooth-dnd'
 import vuescroll from 'vuescroll'
-import { applyDrag, generateItems } from './utils/helpers'
+import { applyDrag, generateItems, truncateLongPath } from './utils/helpers'
 import {
   getRootPath,
   analyzeStatus,
@@ -691,7 +694,12 @@ export default {
         this.$refs.alert.open()
       } else {
         this.commitMessage = message
-        this.commitFiles = list
+        // truncate long paths to make sure one path one line
+        this.commitFiles = []
+        for (let f of list) {
+          f.short_path = truncateLongPath(f.path, 55)
+          this.commitFiles.push(f)
+        }
         this.columnID = id
         this.$refs.commitModal.open()
         this.committing = false

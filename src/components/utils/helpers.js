@@ -23,3 +23,11 @@ export const generateItems = (count, creator) => {
   }
   return result
 }
+
+export const truncateLongPath = (path, length) => {
+  if (path.length > length) {
+    return '...' + path.substring(path.length - length, path.length)
+  } else {
+    return path
+  }
+}
