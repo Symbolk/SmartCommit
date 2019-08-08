@@ -122,7 +122,11 @@
                     >
                       <p class="no-select" title="Double Click to Show Diff" v-b-tooltip.hover>
                         {{ card.path }}
-                        <b-badge style="float:right" :variant="card.badgeType" pill>{{card.operation}}</b-badge>
+                        <b-badge
+                          :variant="card.badgeType"
+                          pill
+                          style="float:right"
+                        >{{card.operation}}</b-badge>
                       </p>
                     </div>
                   </Draggable>
@@ -155,12 +159,18 @@
         <b-badge pill variant="info">{{currentBranch}}</b-badge>&nbsp;->
         <b-badge pill variant="warning">{{trackingBranch}}</b-badge>&nbsp;
       </template>
-      <b-card :header="commitMessage" border-variant="success">
-        <b-list-group>
-          <b-list-group-item :key="file.id" href="#" v-for="file in commitFiles">
+      <b-card border-variant="success" header="Following files will be committed:">
+        <b-list-group deck>
+          <b-list-group-item
+            :key="file.id"
+            :variant="file.badgeType"
+            href="#"
+            v-for="file in commitFiles"
+          >
             {{file.short_path}}
-            <b-badge style="float:right" :variant="file.badgeType" pill>{{file.operation}}</b-badge>
+            <b-badge :variant="file.badgeType" pill style="float:right">{{file.operation}}</b-badge>
           </b-list-group-item>
+          <p class="card-text mt-2">{{commitMessage}}</p>
         </b-list-group>
       </b-card>
       <b-button class="right-button" disabled v-if="committing" variant="success">
@@ -445,7 +455,7 @@ export default {
       // updated & popover positioned first
       this.$nextTick(() => {
         this.$nextTick(() => {
-          ;(ref.$el || ref).focus()
+          (ref.$el || ref).focus()
         })
       })
     },
@@ -826,7 +836,6 @@ export default {
       // git2json.run(repoPath).then(gitlog => {
       git2json.run().then(gitlog => {
         // display at most 20 commits for performance
-        this.loadingHistory = false
         if (gitlog.length <= 20) {
           this.gitGraph.import(gitlog)
         } else {
@@ -834,6 +843,7 @@ export default {
           slicedLog[slicedLog.length - 1].parents = []
           this.gitGraph.import(slicedLog)
         }
+        this.loadingHistory = false
       })
     }
   },
