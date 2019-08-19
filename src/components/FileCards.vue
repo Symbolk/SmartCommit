@@ -10,7 +10,11 @@
               </b-button>
             </center>
           </div>
-          <b-button :variant="highlightPush" @click="readyToPush" v-else>Push to Remote</b-button>
+          <b-button
+            :variant="highlightPush"
+            @click="readyToPush"
+            v-if="successCommits.length>0"
+          >Push to Remote</b-button>
         </div>
         <div class="scroll-area">
           <vuescroll>
@@ -832,7 +836,7 @@ export default {
 
     refreshGraph() {
       // let path = this.REPO_PATH
-        // const path =  'F:/workspace/dev/IntelliMerge'
+      // const path =  'F:/workspace/dev/IntelliMerge'
       // git2json.run({path}).then(gitlog => {
       git2json.run().then(gitlog => {
         // display at most N commits for performance and layout
@@ -939,7 +943,7 @@ export default {
 
 .scroll-area {
   /* overflow: auto; */
-  height: 68vh;
+  height: 70vh;
   position: fixed;
   /* z-index: 2; */
   width: 26vw; /* 3/12 + 10px */
