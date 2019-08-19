@@ -455,7 +455,7 @@ export default {
       // updated & popover positioned first
       this.$nextTick(() => {
         this.$nextTick(() => {
-          (ref.$el || ref).focus()
+          ;(ref.$el || ref).focus()
         })
       })
     },
@@ -831,16 +831,32 @@ export default {
     },
 
     refreshGraph() {
-      // let repoPath = this.REPO_PATH
-      // not working for the defect of git2json
-      // git2json.run(repoPath).then(gitlog => {
+      // let path = this.REPO_PATH
+        // const path =  'F:/workspace/dev/IntelliMerge'
+      // git2json.run({path}).then(gitlog => {
       git2json.run().then(gitlog => {
-        // display at most 20 commits for performance
-        if (gitlog.length <= 20) {
+        // display at most N commits for performance and layout
+        if (gitlog.length <= 15) {
           this.gitGraph.import(gitlog)
         } else {
-          let slicedLog = gitlog.slice(0, 20)
-          slicedLog[slicedLog.length - 1].parents = []
+          let slicedLog = gitlog.slice(0, 15)
+          // sort the sliced log by time
+          // slicedLog.sort((a, b) => parseInt(b.committer.timestamp) - parseInt(a.committer.timestamp))
+          // find the last commit whose parents are not in the sliced log
+          let slicedCommits = slicedLog.map(a => a.hashAbbrev)
+          for (let commit of slicedLog) {
+            let isIn = false
+            for (let parent of commit.parentsAbbrev) {
+              if (slicedCommits.includes(parent)) {
+                isIn = true
+                break
+              }
+            }
+            if (!isIn) {
+              commit.parents = []
+              commit.parentsAbbrev = []
+            }
+          }
           this.gitGraph.import(slicedLog)
         }
         this.loadingHistory = false
@@ -923,7 +939,7 @@ export default {
 
 .scroll-area {
   /* overflow: auto; */
-  height: 100vh;
+  height: 68vh;
   position: fixed;
   /* z-index: 2; */
   width: 26vw; /* 3/12 + 10px */
