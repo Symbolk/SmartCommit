@@ -1,9 +1,4 @@
-#!/usr/bin/env python
+#!/bin/sh
 
-import os
-import sys
-
-binaryPath = sys.path[0] + "/SmartCommit.exe"
-# binaryPath = sys.path[0] + "/../dist_electron/win-unpacked/SmartCommit.exe"
-os.system(binaryPath)
-print("Farewell~")
+$("$(dirname "$0")/SmartCommit.exe")
+echo "Farewell~"
