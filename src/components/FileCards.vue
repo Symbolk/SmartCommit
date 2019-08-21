@@ -382,7 +382,7 @@ export default {
       // graph view data
       loadingHistory: true,
       gitGraph: '',
-      graphBranch: '',
+      graphBranch: undefined,
       highlightPush: 'outline-primary',
 
       // commit
@@ -557,8 +557,7 @@ export default {
           this.currentBranch = status.current
           this.trackingBranch = status.tracking
 
-          this.graphBranch = this.gitGraph.branch(String(this.currentBranch))
-          // this.graphBranch.commit('Last commit')
+          // this.graphBranch = this.gitGraph.branch(String(this.currentBranch))
 
           let res = this.filterDiffs(status.diffs)
           let num = 0
@@ -732,7 +731,11 @@ export default {
             'Successfully commit ' + res.commit + ' to branch ' + res.branch
           this.$refs.commitModal.close()
           this.$refs.success.open()
-          this.refreshGraph()
+          if (this.graphBranch == undefined) {
+            this.refreshGraph()
+          } else {
+            this.graphBranch.commit(this.commitMessage)
+          }
           // clear data (no necessary but for safety)
           this.committing = false
           this.successCommits.push({
@@ -831,7 +834,15 @@ export default {
         reverseArrow: true
       }
       this.gitGraph = GitgraphJS.createGitgraph(graphContainer, options)
-      this.refreshGraph()
+      try {
+        this.refreshGraph()
+      } catch (err) {
+        // if fail to the commit graph, fake one
+        console.log(err)
+        this.graphBranch = this.gitGraph.branch('master')
+        this.graphBranch.commit('HEAD Commit.')
+        this.loadingHistory = false
+      }
     },
 
     refreshGraph() {
@@ -844,6 +855,7 @@ export default {
           this.gitGraph.import(gitlog)
         } else {
           let slicedLog = gitlog.slice(0, 15)
+          let processedLog = []
           // sort the sliced log by time
           // slicedLog.sort((a, b) => parseInt(b.committer.timestamp) - parseInt(a.committer.timestamp))
           // find the last commit whose parents are not in the sliced log
@@ -853,15 +865,17 @@ export default {
             for (let parent of commit.parentsAbbrev) {
               if (slicedCommits.includes(parent)) {
                 isIn = true
+                processedLog.push(commit)
                 break
               }
             }
             if (!isIn) {
               commit.parents = []
               commit.parentsAbbrev = []
+              processedLog.push(commit)
             }
           }
-          this.gitGraph.import(slicedLog)
+          this.gitGraph.import(processedLog)
         }
         this.loadingHistory = false
       })

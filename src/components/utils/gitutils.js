@@ -239,7 +239,6 @@ export const doCommit = (repo_path, commit_message, file_list) => {
         reject(err)
       } else {
         console.log('Add ' + file_list.length + ' files to stage.')
-        console.log(result)
         gitt.commit(commit_message, (err, res) => {
           if (err) {
             reject(err)
