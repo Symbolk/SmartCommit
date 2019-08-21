@@ -217,6 +217,14 @@
     <!-- use 'hide-close-button blocking' to force user action -->
     <sweet-modal icon="success" ref="success" title="Success">{{successMessage}}</sweet-modal>
     <sweet-modal icon="warning" ref="alert" title="Alert">{{alertMessage}}</sweet-modal>
+    <sweet-modal blocking hide-close-button icon="info" overlay-theme="dark" ref="usageModal">
+      <b>Usage:</b>
+      <br />1. Open terminal under a Git repo.
+      <br />2. Run `git sc` in terminal.
+      <br />
+      <b-button @click="exit()" class="right-button" variant="outline-danger">Got It!</b-button>
+    </sweet-modal>
+
     <sweet-modal icon="error" ref="error" title="Error">{{errorMessage}}</sweet-modal>
 
     <!-- modal to show diff view-->
@@ -405,6 +413,11 @@ export default {
   },
 
   methods: {
+    exit() {
+      const remote = require('electron').remote
+      let w = remote.getCurrentWindow()
+      w.close()
+    },
     // handle drag&drop
     onColumnDrop(dropResult) {
       const scene = Object.assign({}, this.scene)
@@ -893,9 +906,7 @@ export default {
         if (res) {
           this.init()
         } else {
-          this.alertMessage =
-            'Not a git repo, please run `git sc` under a git repo!'
-          this.$refs.alert.open()
+          this.$refs.usageModal.open()
         }
       }
     })
