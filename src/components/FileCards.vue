@@ -480,7 +480,7 @@ export default {
     // a trick to forcely refresh the component
     refreshCards(committedFilesNum) {
       this.uncommittedFilesNum -= committedFilesNum
-      if (this.uncommittedFilesNum <= 0) {
+      if (this.uncommittedFilesNum <= 0 || this.successCommits.length > 0) {
         this.highlightPush = 'success'
       }
     },
