@@ -52,6 +52,7 @@ async function formatEntries(repo_path, file_list, operation) {
  * @param {*} operation
  */
 function generateNode(repo_path, path, operation) {
+  // FIXME add node type: folder (test: F:\workspace\dev\intellimerge-sample-input)
   const langDetector = require('language-detect')
   const langMapper = require('language-map')
   const isBinaryFileSync = require('isbinaryfile').isBinaryFileSync
@@ -234,11 +235,12 @@ export const doCommit = (repo_path, commit_message, file_list) => {
   // let workingDir = git._baseDir + '/'
   console.log('Working dir: ' + repo_path)
   return new Promise((resolve, reject) => {
-    gitt.add(file_list, (err, result) => {
-      if (err) {
-        reject(err)
-      } else {
-        console.log('Add ' + file_list.length + ' files to stage.')
+    // FIXME error when adding deleted path
+    // gitt.add(file_list, (err, result) => {
+    //   if (err) {
+    //     reject(err)
+    //   } else {
+        // console.log('Add ' + file_list.length + ' files to stage.')
         gitt.commit(commit_message, (err, res) => {
           if (err) {
             reject(err)
@@ -246,8 +248,8 @@ export const doCommit = (repo_path, commit_message, file_list) => {
             resolve(res)
           }
         })
-      }
-    })
+      // }
+    // })
   })
 }
 
