@@ -16,7 +16,7 @@
             v-if="successCommits.length>0"
           >Push to Remote</b-button>
         </div>
-        <div class="scroll-area">
+        <div class="scroll-area" v-if="graphLoadedOk">
           <vuescroll>
             <div id="graph-container" ref="graph-container"></div>
           </vuescroll>
@@ -389,6 +389,7 @@ export default {
 
       // graph view data
       loadingHistory: true,
+      graphLoadedOk: true,
       gitGraph: '',
       graphBranch: undefined,
       highlightPush: 'outline-primary',
@@ -862,36 +863,43 @@ export default {
       // let path = this.REPO_PATH
       // const path =  'F:/workspace/dev/IntelliMerge'
       // git2json.run({path}).then(gitlog => {
-      git2json.run().then(gitlog => {
-        // display at most N commits for performance and layout
-        if (gitlog.length <= 15) {
-          this.gitGraph.import(gitlog)
-        } else {
-          let slicedLog = gitlog.slice(0, 15)
-          let processedLog = []
-          // sort the sliced log by time
-          // slicedLog.sort((a, b) => parseInt(b.committer.timestamp) - parseInt(a.committer.timestamp))
-          // find the last commit whose parents are not in the sliced log
-          let slicedCommits = slicedLog.map(a => a.hashAbbrev)
-          for (let commit of slicedLog) {
-            let isIn = false
-            for (let parent of commit.parentsAbbrev) {
-              if (slicedCommits.includes(parent)) {
-                isIn = true
+      git2json
+        .run()
+        .then(gitlog => {
+          // display at most N commits for performance and layout
+          if (gitlog.length <= 15) {
+            this.gitGraph.import(gitlog)
+          } else {
+            let slicedLog = gitlog.slice(0, 15)
+            let processedLog = []
+            // sort the sliced log by time
+            // slicedLog.sort((a, b) => parseInt(b.committer.timestamp) - parseInt(a.committer.timestamp))
+            // find the last commit whose parents are not in the sliced log
+            let slicedCommits = slicedLog.map(a => a.hashAbbrev)
+            for (let commit of slicedLog) {
+              let isIn = false
+              for (let parent of commit.parentsAbbrev) {
+                if (slicedCommits.includes(parent)) {
+                  isIn = true
+                  processedLog.push(commit)
+                  break
+                }
+              }
+              if (!isIn) {
+                commit.parents = []
+                commit.parentsAbbrev = []
                 processedLog.push(commit)
-                break
               }
             }
-            if (!isIn) {
-              commit.parents = []
-              commit.parentsAbbrev = []
-              processedLog.push(commit)
-            }
+            this.gitGraph.import(processedLog)
           }
-          this.gitGraph.import(processedLog)
-        }
-        this.loadingHistory = false
-      })
+          this.graphLoadedOk = true
+          this.loadingHistory = false
+        })
+        .catch(err => {
+          // hide the graph sidebar in case of error
+          this.graphLoadedOk = false
+        })
     }
   },
 
@@ -917,8 +925,8 @@ export default {
     // const graphContainer = this.$refs['container']
     this.createGraph(graphContainer)
     // register functions to be called by the navbar
-    this.$root.$on('refresh', ()=>{
-      console.log("Refreshing...");
+    this.$root.$on('refresh', () => {
+      console.log('Refreshing...')
       // this.refreshGraph()
       this.refreshCards(0)
     })
