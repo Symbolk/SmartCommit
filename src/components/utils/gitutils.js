@@ -52,15 +52,33 @@ async function formatEntries(repo_path, file_list, operation) {
  * @param {*} operation
  */
 function generateNode(repo_path, path, operation) {
-  // FIXME add node type: folder (test: F:\workspace\dev\intellimerge-sample-input)
   const langDetector = require('language-detect')
   const langMapper = require('language-map')
   const isBinaryFileSync = require('isbinaryfile').isBinaryFileSync
   return new Promise((resolve, reject) => {
     let lang = 'plaintext'
     let abs_path = repo_path + path
+
+    // check if the path is a directory
+    try{
+      console.log(abs_path);
+      if(fs.existsSync(abs_path) && fs.lstatSync(abs_path).isDirectory()){
+        let node = {
+          operation: operation,
+          type: 'directory',
+          lang: 'directory',
+          name: getFileName(path),
+          path: path, // relative path by git
+          abs_path: abs_path
+        }
+        resolve(node)
+      }
+    }catch(err){
+        reject(err)
+    }
+
     if (operation == 'Deleted') {
-      // deleted, the file does not exist on the disk, so detect binary with indexed content,
+      // deleted: the file does not exist on the disk, so detect binary with indexed content,
       // and detect lang with file name only if the file type is text
       showAtHEAD(repo_path, path)
         .then(res => {
@@ -162,6 +180,7 @@ function getParentDir(path) {
 }
 
 var git = require('simple-git')
+const fs = require('fs')
 
 /**
  * Get the absolute path of the root directory of the git repo
@@ -268,7 +287,7 @@ export const doCommit = (repo_path, commit_message, file_list) => {
 export const doPush = (repo_path, currentBranch, trackingBranch) => {
   const gitt = git(repo_path)
   console.log('Working dir: ' + repo_path)
-  var options = {}
+  // var options = {}
   return new Promise((resolve, reject) => {
     // simply push with the default config, equivalent to 'git push'
     gitt.push([], (err, res) => {

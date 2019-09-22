@@ -473,7 +473,7 @@ export default {
       // updated & popover positioned first
       this.$nextTick(() => {
         this.$nextTick(() => {
-          ;(ref.$el || ref).focus()
+          (ref.$el || ref).focus()
         })
       })
     },
@@ -629,7 +629,6 @@ export default {
       this.$refs.diffViewModal.open('sideDiff')
       this.loadingDiff = true
       this.diffViewTitle = abs_path
-      // if the file is binary, just tell the user it is a binary file
       if (type == 'text') {
         if (operation == 'Untracked' || operation == 'Created') {
           // when the file is newly added
@@ -695,6 +694,8 @@ export default {
           })
         }
       } else {
+        // if the file is not a text file, just tell the user the type
+
         this.language = language
         if (operation == 'Untracked' || operation == 'Created') {
           // TODO a strange bug here: code left is what is last diffed instead of empty
@@ -930,7 +931,7 @@ export default {
       // this.refreshGraph()
       this.refreshCards(0)
     })
-        this.$root.$on('exit', () => {
+    this.$root.$on('exit', () => {
       console.log('Exiting...')
       // this.refreshGraph()
       this.exit()
