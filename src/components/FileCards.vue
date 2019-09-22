@@ -916,6 +916,12 @@ export default {
     const graphContainer = document.querySelector('#graph-container')
     // const graphContainer = this.$refs['container']
     this.createGraph(graphContainer)
+    // register functions to be called by the navbar
+    this.$root.$on('refresh', ()=>{
+      console.log("Refreshing...");
+      // this.refreshGraph()
+      this.refreshCards(0)
+    })
   }
 }
 </script>
@@ -968,7 +974,7 @@ export default {
 
 .scroll-area {
   /* overflow: auto; */
-  height: 70vh;
+  height: 90vh;
   position: fixed;
   /* z-index: 2; */
   width: 26vw; /* 3/12 + 10px */

@@ -1,20 +1,20 @@
 <template>
   <div id="app">
-    <Header></Header>
+    <NavBar></NavBar>
     <!-- <HelloWorld msg="Welcome to SmartCommit!"/> -->
     <FileCards></FileCards>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+// import HelloWorld from './components/HelloWorld.vue'
 import FileCards from './components/FileCards.vue'
-import Header from './components/Header.vue'
+import NavBar from './components/NavBar.vue'
 
 export default {
   name: 'app',
   components: {
-    Header,
+    NavBar,
     FileCards
   }
 }
