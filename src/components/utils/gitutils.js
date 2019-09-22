@@ -235,12 +235,11 @@ export const doCommit = (repo_path, commit_message, file_list) => {
   // let workingDir = git._baseDir + '/'
   console.log('Working dir: ' + repo_path)
   return new Promise((resolve, reject) => {
-    // FIXME error when adding deleted path
-    // gitt.add(file_list, (err, result) => {
-    //   if (err) {
-    //     reject(err)
-    //   } else {
-        // console.log('Add ' + file_list.length + ' files to stage.')
+    gitt.add(file_list, (err, result) => {
+      if (err) {
+        reject(err)
+      } else {
+        console.log('Add ' + file_list.length + ' files to stage.')
         gitt.commit(commit_message, (err, res) => {
           if (err) {
             reject(err)
@@ -248,7 +247,15 @@ export const doCommit = (repo_path, commit_message, file_list) => {
             resolve(res)
           }
         })
-      // }
+      }
+    })
+    // untracked files cannot be committed in this way
+    // gitt.commit(commit_message, file_list, (err, res) => {
+    //   if (err) {
+    //     reject(err)
+    //   } else {
+    //     resolve(res)
+    //   }
     // })
   })
 }
