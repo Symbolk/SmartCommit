@@ -15,7 +15,13 @@
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
             <!-- <b-form-input class="mr-sm-2" placeholder="Search" size="sm"></b-form-input> -->
-            <b-button class="my-2 my-sm-0" size="sm" type="submit"  @click="refresh()" variant="warning">Refresh</b-button>
+            <b-button
+              @click="refresh()"
+              class="my-2 my-sm-0"
+              size="sm"
+              type="submit"
+              variant="warning"
+            >Refresh</b-button>
           </b-nav-form>
 
           <b-nav-item-dropdown right text="Lang">
@@ -30,21 +36,41 @@
             </template>
             <b-dropdown-item href="#">Settings</b-dropdown-item>
             <b-dropdown-item href="#">Release Note</b-dropdown-item>
-            <b-dropdown-item href="#">Exit</b-dropdown-item>
           </b-nav-item-dropdown>
+
+          <b-nav-form>
+            <!-- <b-form-input class="mr-sm-2" placeholder="Search" size="sm"></b-form-input> -->
+            <b-button @click="showExitModal()" class="my-2 my-sm-0" size="sm" variant="danger">Exit</b-button>
+          </b-nav-form>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
+    <sweet-modal icon="info" overlay-theme="dark" ref="exitModal">
+      <b>Are You Sure to Exit?</b>
+      <b-button @click="exit()" class="right-button" variant="outline-danger">Yes</b-button>
+    </sweet-modal>
   </div>
 </template>
 
 <script>
+import { SweetModal } from 'sweet-modal-vue'
+
 export default {
   name: 'Cards',
 
+  components: {
+    SweetModal
+  },
+
   methods: {
+    showExitModal() {
+      this.$refs.exitModal.open()
+    },
     refresh() {
       this.$root.$emit('refresh')
+    },
+    exit() {
+      this.$root.$emit('exit')
     }
   }
 }

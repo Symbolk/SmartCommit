@@ -930,6 +930,11 @@ export default {
       // this.refreshGraph()
       this.refreshCards(0)
     })
+        this.$root.$on('exit', () => {
+      console.log('Exiting...')
+      // this.refreshGraph()
+      this.exit()
+    })
   }
 }
 </script>
