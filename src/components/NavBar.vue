@@ -11,6 +11,10 @@
           <b-nav-item disabled href="#">Changes View</b-nav-item>
         </b-navbar-nav>
 
+        <b-navbar-nav class="ml-auto">
+          <b-nav-item active href="#">{{repoName}}{{currentBranch}}{{trackingBranch}}</b-nav-item>
+        </b-navbar-nav>
+
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
@@ -61,6 +65,13 @@ export default {
   components: {
     SweetModal
   },
+  data() {
+    return {
+      repoName: '',
+      currentBranch: '',
+      trackingBranch: ''
+    }
+  },
 
   methods: {
     showExitModal() {
@@ -72,6 +83,17 @@ export default {
     exit() {
       this.$root.$emit('exit')
     }
+  },
+
+  mounted() {
+    this.$root.$on(
+      'showRepoName',
+      (repoName, currentBranch, trackingBranch) => {
+        this.repoName = repoName + ': '
+        this.currentBranch = currentBranch + '-->'
+        this.trackingBranch = trackingBranch
+      }
+    )
   }
 }
 </script>

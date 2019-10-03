@@ -60,9 +60,9 @@ function generateNode(repo_path, path, operation) {
     let abs_path = repo_path + path
 
     // check if the path is a directory
-    try{
-      console.log(abs_path);
-      if(fs.existsSync(abs_path) && fs.lstatSync(abs_path).isDirectory()){
+    try {
+      console.log(abs_path)
+      if (fs.existsSync(abs_path) && fs.lstatSync(abs_path).isDirectory()) {
         let node = {
           operation: operation,
           type: 'directory',
@@ -73,8 +73,8 @@ function generateNode(repo_path, path, operation) {
         }
         resolve(node)
       }
-    }catch(err){
-        reject(err)
+    } catch (err) {
+      reject(err)
     }
 
     if (operation == 'Deleted') {
@@ -167,7 +167,7 @@ function generateNode(repo_path, path, operation) {
  * Get the file name from absolute path
  * @param {} path
  */
-function getFileName(path) {
+export const getFileName = path => {
   return path.replace(/^.*[\\\/]/, '')
 }
 

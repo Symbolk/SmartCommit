@@ -272,6 +272,7 @@ import { Container, Draggable } from 'vue-smooth-dnd'
 import vuescroll from 'vuescroll'
 import { applyDrag, generateItems, truncateLongPath } from './utils/helpers'
 import {
+  getFileName,
   getRootPath,
   analyzeStatus,
   doCommit,
@@ -364,6 +365,7 @@ export default {
 
       // repo data
       REPO_PATH: '',
+      REPO_NAME: '',
       currentBranch: '',
       trackingBranch: '',
       loadingStatus: true,
@@ -473,7 +475,7 @@ export default {
       // updated & popover positioned first
       this.$nextTick(() => {
         this.$nextTick(() => {
-          (ref.$el || ref).focus()
+          ;(ref.$el || ref).focus()
         })
       })
     },
@@ -546,6 +548,8 @@ export default {
         .then(rootPath => {
           this.REPO_PATH = rootPath + '/'
           console.log('Repo root path: ' + this.REPO_PATH)
+          this.REPO_NAME = getFileName(rootPath)
+          console.log('Repo name: ' + this.REPO_NAME)
           this.analyzeGitRepo()
         })
         .catch(err => {
@@ -570,6 +574,14 @@ export default {
         .then(status => {
           this.currentBranch = status.current
           this.trackingBranch = status.tracking
+
+          // show the repo name in the navbar
+          this.$root.$emit(
+            'showRepoName',
+            this.REPO_NAME,
+            this.currentBranch,
+            this.trackingBranch
+          )
 
           // this.graphBranch = this.gitGraph.branch(String(this.currentBranch))
 
