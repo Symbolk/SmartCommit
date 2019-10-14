@@ -2,7 +2,9 @@
 
 #### SmartCommit makes committing both an elegant and decent daily work.
 
-Developers are encouraged to submit cohesive and self-contained commits, with clear and uniform commit messages. That's exactly what SmartCommit tries to do, by firstly taking over the job of `git-status`, `git-diff`, `git-add`, `git-commit` and `git-push` commands. 
+As recently suggested in [Google's engineering practices] (2019-9), developers are encouraged to submit cohesive and self-contained commits, with clear and uniform commit messages. That's exactly what SmartCommit tries to do, by firstly taking over the job of `git-status`, `git-diff`, `git-add`, `git-commit` and `git-push` commands. 
+
+[Google's best engineering practices]: https://github.com/google/eng-practices/blob/master/review/developer/small-cls.md
 
 To live up to the name, SmartCommit will gradually provide more advanced features to make it a real smart assistant for developers. Suggestions and Issues are welcomed!
 
@@ -54,20 +56,20 @@ When you have some changes to commit:
 ## Screenshots
 
 ##### Repo status
-![status](https://github.com/Symbolk/SmartCommit/blob/master/screenshots/status.png)
+![status](/screenshots/status.png?raw=true "status")
 
 ##### Side by side diff
-![side_diff](https://github.com/Symbolk/SmartCommit/blob/master/screenshots/side_diff.png)
+![side_diff](/screenshots/side_diff.png?raw=true "side_diff")
 
 ##### Inline diff
-![inline_diff](https://github.com/Symbolk/SmartCommit/blob/master/screenshots/inline_diff.png)
+![inline_diff](/screenshots/inline_diff.png?raw=true "inline_diff")
 
 ##### Commit
-![commit](https://github.com/Symbolk/SmartCommit/blob/master/screenshots/commit.png)
+![commit](/screenshots/commit.png?raw=true "commit")
 
 ##### Push
-![push](https://github.com/Symbolk/SmartCommit/blob/master/screenshots/push.png)
-![push_ok](https://github.com/Symbolk/SmartCommit/blob/master/screenshots/push_ok.png)
+![push](/screenshots/push.png?raw=true "push")
+![push_ok](/screenshots/push_ok.png?raw=true "push_ok")
 
 ---
 
