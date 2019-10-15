@@ -2,9 +2,9 @@
 
 #### SmartCommit makes committing both an elegant and decent daily work.
 
-As recently suggested in [Google's engineering practices] (2019-9), developers are encouraged to submit cohesive and self-contained commits, with clear and uniform commit messages. That's exactly what SmartCommit tries to do, by firstly taking over the job of `git-status`, `git-diff`, `git-add`, `git-commit` and `git-push` commands. 
+As recently suggested in Google's engineering [practices] (2019-9), developers are encouraged to submit cohesive and self-contained commits, with clear and uniform commit messages. That's exactly what SmartCommit tries to do, by firstly taking over the job of `git-status`, `git-diff`, `git-add`, `git-commit` and `git-push` commands. 
 
-[Google's best engineering practices]: https://github.com/google/eng-practices/blob/master/review/developer/small-cls.md
+[practices]: https://github.com/google/eng-practices/blob/master/review/developer/small-cls.md
 
 To live up to the name, SmartCommit will gradually provide more advanced features to make it a real smart assistant for developers. Suggestions and Issues are welcomed!
 
