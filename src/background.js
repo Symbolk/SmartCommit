@@ -31,17 +31,17 @@ protocol.registerSchemesAsPrivileged([
 ])
 
 function createWindow() {
-  const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize
+  // const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize
 
   // Create the browser window.
-  win = new BrowserWindow({
-    width: width,
-    height: height,
-    webPreferences: {
-      nodeIntegration: true
-      // webSecurity: false
-    }
-  })
+  // win = new BrowserWindow({
+  //   width: width,
+  //   height: height,
+  //   webPreferences: {
+  //     nodeIntegration: true
+  //     // webSecurity: false
+  //   }
+  // })
 
   win.maximize()
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -117,10 +117,15 @@ app.on('ready', async () => {
   }
 
   // show the splash screen
+  const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize
   const windowOptions = {
-    width: 500,
-    height: 375,
-    show: false
+    width: width,
+    height: height,
+    show: false,
+    webPreferences: {
+      nodeIntegration: true
+      // webSecurity: false
+    }
   }
   win = Splashscreen.initSplashScreen({
     windowOpts: windowOptions,

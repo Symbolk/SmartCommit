@@ -104,7 +104,7 @@ yarn electron:build
 
 ## Project Infrastructure
 
-SmartCommit is powered by multiple nice open source projects.
+SmartCommit is powered by multiple nice open source projects. Thanks for all the open-sourcers!
 
 | Module       | Component              | Version |
 | ------------ | --------------------- | -------------------- |
@@ -118,6 +118,7 @@ SmartCommit is powered by multiple nice open source projects.
 | Diff View | [vue-monaco] | ^1.0.1|
 | Language Detector | [language-detect] | ^1.1.0 |
 | Git Graph | [gitgraph.js] | ^1.3.0 |
+| Splash Screen | [electron-splashscreen] | ^0.3.4 |
 
 [Vue]: https://github.com/vuejs/vue
 [bootstrap-vue]: https://github.com/bootstrap-vue/bootstrap-vue
@@ -129,6 +130,7 @@ SmartCommit is powered by multiple nice open source projects.
 [vue-smooth-dnd]: https://github.com/kutlugsahin/vue-smooth-dnd
 [git-js]: https://github.com/steveukx/git-js
 [gitgraph.js]: https://github.com/nicoespeon/gitgraph.js
+[electron-splashscreen]: https://github.com/trodi/electron-splashscreen
 
 
 ## License
