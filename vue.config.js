@@ -27,7 +27,8 @@ module.exports = {
           buildResources: 'assets'
         },
         extraFiles: [
-          'git-sc'
+          'git-sc',
+          'icon.svg'
         ],
         compression: 'maximum',
         nsis: {

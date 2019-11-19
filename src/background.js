@@ -2,6 +2,7 @@
 
 const electron = require('electron')
 const log = require('electron-log')
+import * as path from 'path'
 import { autoUpdater } from 'electron-updater'
 import { app, protocol, BrowserWindow } from 'electron'
 import {
@@ -9,6 +10,7 @@ import {
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
 const isDevelopment = process.env.NODE_ENV !== 'production'
+import * as Splashscreen from '@trodi/electron-splashscreen'
 
 autoUpdater.logger = log
 autoUpdater.logger.transports.file.level = 'info'
@@ -72,7 +74,7 @@ autoUpdater.on('error', err => {
 })
 
 autoUpdater.on('download-progress', progressObj => {
-  console.log('Downloading the update...');
+  console.log('Downloading the update...')
   let log_message = 'Download speed: ' + progressObj.bytesPerSecond
   log_message = log_message + ' - Downloaded ' + progressObj.percent + '%'
   log_message =
@@ -113,6 +115,28 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
+
+  // show the splash screen
+  const windowOptions = {
+    width: 500,
+    height: 375,
+    show: false
+  }
+  win = Splashscreen.initSplashScreen({
+    windowOpts: windowOptions,
+    templateUrl: path.join(__dirname, '..', 'icon.svg'),
+    // templateUrl: `${__dirname}/icon.svg`,
+    // templateUrl: `file://${path.join(__dirname, "icon.svg")}`,
+    delay: 0, // force show immediately since example will load fast
+    minVisible: 1500, // show for 1.5s so example is obvious
+    splashScreenOpts: {
+      height: 500,
+      width: 500,
+      transparent: true
+    }
+  })
+  // setTimeout(() => {win.close(); console.log("CLOSE")}, 2500)
+
   createWindow()
 })
 
