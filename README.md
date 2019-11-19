@@ -89,7 +89,6 @@ When you have some changes to commit:
 
 ```
 yarn install
-
 ```
 2. Compiles and hot-reloads for development:
 
