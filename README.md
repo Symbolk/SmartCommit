@@ -94,15 +94,13 @@ yarn install
 2. Compiles and hot-reloads for development:
 
 ```
-yarn run electron:serve
-
+yarn electron:serve
 ```
 
 3. [OR] Build the executable for production:
 
 ```
-yarn run electron:build
-
+yarn electron:build
 ```
 
 ## Project Infrastructure
