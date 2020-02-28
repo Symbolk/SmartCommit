@@ -475,7 +475,7 @@ export default {
       // updated & popover positioned first
       this.$nextTick(() => {
         this.$nextTick(() => {
-          ;(ref.$el || ref).focus()
+          (ref.$el || ref).focus()
         })
       })
     },
