@@ -1,19 +1,19 @@
 # <center>SmartCommit</center>
 
-#### SmartCommit makes committing both an elegant and decent daily work.
+#### SmartCommit aims at making "code commit" both an elegant and decent daily work.
 
-As recently suggested in Google's engineering [practices] (2019-9), developers are encouraged to submit cohesive and self-contained commits, with clear and uniform commit messages. That's exactly what SmartCommit tries to do, by firstly taking over the job of `git-status`, `git-diff`, `git-add`, `git-commit` and `git-push` commands. 
+As suggested by [Google's engineering practices] (2019-9), developers are encouraged to submit cohesive and self-contained commits, with clear and uniform commit messages. SmartCommit assists you to follow this best practice.
+
+SmartCommit allows you to review&organize your local changes in groups, and commit them with one click, instead of typing `git-status`, `git-diff`, `git-add`, `git-commit` and `git-push` again and again.
 
 [practices]: https://github.com/google/eng-practices/blob/master/review/developer/small-cls.md
-
-To live up to the name, SmartCommit will gradually provide more advanced features to make it a real smart assistant for developers. Suggestions and Issues are welcomed!
 
 ---
 ## Features
 
 - Stage&Commit changes in groups
 - Diff&Compare diff code side by side or line by line
-- Suggest words for commit message
+- Suggest key words for commit message
 - Push to the remote
 - Customizable template for commit message (developing)
 
