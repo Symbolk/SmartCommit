@@ -2,11 +2,11 @@
 
 #### SmartCommit aims at making "code commit" both an elegant and decent daily work.
 
-As suggested by [Google's engineering practices] (2019-9), developers are encouraged to submit cohesive and self-contained commits, with clear and uniform commit messages. SmartCommit assists you to follow this best practice.
+As suggested by [Google's engineering practices] (2019), developers are encouraged to submit cohesive and self-contained commits, with clear and uniform commit messages. SmartCommit assists you to follow this best practice.
 
 SmartCommit allows you to review&organize your local changes in groups, and commit them with one click, instead of typing `git-status`, `git-diff`, `git-add`, `git-commit` and `git-push` again and again.
 
-[practices]: https://github.com/google/eng-practices/blob/master/review/developer/small-cls.md
+[Google's engineering practices]: https://github.com/google/eng-practices/blob/master/review/developer/small-cls.md
 
 ---
 ## Features
