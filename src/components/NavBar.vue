@@ -7,8 +7,8 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item active href="#">File View</b-nav-item>
-          <b-nav-item disabled href="#">Changes View</b-nav-item>
+          <b-nav-item href="/files">File View</b-nav-item>
+          <b-nav-item active href="/changes">Changes View</b-nav-item>
         </b-navbar-nav>
 
         <b-navbar-nav class="ml-auto">

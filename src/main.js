@@ -10,11 +10,17 @@ import 'vue-awesome/icons/check'
 import 'vue-awesome/icons/eraser'
 import 'vue-awesome/icons/hand-spock'
 
+import router from './router.js'
+
 Vue.config.productionTip = false
 Vue.component('v-icon', Icon)
 
 Vue.use(BootstrapVue)
 
 new Vue({
-  render: h => h(App)
+  router,
+  render: h => h(App),
+  created() {
+    this.$router.push('/files')
+  }
 }).$mount('#app')
