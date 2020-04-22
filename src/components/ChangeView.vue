@@ -104,7 +104,7 @@ import { Container, Draggable } from 'vue-smooth-dnd'
 import MonacoEditor from './vue-monaco'
 import { checkIsRepo, getFileName, getRootPath } from './utils/gitutils'
 import { isPathValid } from './utils/fsutils'
-import { generateItems } from './utils/helpers'
+import { applyDrag, generateItems } from './utils/helpers'
 
 const loadJsonFile = require('load-json-file')
 const fs = require('fs')
@@ -194,6 +194,14 @@ export default {
         animationDuration: '100',
         showOnTop: true
       },
+
+      // statistics
+      steps: 0,
+      actions: [], // the list of moving actions of the user
+      // temp id to compute actions
+      fromCard: 'null:null',
+      toCard: 'null:null',
+
       // prompt messages
       successMsg: '',
       alertMsg: '',
@@ -267,7 +275,7 @@ export default {
             props: {
               className: 'card',
               style: {
-                backgroundColor: pickColor(groups[i].diff_hunks[j].file_index)
+                backgroundColor: pickColor(groups[i].diff_hunks[j].fileIndex)
               }
             },
             file_index: groups[i].diff_hunks[j].fileIndex,
@@ -377,6 +385,55 @@ export default {
           index
         ]
       }
+    },
+    onColumnDrop(dropResult) {
+      const scene = Object.assign({}, this.scene)
+      scene.children = applyDrag(scene.children, dropResult)
+      this.scene = scene
+      this.steps += 1
+      let action =
+        '[Group]' + dropResult.removedIndex + '->' + dropResult.addedIndex
+
+      console.log(action)
+      this.actions.push(action)
+    },
+    onCardDrop(columnId, dropResult) {
+      if (dropResult.removedIndex !== null || dropResult.addedIndex !== null) {
+        const scene = Object.assign({}, this.scene)
+        const column = scene.children.filter(p => p.id === columnId)[0]
+        const columnIndex = scene.children.indexOf(column)
+        const newColumn = Object.assign({}, column)
+        newColumn.children = applyDrag(newColumn.children, dropResult)
+        scene.children.splice(columnIndex, 1, newColumn)
+        this.scene = scene
+        // a trick to get the action
+        if (this.containsNull(this.fromCard)) {
+          this.fromCard = columnId + ':' + dropResult.removedIndex
+        }
+        if (this.containsNull(this.toCard)) {
+          this.toCard = newColumn.id + ':' + dropResult.addedIndex
+        }
+
+        if (
+          !this.containsNull(this.fromCard) &&
+          !this.containsNull(this.toCard)
+        ) {
+          let action = '[Hunk]' + this.fromCard + '->' + this.toCard
+          console.log(action)
+          this.actions.push(action)
+          this.fromCard = 'null:null'
+          this.toCard = 'null:null'
+        }
+        // move to another column
+        if (
+          !(dropResult.removedIndex !== null && dropResult.addedIndex != null)
+        ) {
+          this.steps += 0.5
+        }
+      }
+    },
+    containsNull(str) {
+      return str.indexOf('null') != -1
     },
     dragStart() {
       // console.log('drag started')
