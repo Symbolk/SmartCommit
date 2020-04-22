@@ -112,6 +112,10 @@ import {
   showAtHEAD
 } from './utils/gitutils'
 
+const loadJsonFile = require('load-json-file')
+const fs = require('fs')
+const path = require('path')
+
 const scene = {
   type: 'container',
   props: {
@@ -130,6 +134,10 @@ export default {
   },
   data() {
     return {
+      // repo data
+      REPO_PATH: '',
+      REPO_NAME: '',
+
       // code related data
       language: 'java',
       pathLeft: 'Double Click a Card to View Diff',
@@ -177,8 +185,26 @@ export default {
   },
   methods: {
     // Data loading
-    loadRepoData() {
-      // show the repo info in the navbar
+    loadMetaData() {
+      // show the repo info in the navbar/
+      let dataDir =
+        require('os').homedir() + '/.mergebot/repos/SmartCommitCore_mergebot/smart_commit'
+      console.log('Data path: ' + dataDir)
+      // load data files into list of json
+      let groupsDir = dataDir + '/generated_groups'
+      //   let diffsDir = dataDir + '/diffs'
+      let groups = []
+      fs.readdirSync(groupsDir).forEach(filename => {
+        const name = path.parse(filename).name
+        const content = loadJsonFile.sync(path.resolve(groupsDir, filename))
+        groups.push({
+          name: name,
+          content: content
+        })
+      })
+      // convert json into scene children
+      console.log(groups)
+      // refresh to load data
     },
 
     // UI methods
@@ -217,7 +243,7 @@ export default {
               console.log('Repo root path: ' + this.REPO_PATH)
               this.REPO_NAME = getFileName(rootPath)
               console.log('Repo name: ' + this.REPO_NAME)
-              this.loadRepoData()
+              this.loadMetaData()
               this.$root.$emit('showRepoName', this.REPO_NAME, '', '')
             })
             .catch(err => {
