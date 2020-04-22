@@ -215,8 +215,8 @@
     </sweet-modal>
 
     <!-- use 'hide-close-button blocking' to force user action -->
-    <sweet-modal icon="success" ref="success" title="Success">{{successMessage}}</sweet-modal>
-    <sweet-modal icon="warning" ref="alert" title="Alert">{{alertMessage}}</sweet-modal>
+    <sweet-modal icon="success" ref="successModal" title="Success">{{successMessage}}</sweet-modal>
+    <sweet-modal icon="warning" ref="alertModal" title="Alert">{{alertMessage}}</sweet-modal>
     <sweet-modal blocking hide-close-button icon="info" overlay-theme="dark" ref="usageModal">
       <b>Usage:</b>
       <br />1. Open terminal under a Git repo.
@@ -272,6 +272,7 @@ import { Container, Draggable } from 'vue-smooth-dnd'
 import vuescroll from 'vuescroll'
 import { applyDrag, generateItems, truncateLongPath } from './utils/helpers'
 import {
+  checkIsRepo,
   getFileName,
   getRootPath,
   analyzeStatus,
@@ -283,7 +284,6 @@ import { SweetModal, SweetModalTab } from 'sweet-modal-vue'
 import MonacoEditor from './vue-monaco'
 
 const fs = require('fs')
-var git = require('simple-git')
 const git2json = require('@fabien0102/git2json')
 
 const badgeTypeMap = new Map([
@@ -556,7 +556,7 @@ export default {
           this.loadingStatus = false
           console.log(err)
           this.errorMessage = err.message
-          this.$refs.error.open()
+          this.$refs.errorModal.open()
         })
     },
     filterDiffs(diffs) {
@@ -632,7 +632,7 @@ export default {
           this.loadingStatus = false
           console.log(err)
           this.errorMessage = err
-          this.$refs.error.open()
+          this.$refs.errorModal.open()
         })
     },
 
@@ -650,7 +650,7 @@ export default {
               this.errorMessage =
                 'An error ocurred reading the file :' + err.message
               this.$refs.diffViewModal.close()
-              this.$refs.error.open()
+              this.$refs.errorModal.open()
               return
             }
             this.language = language
@@ -674,7 +674,7 @@ export default {
               this.errorMessage =
                 'An error ocurred reading the file :' + err.message
               this.$refs.diffViewModal.close()
-              this.$refs.error.open()
+              this.$refs.errorModal.open()
             })
         } else {
           // when the file is Modified/Conflicted/Renamed
@@ -683,7 +683,7 @@ export default {
               this.errorMessage =
                 'An error ocurred reading the file :' + err.message
               this.$refs.diffViewModal.close()
-              this.$refs.error.open()
+              this.$refs.errorModal.open()
               return
             }
             this.language = language
@@ -701,7 +701,7 @@ export default {
                 this.errorMessage =
                   'An error ocurred reading the file :' + err.message
                 this.$refs.diffViewModal.close()
-                this.$refs.error.open()
+                this.$refs.errorModal.open()
               })
           })
         }
@@ -728,10 +728,10 @@ export default {
     readyToCommit(id, message, list) {
       if (list.length == 0) {
         this.alertMessage = 'No files to commit in this group!'
-        this.$refs.alert.open()
+        this.$refs.alertModal.open()
       } else if (message === '') {
         this.alertMessage = 'The commit message cannot be empty!'
-        this.$refs.alert.open()
+        this.$refs.alertModal.open()
       } else {
         this.commitMessage = message
         // truncate long paths to make sure one path one line
@@ -757,7 +757,7 @@ export default {
           this.successMessage =
             'Successfully commit ' + res.commit + ' to branch ' + res.branch
           this.$refs.commitModal.close()
-          this.$refs.success.open()
+          this.$refs.successModal.open()
           if (this.graphBranch == undefined) {
             this.refreshGraph()
           } else {
@@ -778,7 +778,7 @@ export default {
         .catch(err => {
           console.log(err)
           this.errorMessage = err
-          this.$refs.error.open()
+          this.$refs.errorModal.open()
         })
     },
 
@@ -805,14 +805,14 @@ export default {
             ' to ' +
             this.trackingBranch
           this.$refs.pushModal.close()
-          this.$refs.success.open()
+          this.$refs.successModal.open()
           this.pushing = false
           this.successCommits = []
         })
         .catch(err => {
           console.log(err)
           this.errorMessage = err
-          this.$refs.error.open()
+          this.$refs.errorModal.open()
         })
     },
 
@@ -918,20 +918,18 @@ export default {
   },
 
   created() {
-    const gitt = git(this.REPO_PATH)
-
-    gitt.checkIsRepo((err, res) => {
-      if (err) {
-        this.alertMessage = err
-        this.$refs.alert.open()
-      } else {
+    checkIsRepo(this.REPO_PATH)
+      .then(res => {
         if (res) {
           this.init()
         } else {
           this.$refs.usageModal.open()
         }
-      }
-    })
+      })
+      .catch(err => {
+        this.alertMessage = err
+        this.$refs.alertModal.open()
+      })
   },
 
   mounted() {
