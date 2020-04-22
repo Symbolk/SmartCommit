@@ -46,11 +46,11 @@
                             v-b-tooltip.hover
                           >
                             <p>
-                              {{ card.a_hunk.git_path }}:{{card.a_hunk.start_line}}-{{card.a_hunk.end_line}}
+                              {{ card.a_hunk.relativeFilePath }}:{{card.a_hunk.startLine}}-{{card.a_hunk.endLine}}
                               <b-badge pill style="float:right">Old</b-badge>
                             </p>
                             <p>
-                              {{ card.b_hunk.git_path }}:{{card.b_hunk.start_line}}-{{card.b_hunk.end_line}}
+                              {{ card.b_hunk.relativeFilePath }}:{{card.b_hunk.startLine}}-{{card.b_hunk.endLine}}
                               <b-badge pill style="float:right" variant="success">New</b-badge>
                             </p>
                           </div>
@@ -102,15 +102,8 @@
 import { SweetModal } from 'sweet-modal-vue'
 import { Container, Draggable } from 'vue-smooth-dnd'
 import MonacoEditor from './vue-monaco'
-import {
-  checkIsRepo,
-  getFileName,
-  getRootPath,
-  analyzeStatus,
-  doCommit,
-  doPush,
-  showAtHEAD
-} from './utils/gitutils'
+import { checkIsRepo, getFileName, getRootPath } from './utils/gitutils'
+import { generateItems } from './utils/helpers'
 
 const loadJsonFile = require('load-json-file')
 const fs = require('fs')
@@ -122,6 +115,28 @@ const scene = {
     orientation: 'horizontal'
   },
   children: []
+}
+
+const cardColors = [
+  'azure',
+  'beige',
+  'bisque',
+  'blanchedalmond',
+  'burlywood',
+  'cornsilk',
+  'gainsboro',
+  'ghostwhite',
+  'ivory',
+  'khaki'
+]
+
+const pickColor = fileIndex => {
+  if (fileIndex < cardColors.length) {
+    return cardColors[fileIndex]
+  } else {
+    let index = fileIndex % cardColors.length
+    return cardColors[index]
+  }
 }
 
 export default {
@@ -188,22 +203,80 @@ export default {
     loadMetaData() {
       // show the repo info in the navbar/
       let dataDir =
-        require('os').homedir() + '/.mergebot/repos/SmartCommitCore_mergebot/smart_commit'
+        require('os').homedir() +
+        '/.mergebot/repos/SmartCommitCore_mergebot/smart_commit'
       console.log('Data path: ' + dataDir)
-      // load data files into list of json
+      // load and extract data into list of json
       let groupsDir = dataDir + '/generated_groups'
-      //   let diffsDir = dataDir + '/diffs'
       let groups = []
       fs.readdirSync(groupsDir).forEach(filename => {
-        const name = path.parse(filename).name
+        const name = path.parse(filename).name.replace(/(.*).json/, '')
         const content = loadJsonFile.sync(path.resolve(groupsDir, filename))
         groups.push({
           name: name,
           content: content
         })
       })
+      let diffsDir = dataDir + '/diffs'
+      let diffs = {}
+      fs.readdirSync(diffsDir).forEach(filename => {
+        const name = path.parse(filename).name.replace(/(.*).json/, '')
+        const content = loadJsonFile.sync(path.resolve(diffsDir, filename))
+        diffs[name] = content
+      })
+
+      // match diff hunks info
+      for (let group of groups) {
+        let diff_hunks = []
+        for (let id of group.content.diffHunkIDs) {
+          let idPair = String(id).split(':')
+          if (idPair.length == 2) {
+            diff_hunks.push(
+              diffs[String(idPair[0])].diffHunksMap[String(idPair[1])]
+            )
+          }
+        }
+        group.diff_hunks = diff_hunks
+      }
+
       // convert json into scene children
-      console.log(groups)
+      this.scene = {
+        type: 'container',
+        props: {
+          orientation: 'horizontal'
+        },
+        children: generateItems(groups.length, i => ({
+          id: i,
+          type: 'container',
+          name: 'Group $i',
+          props: {
+            orientation: 'vertical',
+            className: 'card-container'
+          },
+          group_id: groups[i].content.groupID,
+          group_label: groups[i].content.intentLabel,
+          commit_msg: '',
+          committed: false, // whether the group has been committed
+          // diff hunks
+          children: generateItems(groups[i].diff_hunks.length, j => ({
+            type: 'draggable',
+            id: `${i}${j}`,
+            props: {
+              className: 'card',
+              style: {
+                backgroundColor: pickColor(groups[i].diff_hunks[j].file_index)
+              }
+            },
+            file_index: groups[i].diff_hunks[j].fileIndex,
+            diff_hunk_index: groups[i].diff_hunks[j].index,
+            change_type: groups[i].diff_hunks[j].changeType,
+            description: groups[i].diff_hunks[j].description,
+            a_hunk: groups[i].diff_hunks[j].baseHunk,
+            b_hunk: groups[i].diff_hunks[j].currentHunk
+          }))
+        }))
+      }
+      console.log(this.scene)
       // refresh to load data
     },
 
@@ -226,6 +299,14 @@ export default {
         children: []
       })
       this.scene = scene
+    },
+
+    getCardPayload(columnId) {
+      return index => {
+        return this.scene.children.filter(p => p.id === columnId)[0].children[
+          index
+        ]
+      }
     },
     dragStart() {
       // console.log('drag started')
