@@ -182,6 +182,19 @@ function getParentDir(path) {
 var git = require('simple-git')
 const fs = require('fs')
 
+export const checkIsRepo = path => {
+  const gitt = git(path)
+  return new Promise((resolve, reject) => {
+    gitt.checkIsRepo((err, res) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(res)
+      }
+    })
+  })
+}
+
 /**
  * Get the absolute path of the root directory of the git repo
  */
