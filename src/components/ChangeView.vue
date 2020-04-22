@@ -103,6 +103,7 @@ import { SweetModal } from 'sweet-modal-vue'
 import { Container, Draggable } from 'vue-smooth-dnd'
 import MonacoEditor from './vue-monaco'
 import { checkIsRepo, getFileName, getRootPath } from './utils/gitutils'
+import { isPathValid } from './utils/fsutils'
 import { generateItems } from './utils/helpers'
 
 const loadJsonFile = require('load-json-file')
@@ -152,6 +153,7 @@ export default {
       // repo data
       REPO_PATH: '',
       REPO_NAME: '',
+      DATA_PATH: '',
 
       // code related data
       language: 'java',
@@ -205,6 +207,7 @@ export default {
       let dataDir =
         require('os').homedir() +
         '/.mergebot/repos/SmartCommitCore_mergebot/smart_commit'
+      this.DATA_PATH = dataDir
       console.log('Data path: ' + dataDir)
       // load and extract data into list of json
       let groupsDir = dataDir + '/generated_groups'
@@ -276,8 +279,75 @@ export default {
           }))
         }))
       }
-      console.log(this.scene)
       // refresh to load data
+    },
+
+    showDiff(a_hunk, b_hunk, description) {
+      this.pathLeft = a_hunk.relativeFilePath
+      this.pathRight = b_hunk.relativeFilePath
+      this.startLineLeft = a_hunk.startLine
+      this.startLineRight = b_hunk.startLine
+      this.endLineLeft = a_hunk.endLine
+      this.endLineRight = b_hunk.endLine
+
+      this.$bvToast.hide()
+      this.$bvToast.toast(description, {
+        title: 'Change Actions',
+        toaster: 'b-toaster-bottom-center',
+        solid: true,
+        variant: 'success',
+        // appendToast: false,
+        noAutoHide: true
+      })
+
+      if (!isPathValid(this.pathLeft)) {
+        this.codeLeft = ''
+      } else {
+        try {
+          this.codeLeft = fs.readFileSync(
+            this.DATA_PATH + '/base/' + this.pathLeft,
+            'utf-8'
+          )
+        } catch (err) {
+          this.errorMessage = this.pathLeft + ' :' + err.message
+          this.$refs.errorModal.open()
+          return
+        }
+      }
+
+      if (!isPathValid(this.pathRight)) {
+        this.codeRight = ''
+      } else {
+        try {
+          this.codeRight = fs.readFileSync(
+            this.DATA_PATH + '/current/' + this.pathRight,
+            'utf-8'
+          )
+        } catch (err) {
+          this.errorMessage = this.pathRight + ' :' + err.message
+          this.$refs.errorModal.open()
+          return
+        }
+      }
+
+      const monaco = require('monaco-editor')
+      this.$refs.diffEditor.getEditor().setModel({
+        original: monaco.editor.createModel(this.codeLeft, this.language),
+        modified: monaco.editor.createModel(this.codeRight, this.language)
+      })
+      // this.$refs.diffEditor
+      //   .getEditor()
+      //   .revealRangeAtTop(
+      //     new monaco.Range(leftStartLine, 1, leftEndLine, 1)
+      //   )
+      this.$refs.diffEditor
+        .getEditor()
+        .revealLinesInCenter(this.startLineLeft, this.endLineLeft)
+      this.$refs.diffEditor
+        .getModifiedEditor()
+        .revealLinesInCenter(this.startLineRight, this.endLineRight)
+      // this.codeLeft = res.data.left_content
+      // this.codeRight = res.data.right_content
     },
 
     // UI methods
@@ -310,7 +380,8 @@ export default {
     },
     dragStart() {
       // console.log('drag started')
-    }
+    },
+    log() {}
   },
   mounted() {},
   created() {
