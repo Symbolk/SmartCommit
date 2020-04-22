@@ -1,5 +1,9 @@
 <template>
   <div>
+    <sweet-modal icon="success" ref="successModal" title="Success">{{successMsg}}</sweet-modal>
+    <sweet-modal icon="warning" ref="alertModal" title="Alert">{{alertMsg}}</sweet-modal>
+    <sweet-modal icon="error" ref="errorModal" title="Error">{{errorMsg}}</sweet-modal>
+
     <b-row align-v="start" no-gutters>
       <b-col class="group-view">
         <div class="card-scene">
@@ -95,8 +99,18 @@
 </template>
 
 <script>
+import { SweetModal } from 'sweet-modal-vue'
 import { Container, Draggable } from 'vue-smooth-dnd'
 import MonacoEditor from './vue-monaco'
+import {
+  checkIsRepo,
+  getFileName,
+  getRootPath,
+  analyzeStatus,
+  doCommit,
+  doPush,
+  showAtHEAD
+} from './utils/gitutils'
 
 const scene = {
   type: 'container',
@@ -111,6 +125,7 @@ export default {
   components: {
     Container,
     Draggable,
+    SweetModal,
     MonacoEditor
   },
   data() {
@@ -142,6 +157,7 @@ export default {
         // keepShow: true
       },
 
+      // view data
       scene,
       upperDropPlaceholderOptions: {
         className: 'cards-drop-preview',
@@ -152,10 +168,20 @@ export default {
         className: 'drop-preview',
         animationDuration: '100',
         showOnTop: true
-      }
+      },
+      // prompt messages
+      successMsg: '',
+      alertMsg: '',
+      errorMsg: ''
     }
   },
   methods: {
+    // Data loading
+    loadRepoData() {
+      // show the repo info in the navbar
+    },
+
+    // UI methods
     appendNewGroup() {
       const scene = Object.assign({}, this.scene)
       let newGroupID = this.scene.children.length
@@ -179,7 +205,36 @@ export default {
       // console.log('drag started')
     }
   },
-  mounted() {}
+  mounted() {},
+  created() {
+    checkIsRepo(this.REPO_PATH)
+      .then(res => {
+        if (res) {
+          console.log('Loading data: ' + __dirname)
+          getRootPath(this.REPO_PATH)
+            .then(rootPath => {
+              this.REPO_PATH = rootPath + '/'
+              console.log('Repo root path: ' + this.REPO_PATH)
+              this.REPO_NAME = getFileName(rootPath)
+              console.log('Repo name: ' + this.REPO_NAME)
+              this.loadRepoData()
+              this.$root.$emit('showRepoName', this.REPO_NAME, '', '')
+            })
+            .catch(err => {
+              this.loadingStatus = false
+              console.log(err)
+              this.errorMsg = err.message
+              this.$refs.errorModal.open()
+            })
+        } else {
+          this.$refs.usageModal.open()
+        }
+      })
+      .catch(err => {
+        this.alertMsg = err
+        this.$refs.alertModal.open()
+      })
+  }
 }
 </script>
 

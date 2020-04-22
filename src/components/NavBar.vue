@@ -85,13 +85,18 @@ export default {
     }
   },
 
+  created() {},
+
   mounted() {
     this.$root.$on(
       'showRepoName',
       (repoName, currentBranch, trackingBranch) => {
-        this.repoName = repoName + ': '
-        this.currentBranch = currentBranch + '-->'
-        this.trackingBranch = trackingBranch
+        this.repoName = repoName
+        if (currentBranch != '') {
+          this.repoName += ': '
+          this.currentBranch = currentBranch + '-->'
+          this.trackingBranch = trackingBranch
+        }
       }
     )
   }
