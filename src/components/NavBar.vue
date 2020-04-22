@@ -7,8 +7,8 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item href="/files">File View</b-nav-item>
-          <b-nav-item active href="/changes">Changes View</b-nav-item>
+          <b-nav-item href="/file">File View</b-nav-item>
+          <b-nav-item active href="/change">Change View</b-nav-item>
         </b-navbar-nav>
 
         <b-navbar-nav class="ml-auto">
@@ -60,7 +60,7 @@
 import { SweetModal } from 'sweet-modal-vue'
 
 export default {
-  name: 'Cards',
+  name: 'NavBar',
 
   components: {
     SweetModal

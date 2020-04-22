@@ -2,6 +2,8 @@ import Vue from 'vue'
 import App from './App.vue'
 import BootstrapVue from 'bootstrap-vue'
 import Icon from 'vue-awesome/components/Icon'
+import vuescroll from 'vuescroll/dist/vuescroll-native'
+import 'vuescroll/dist/vuescroll.css'
 
 import './assets/cards.css'
 import 'bootstrap/dist/css/bootstrap.css'
@@ -16,11 +18,12 @@ Vue.config.productionTip = false
 Vue.component('v-icon', Icon)
 
 Vue.use(BootstrapVue)
+Vue.use(vuescroll)
 
 new Vue({
   router,
   render: h => h(App),
-  created() {
-    this.$router.push('/files')
-  }
+  // created() {
+  //   this.$router.push('/change')
+  // }
 }).$mount('#app')

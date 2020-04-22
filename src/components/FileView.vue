@@ -321,7 +321,7 @@ var scene = {
 }
 
 export default {
-  name: 'Cards',
+  name: 'FileView',
 
   components: {
     Container,
@@ -912,6 +912,7 @@ export default {
         .catch(err => {
           // hide the graph sidebar in case of error
           this.graphLoadedOk = false
+          console.log(err);
         })
     }
   },

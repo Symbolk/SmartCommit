@@ -8,12 +8,12 @@ Vue.use(VueRouter)
 export default new VueRouter({
   routes: [
     {
-      path: '/files',
+      path: '/file',
       name: 'File View',
       component: FileView
     },
     {
-      path: '/changes',
+      path: '/change',
       name: 'Change View',
       component: ChangeView
     }
