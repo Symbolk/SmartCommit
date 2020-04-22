@@ -121,7 +121,7 @@
                     <div
                       :class="card.props.className"
                       :style="card.props.style"
-                      @dblclick="showDiffWithSweet(card.path, card.abs_path, card.type, card.operation, card.language)"
+                      @dblclick="showDiffWithSweet(card.path, card.abs_path, card.change_type, card.operation, card.language)"
                       class="no-select"
                     >
                       <p class="no-select" title="Double Click to Show Diff" v-b-tooltip.hover>
@@ -475,7 +475,7 @@ export default {
       // updated & popover positioned first
       this.$nextTick(() => {
         this.$nextTick(() => {
-          (ref.$el || ref).focus()
+          ;(ref.$el || ref).focus()
         })
       })
     },
@@ -619,7 +619,7 @@ export default {
                 badgeType: this.getBadgeType(res[i][j].operation),
                 path: res[i][j].path,
                 abs_path: res[i][j].abs_path,
-                type: res[i][j].type,
+                change_type: res[i][j].type,
                 language: res[i][j].lang
               }))
             }))
@@ -912,7 +912,7 @@ export default {
         .catch(err => {
           // hide the graph sidebar in case of error
           this.graphLoadedOk = false
-          console.log(err);
+          console.log(err)
         })
     }
   },

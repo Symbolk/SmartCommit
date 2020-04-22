@@ -23,7 +23,7 @@ Vue.use(vuescroll)
 new Vue({
   router,
   render: h => h(App),
-  // created() {
-  //   this.$router.push('/change')
-  // }
+  created() {
+    this.$router.push('/change')
+  }
 }).$mount('#app')
