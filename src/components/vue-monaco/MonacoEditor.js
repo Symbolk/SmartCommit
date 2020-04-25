@@ -87,7 +87,8 @@ export default {
         {
           value: this.value,
           theme: this.theme,
-          language: this.language
+          language: this.language,
+          renderSideBySide: true
         },
         this.options
       )

@@ -339,10 +339,57 @@ export default {
       }
 
       const monaco = require('monaco-editor')
+      var originalModel = monaco.editor.createModel(
+        this.codeLeft,
+        this.language
+      )
+      var modifiedModel = monaco.editor.createModel(
+        this.codeRight,
+        this.language
+      )
+
+      //  highlight the current focused area (not working for no reason)
+      originalModel.deltaDecorations(
+        [],
+        [
+          {
+            range: new monaco.Range(this.startLineLeft, 0, this.endLineLeft, 0),
+            options: {
+              isWholeLine: true,
+              linesDecorationsClassName: 'line-decoration',
+              inlineClassName: 'line-decoration',
+              className: 'line-decoration',
+              marginClassName: 'line-decoration'
+            }
+          }
+        ]
+      )
+
+      modifiedModel.deltaDecorations(
+        [],
+        [
+          {
+            range: new monaco.Range(
+              this.startLineRight,
+              0,
+              this.endLineRight,
+              0
+            ),
+            options: {
+              isWholeLine: true,
+              linesDecorationsClassName: 'line-decoration',
+              className: 'line-decoration',
+              marginClassName: 'line-decoration'
+            }
+          }
+        ]
+      )
+
       this.$refs.diffEditor.getEditor().setModel({
-        original: monaco.editor.createModel(this.codeLeft, this.language),
-        modified: monaco.editor.createModel(this.codeRight, this.language)
+        original: originalModel,
+        modified: modifiedModel
       })
+
       // this.$refs.diffEditor
       //   .getEditor()
       //   .revealRangeAtTop(
@@ -354,8 +401,6 @@ export default {
       this.$refs.diffEditor
         .getModifiedEditor()
         .revealLinesInCenter(this.startLineRight, this.endLineRight)
-      // this.codeLeft = res.data.left_content
-      // this.codeRight = res.data.right_content
     },
 
     // UI methods
@@ -547,5 +592,11 @@ h6 {
 
 .editor {
   height: 48vh;
+}
+
+.line-decoration {
+  background: blueviolet;
+  width: 50px !important;
+  margin-left: 3px;
 }
 </style>
