@@ -12,6 +12,22 @@
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 1px 1px rgba(0, 0, 0, 0.24);
 }
 
+.rotate {
+  writing-mode: vertical-rl;
+  /* -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg); */
+  transform: rotate(90deg);
+  position: fixed;
+  width: 1px;
+  white-space: nowrap;
+  display: block;
+  padding: 100px;
+  text-align: center;
+  align-items: center;
+}
+
 .popover {
   max-width: 500px !important;
   /* width: 600px !important; */

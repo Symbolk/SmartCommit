@@ -5,6 +5,11 @@
     <sweet-modal icon="error" ref="errorModal" title="Error">{{errorMsg}}</sweet-modal>
 
     <b-row align-v="start" no-gutters>
+      <b-col class="rotate" cols="1">
+        <div>
+          <b-form-input id="bar" type="range" v-model="barValue"></b-form-input>
+        </div>
+      </b-col>
       <b-col class="group-view">
         <div class="card-scene">
           <vue-scroll :ops="scrollOptions">
@@ -194,6 +199,9 @@ export default {
         animationDuration: '100',
         showOnTop: true
       },
+
+      // options
+      barValue: 0,
 
       // statistics
       steps: 0,
