@@ -1,5 +1,7 @@
 # <center>SmartCommit</center>
 
+> Note that this is solely the frontend GUI of SmartCommit, the core algorithm will be public once it passes the security check.
+
 #### SmartCommit aims at making "code commit" both an elegant and decent daily work.
 
 As suggested by [Google's engineering practices] (2019), developers are encouraged to submit cohesive and self-contained commits, with clear and uniform commit messages. SmartCommit assists you to follow this best practice.
