@@ -18,15 +18,21 @@
   -moz-transform: rotate(90deg);
   -o-transform: rotate(90deg);
   -ms-transform: rotate(90deg); */
-  transform: rotate(90deg);
+  transform: rotate(-90deg);
   position: fixed;
   width: 1px;
+  height: 300px;
   white-space: nowrap;
-  display: block;
-  padding: 100px;
+  /* display: block; */
+  /* padding: 10px; */
   text-align: center;
   align-items: center;
 }
+/* 
+input[type="range"] {
+  writing-mode: bt-lr;
+  -webkit-appearance: slider-vertical;
+} */
 
 .popover {
   max-width: 500px !important;

@@ -5,10 +5,17 @@
     <sweet-modal icon="error" ref="errorModal" title="Error">{{errorMsg}}</sweet-modal>
 
     <b-row align-v="start" no-gutters>
-      <b-col class="rotate" cols="1">
-        <div>
+      <b-col cols="1">
+        <b-col class="rotate">
           <b-form-input id="bar" type="range" v-model="barValue"></b-form-input>
-        </div>
+        </b-col>
+        <b-col>
+          <b-button
+            size="sm"
+            style="text-align: center;align-items: center;margin-left: 25px;"
+            variant="success"
+          >Update</b-button>
+        </b-col>
       </b-col>
       <b-col class="group-view">
         <div class="card-scene">
@@ -30,6 +37,31 @@
                     {{ column.group_label }}
                   </div>
                   <div class="card-scroll-area">
+                    <div id="message-container">
+                      <b-input-group :id="`message-${column.id}`" class="mt-3" prepend>
+                        <!-- <b-form-input placeholder="Commit Message" v-model="column.message"></b-form-input> -->
+                        <b-form-textarea
+                          max-rows="10"
+                          placeholder="Commit Message"
+                          rows="3"
+                          v-model="column.commit_msg"
+                        ></b-form-textarea>
+                        <b-input-group-append>
+                          <!-- disable button if the message is empty with: :disabled="!column.message" -->
+                          <b-button
+                            @click="column.commit_msg=''"
+                            title="Clear"
+                            v-b-tooltip.hover
+                            variant="outline-danger"
+                          >
+                            <v-icon name="eraser" />
+                          </b-button>
+                          <b-button title="Ok" v-b-tooltip.hover variant="outline-success">
+                            <v-icon name="check" />
+                          </b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </div>
                     <vue-scroll>
                       <Container
                         :drop-placeholder="dropPlaceholderOptions"
@@ -200,7 +232,6 @@ export default {
         showOnTop: true
       },
 
-      // options
       barValue: 0,
 
       // statistics
@@ -222,7 +253,7 @@ export default {
       // show the repo info in the navbar/
       let dataDir =
         require('os').homedir() +
-        '/.mergebot/repos/SmartCommitCore_mergebot/smart_commit'
+        '/.mergebot/repos/nomulus_mergebot/smart_commit/bc7f3546c73631ff241dd4406b2317d1cc1b7a58'
       this.DATA_PATH = dataDir
       console.log('Data path: ' + dataDir)
       // load and extract data into list of json
@@ -274,7 +305,7 @@ export default {
           },
           group_id: groups[i].content.groupID,
           group_label: groups[i].content.intentLabel,
-          commit_msg: '',
+          commit_msg: groups[i].content.commitMsg,
           committed: false, // whether the group has been committed
           // diff hunks
           children: generateItems(groups[i].diff_hunks.length, j => ({
@@ -504,6 +535,7 @@ export default {
               this.REPO_PATH = rootPath + '/'
               console.log('Repo root path: ' + this.REPO_PATH)
               this.REPO_NAME = getFileName(rootPath)
+              this.REPO_NAME = 'nomulus'
               console.log('Repo name: ' + this.REPO_NAME)
               this.loadMetaData()
               this.$root.$emit('showRepoName', this.REPO_NAME, '', '')

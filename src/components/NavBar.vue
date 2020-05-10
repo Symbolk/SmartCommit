@@ -19,13 +19,13 @@
         <b-navbar-nav class="ml-auto">
           <b-nav-form>
             <!-- <b-form-input class="mr-sm-2" placeholder="Search" size="sm"></b-form-input> -->
-            <b-button
+            <!-- <b-button
               @click="refresh()"
               class="my-2 my-sm-0"
               size="sm"
               type="submit"
               variant="warning"
-            >Refresh</b-button>
+            >Refresh</b-button> -->
           </b-nav-form>
 
           <b-nav-item-dropdown right text="Lang">
