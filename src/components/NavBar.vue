@@ -7,8 +7,8 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item href="/file">File View</b-nav-item>
-          <b-nav-item active href="/change">Change View</b-nav-item>
+          <b-nav-item href="/file">File Level</b-nav-item>
+          <b-nav-item active href="/change">Change Level</b-nav-item>
         </b-navbar-nav>
 
         <b-navbar-nav class="ml-auto">
@@ -25,8 +25,10 @@
               size="sm"
               type="submit"
               variant="warning"
-            >Refresh</b-button> -->
+            >Refresh</b-button>-->
           </b-nav-form>
+
+          <b-button class="my-2 my-sm-0" variant="warning">Commit</b-button>
 
           <b-nav-item-dropdown right text="Lang">
             <b-dropdown-item href="#">EN</b-dropdown-item>

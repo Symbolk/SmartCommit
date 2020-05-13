@@ -12,9 +12,9 @@
         <b-col>
           <b-button
             size="sm"
-            style="text-align: center;align-items: center;margin-left: 25px;"
+            style="text-align: center;align-items: center;margin-left: 20px;"
             variant="success"
-          >Update</b-button>
+          >Regroup</b-button>
         </b-col>
       </b-col>
       <b-col class="group-view">
@@ -32,7 +32,7 @@
                   <div class="card-column-header">
                     <span class="column-drag-handle">&#x2630;</span>
                     <span class="column-drag-handle" title="Drag to Move" v-b-tooltip.hover>
-                      <b-icon icon="document-diff" scale="1.5"></b-icon>
+                      <b-icon icon="document-diff" scale="1.0"></b-icon>
                     </span>
                     {{ column.group_label }}
                   </div>
@@ -56,7 +56,12 @@
                           >
                             <v-icon name="eraser" />
                           </b-button>
-                          <b-button title="Ok" v-b-tooltip.hover variant="outline-success">
+                          <b-button
+                            @click="variant='success'"
+                            title="Ready to Commit"
+                            v-b-tooltip.hover
+                            variant="outline-success"
+                          >
                             <v-icon name="check" />
                           </b-button>
                         </b-input-group-append>
