@@ -43,24 +43,16 @@
                         <b-form-textarea
                           max-rows="10"
                           placeholder="Commit Message"
-                          rows="3"
+                          rows="2"
                           v-model="column.commit_msg"
                         ></b-form-textarea>
-                        <b-input-group-append>
-                          <!-- disable button if the message is empty with: :disabled="!column.message" -->
+                          <b-input-group-append>
                           <b-button
-                            @click="column.commit_msg=''"
-                            title="Clear"
-                            v-b-tooltip.hover
-                            variant="outline-danger"
-                          >
-                            <v-icon name="eraser" />
-                          </b-button>
-                          <b-button
-                            @click="variant='success'"
+                            :variant="column.variant"
+                            @click="column.variant='success'"
+                            :disabled="!column.commit_msg"
                             title="Ready to Commit"
                             v-b-tooltip.hover
-                            variant="outline-success"
                           >
                             <v-icon name="check" />
                           </b-button>
@@ -311,6 +303,7 @@ export default {
           group_id: groups[i].content.groupID,
           group_label: groups[i].content.intentLabel,
           commit_msg: groups[i].content.commitMsg,
+          variant: 'outline-success', // checked or not
           committed: false, // whether the group has been committed
           // diff hunks
           children: generateItems(groups[i].diff_hunks.length, j => ({
