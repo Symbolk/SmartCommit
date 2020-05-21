@@ -1,5 +1,5 @@
 .card-scene {
-  padding: 5px;
+  /* padding: 5px; */
   /* background-color: #fff; */
 }
 
@@ -7,7 +7,7 @@
   width: 300px;
   padding: 5px;
   margin: 5px;
-  margin-right: 5px;
+  /* margin-right: 5px; */
   background-color: #f3f3f3;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 1px 1px rgba(0, 0, 0, 0.24);
 }
@@ -20,8 +20,8 @@
   -ms-transform: rotate(90deg); */
   transform: rotate(-90deg);
   position: fixed;
-  width: 1px;
-  height: 300px;
+  width: 100px;
+  height: 100px;
   white-space: nowrap;
   /* display: block; */
   /* padding: 10px; */

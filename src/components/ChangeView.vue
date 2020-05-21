@@ -4,22 +4,11 @@
     <sweet-modal icon="warning" ref="alertModal" title="Alert">{{alertMsg}}</sweet-modal>
     <sweet-modal icon="error" ref="errorModal" title="Error">{{errorMsg}}</sweet-modal>
 
-    <b-row align-v="start" no-gutters>
-      <b-col cols="1">
-        <b-col class="rotate">
-          <b-form-input id="bar" type="range" v-model="barValue"></b-form-input>
-        </b-col>
-        <b-col>
-          <b-button
-            size="sm"
-            style="text-align: center;align-items: center;margin-left: 20px;"
-            variant="success"
-          >Regroup</b-button>
-        </b-col>
-      </b-col>
-      <b-col class="group-view">
+    <!-- <b-container fluid> -->
+    <b-row align-v="start" class="group-view" no-gutters>
+      <b-col>
         <div class="card-scene">
-          <vue-scroll :ops="scrollOptions">
+          <vue-scroll :ops="horizonScrollOps">
             <Container
               :drop-placeholder="upperDropPlaceholderOptions"
               @drag-start="dragStart"
@@ -36,30 +25,30 @@
                     </span>
                     {{ column.group_label }}
                   </div>
-                  <div class="card-scroll-area">
-                    <div id="message-container">
-                      <b-input-group :id="`message-${column.id}`" class="mt-3" prepend>
-                        <!-- <b-form-input placeholder="Commit Message" v-model="column.message"></b-form-input> -->
-                        <b-form-textarea
-                          max-rows="10"
-                          placeholder="Commit Message"
-                          rows="2"
-                          v-model="column.commit_msg"
-                        ></b-form-textarea>
-                          <b-input-group-append>
-                          <b-button
-                            :variant="column.variant"
-                            @click="column.variant='success'"
-                            :disabled="!column.commit_msg"
-                            title="Ready to Commit"
-                            v-b-tooltip.hover
-                          >
-                            <v-icon name="check" />
-                          </b-button>
-                        </b-input-group-append>
-                      </b-input-group>
-                    </div>
-                    <vue-scroll>
+                  <div id="message-container">
+                    <b-input-group :id="`message-${column.id}`" class="mt-3" prepend>
+                      <!-- <b-form-input placeholder="Commit Message" v-model="column.message"></b-form-input> -->
+                      <b-form-textarea
+                        max-rows="10"
+                        placeholder="Commit Message"
+                        rows="2"
+                        v-model="column.commit_msg"
+                      ></b-form-textarea>
+                      <b-input-group-append>
+                        <b-button
+                          :disabled="!column.commit_msg"
+                          :variant="column.variant"
+                          @click="column.variant='success'"
+                          title="Ready to Commit"
+                          v-b-tooltip.hover
+                        >
+                          <v-icon name="check" />
+                        </b-button>
+                      </b-input-group-append>
+                    </b-input-group>
+                  </div>
+                  <vue-scroll :ops="verticalScrollOps">
+                    <div class="card-scroll-area">
                       <Container
                         :drop-placeholder="dropPlaceholderOptions"
                         :get-child-payload="getCardPayload(column.id)"
@@ -90,8 +79,8 @@
                           </div>
                         </Draggable>
                       </Container>
-                    </vue-scroll>
-                  </div>
+                    </div>
+                  </vue-scroll>
                 </div>
               </Draggable>
               <b-button @click="appendNewGroup" variant="outline-success">+ New Group</b-button>
@@ -100,6 +89,7 @@
         </div>
       </b-col>
     </b-row>
+    <!-- </b-container> -->
 
     <b-row no-gutters>
       <b-col>
@@ -210,10 +200,16 @@ export default {
         // smoothScrolling: true
         renderFinalNewline: false
       },
-
-      scrollOptions: {
-        wheelDirectionReverse: true
-        // keepShow: true
+      horizonScrollOps: {
+        wheelDirectionReverse: true,
+        bar: {
+          keepShow: true
+        }
+      },
+      verticalScrollOps: {
+        bar: {
+          keepShow: true
+        }
       },
 
       // view data
@@ -250,7 +246,7 @@ export default {
       // show the repo info in the navbar/
       let dataDir =
         require('os').homedir() +
-        '/.mergebot/repos/nomulus_mergebot/smart_commit/bc7f3546c73631ff241dd4406b2317d1cc1b7a58'
+        '/.mergebot/repos/IntelliMerge_mergebot/smart_commit'
       this.DATA_PATH = dataDir
       console.log('Data path: ' + dataDir)
       // load and extract data into list of json
@@ -606,22 +602,15 @@ h6 {
 }
 
 .group-view {
-  height: 42vh;
-}
-
-.commits-scroll-area {
-  /* overflow: auto; */
-  height: 40vh;
-  /* position: fixed; */
-  /* z-index: 2; */
+  height: 52vh;
+  margin-bottom: 5px;
 }
 
 .card-scroll-area {
-  /* overflow: auto; */
-  height: 35vh;
+  /* overflow: scroll; */
+  height: 40vh;
   /* position: fixed; */
   /* z-index: 2; */
-  padding: 5px;
 }
 
 .diff-view {
@@ -629,7 +618,7 @@ h6 {
 }
 
 .editor {
-  height: 48vh;
+  height: 100%;
 }
 
 .line-decoration {
