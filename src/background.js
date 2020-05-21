@@ -129,14 +129,14 @@ app.on('ready', async () => {
   }
   win = Splashscreen.initSplashScreen({
     windowOpts: windowOptions,
-    templateUrl: path.join(__dirname, '..', 'icon.svg'),
+    templateUrl: path.join(__dirname, '..', 'assets/logo.png'),
     // templateUrl: `${__dirname}/icon.svg`,
     // templateUrl: `file://${path.join(__dirname, "icon.svg")}`,
     delay: 0, // force show immediately since example will load fast
-    minVisible: 1500, // show for 1.5s so example is obvious
+    minVisible: 1000, // show for 1.5s so example is obvious
     splashScreenOpts: {
-      height: 500,
-      width: 500,
+      height: 250,
+      width: 250,
       transparent: true
     }
   })

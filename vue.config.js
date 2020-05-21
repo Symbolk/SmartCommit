@@ -20,7 +20,7 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
-        appId: 'edu.pku.smartcommit',
+        appId: 'smartcommit',
         productName: 'SmartCommit',
         copyright: 'Copyright © 2019 Bo Shen',
         directories: {
@@ -28,7 +28,7 @@ module.exports = {
         },
         extraFiles: [
           'git-sc',
-          'icon.svg'
+          'assets/logo.png'
         ],
         compression: 'maximum',
         nsis: {
