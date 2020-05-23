@@ -28,7 +28,7 @@ module.exports = {
         },
         extraFiles: [
           'git-sc',
-          'assets/logo.png'
+          'assets/icon.svg'
         ],
         compression: 'maximum',
         nsis: {
