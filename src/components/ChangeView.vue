@@ -201,10 +201,12 @@ export default {
         renderFinalNewline: false
       },
       horizonScrollOps: {
-        wheelDirectionReverse: true,
-        bar: {
-          keepShow: true
-        }
+        // vuescroll: {
+        //   wheelDirectionReverse: true,
+        //   // keepShow: true,
+        //   // mode: 'slide',
+        //   // detectResize: false
+        // }
       },
       verticalScrollOps: {
         bar: {
