@@ -4,6 +4,30 @@
     <sweet-modal icon="warning" ref="alertModal" title="Alert">{{alertMsg}}</sweet-modal>
     <sweet-modal icon="error" ref="errorModal" title="Error">{{errorMsg}}</sweet-modal>
 
+    <sweet-modal
+      blocking
+      hide-close-button
+      icon="info"
+      modal-theme="light"
+      overlay-theme="light"
+      ref="analyzeModal"
+      title="Analyzing changes ..."
+    >
+      <b-progress max="max">
+        <b-progress-bar
+          :label="`${((progress / max) * 100).toFixed(2)}%`"
+          :value="progress"
+          animated
+          striped
+          variant="success"
+        ></b-progress-bar>
+      </b-progress>
+      <br />
+      <div>
+        <b-button @click="analyze()" variant="success">Start Analyzing</b-button>
+      </div>
+    </sweet-modal>
+
     <!-- <b-container fluid> -->
     <b-row align-v="start" class="group-view" no-gutters>
       <b-col>
@@ -83,7 +107,7 @@
                   </vue-scroll>
                 </div>
               </Draggable>
-              <b-button @click="appendNewGroup" variant="outline-success">+ New Group</b-button>
+              <b-button @click="appendNewGroup" variant="outputline-success">+ New Group</b-button>
             </Container>
           </vue-scroll>
         </div>
@@ -126,8 +150,8 @@
 import { SweetModal } from 'sweet-modal-vue'
 import { Container, Draggable } from 'vue-smooth-dnd'
 import MonacoEditor from './vue-monaco'
-import { checkIsRepo, getFileName, getRootPath } from './utils/gitutils'
-import { isPathValid } from './utils/fsutils'
+import { checkIsRepo, getRootPath } from './utils/gitutils'
+import { isPathValid, invokeAnalysis, getFileName } from './utils/fsutils'
 import { applyDrag, generateItems } from './utils/helpers'
 
 const loadJsonFile = require('load-json-file')
@@ -178,6 +202,10 @@ export default {
       REPO_PATH: '',
       REPO_NAME: '',
       DATA_PATH: '',
+
+      // analyze with jar
+      progress: 0,
+      max: 100,
 
       // code related data
       language: 'java',
@@ -243,16 +271,34 @@ export default {
     }
   },
   methods: {
+    analyze() {
+      // invoke jar to analyze the current repo
+      this.progress = 50
+      invokeAnalysis('/Users/symbolk/coding/data/repos/IntelliMerge')
+        .then(output => {
+          console.log(output)
+          // return data path
+          this.DATA_PATH = output
+          console.log('Data path: ' + this.DATA_PATH)
+          // update the progress
+
+          // load data
+          this.loadMetaData()
+          // this.successMsg = 'Finish analyzing repo.'
+          // this.$refs.successModal.open()
+          this.$refs.analyzeModal.close()
+        })
+        .catch(err => {
+          this.alertMsg = err
+          console.log(err)
+          this.$refs.alertModal.open()
+          this.$refs.analyzeModal.close()
+        })
+    },
     // Data loading
     loadMetaData() {
-      // show the repo info in the navbar/
-      let dataDir =
-        require('os').homedir() +
-        '/.mergebot/repos/IntelliMerge_mergebot/smart_commit'
-      this.DATA_PATH = dataDir
-      console.log('Data path: ' + dataDir)
       // load and extract data into list of json
-      let groupsDir = dataDir + '/generated_groups'
+      let groupsDir = this.DATA_PATH + '/generated_groups'
       let groups = []
       fs.readdirSync(groupsDir).forEach(filename => {
         const name = path.parse(filename).name.replace(/(.*).json/, '')
@@ -262,7 +308,7 @@ export default {
           content: content
         })
       })
-      let diffsDir = dataDir + '/diffs'
+      let diffsDir = this.DATA_PATH + '/diffs'
       let diffs = {}
       fs.readdirSync(diffsDir).forEach(filename => {
         const name = path.parse(filename).name.replace(/(.*).json/, '')
@@ -301,7 +347,7 @@ export default {
           group_id: groups[i].content.groupID,
           group_label: groups[i].content.intentLabel,
           commit_msg: groups[i].content.commitMsg,
-          variant: 'outline-success', // checked or not
+          variant: 'outputline-success', // checked or not
           committed: false, // whether the group has been committed
           // diff hunks
           children: generateItems(groups[i].diff_hunks.length, j => ({
@@ -520,7 +566,9 @@ export default {
     },
     log() {}
   },
-  mounted() {},
+  mounted() {
+    this.$refs.analyzeModal.open()
+  },
   created() {
     checkIsRepo(this.REPO_PATH)
       .then(res => {
@@ -531,9 +579,8 @@ export default {
               this.REPO_PATH = rootPath + '/'
               console.log('Repo root path: ' + this.REPO_PATH)
               this.REPO_NAME = getFileName(rootPath)
-              this.REPO_NAME = 'nomulus'
               console.log('Repo name: ' + this.REPO_NAME)
-              this.loadMetaData()
+              // show the repo info in the navbar
               this.$root.$emit('showRepoName', this.REPO_NAME, '', '')
             })
             .catch(err => {
@@ -548,6 +595,7 @@ export default {
       })
       .catch(err => {
         this.alertMsg = err
+        console.log(err)
         this.$refs.alertModal.open()
       })
   }
@@ -577,7 +625,7 @@ h6 {
 }
 
 .no-select {
-  -webkit-touch-callout: none;
+  -webkit-touch-calloutput: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
   -moz-user-select: none;

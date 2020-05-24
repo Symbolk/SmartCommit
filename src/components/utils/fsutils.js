@@ -32,7 +32,7 @@ export const getParentDir = file_path => {
   // return path.substring(0, path.lastIndexOf('\\') + 1)
 }
 
-export const invokeCore = repo_path => {
+export const invokeAnalysis = repo_path => {
   var childProcess = require('child_process')
   var options = {
     maxBuffer: 1024 * 1024 * 100,
@@ -56,7 +56,9 @@ export const invokeCore = repo_path => {
         if (stderr.length) {
           console.log('Errors: ' + stderr)
         }
-        resolve(stdout)
+        // return the output path
+        let output_path = stdout.substring(stdout.lastIndexOf(': ') + 1).trim()
+        resolve(output_path)
       }
     )
   })
