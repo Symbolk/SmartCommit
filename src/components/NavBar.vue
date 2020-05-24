@@ -86,7 +86,10 @@ export default {
       this.$root.$router.push(url)
     },
     exit() {
-      this.$root.$emit('exit')
+      // this.$root.$emit('exit')
+      const remote = require('electron').remote
+      let w = remote.getCurrentWindow()
+      w.close()
     }
   },
 

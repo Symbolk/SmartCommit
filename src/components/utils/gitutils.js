@@ -163,22 +163,6 @@ function generateNode(repo_path, path, operation) {
   })
 }
 
-/**
- * Get the file name from absolute path
- * @param {} path
- */
-export const getFileName = path => {
-  return path.replace(/^.*[\\\/]/, '')
-}
-
-/**
- * Get the parent dir for a file/dir
- * @param {} path
- */
-function getParentDir(path) {
-  return path.substring(0, path.lastIndexOf('\\') + 1)
-}
-
 var git = require('simple-git')
 const fs = require('fs')
 
