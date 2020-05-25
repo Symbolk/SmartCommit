@@ -1,3 +1,6 @@
 #!/bin/sh
-$("$(dirname "$0")/SmartCommit.exe")
+# win
+# $("$(dirname "$0")/SmartCommit.exe")
+# macOS
+$(open -a "$(dirname "$0")/dist_electron/mac/SmartCommit.app")
 echo "Farewell~"

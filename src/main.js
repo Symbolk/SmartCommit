@@ -24,6 +24,6 @@ new Vue({
   router,
   render: h => h(App),
   created() {
-    this.$router.push('/change')
+    this.$router.push('/file')
   }
 }).$mount('#app')
