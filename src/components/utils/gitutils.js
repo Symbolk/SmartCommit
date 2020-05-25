@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-
+import { getFileName } from './fsutils.js'
 /**
  * Format the git statusinto graph data in json format
  * @param {} status

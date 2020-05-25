@@ -40,7 +40,7 @@ export const invokeAnalysis = repo_path => {
     timeout: 5000
   }
   return new Promise((resolve, reject) => {
-    var child = childProcess.exec(
+    childProcess.exec(
       'java -jar /Users/symbolk/coding/dev/SmartCommit/smartcommitcore-1.0.jar ' +
         '-r ' +
         repo_path,
