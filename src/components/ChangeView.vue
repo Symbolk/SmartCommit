@@ -4,6 +4,14 @@
     <sweet-modal icon="warning" ref="alertModal" title="Alert">{{alertMsg}}</sweet-modal>
     <sweet-modal icon="error" ref="errorModal" title="Error">{{errorMsg}}</sweet-modal>
 
+    <sweet-modal blocking hide-close-button icon="info" overlay-theme="dark" ref="usageModal">
+      <b>Usage:</b>
+      <br />1. Open terminal under a Git repo.
+      <br />2. Run `git sc` in terminal.
+      <br />
+      <b-button @click="exit()" class="right-button" variant="outline-danger">Got It!</b-button>
+    </sweet-modal>
+
     <sweet-modal
       blocking
       hide-close-button
@@ -274,7 +282,7 @@ export default {
     analyze() {
       // invoke jar to analyze the current repo
       this.progress = 50
-      invokeAnalysis('/Users/symbolk/coding/data/repos/IntelliMerge')
+      invokeAnalysis(this.REPO_PATH)
         .then(output => {
           console.log(output)
           // return data path
@@ -570,7 +578,7 @@ export default {
     this.$refs.analyzeModal.open()
   },
   created() {
-    checkIsRepo(this.REPO_PATH)
+    checkIsRepo('')
       .then(res => {
         if (res) {
           console.log('Loading data: ' + __dirname)

@@ -7,8 +7,8 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item @click="switchView('/file')">File Level</b-nav-item>
-          <b-nav-item @click="switchView('/change')">Change Level</b-nav-item>
+          <b-nav-item :active="currentView=='/file'" @click="switchView('/file')">File Level</b-nav-item>
+          <b-nav-item :active="currentView=='/change'" @click="switchView('/change')">Change Level</b-nav-item>
         </b-navbar-nav>
 
         <b-navbar-nav class="ml-auto">
@@ -71,7 +71,8 @@ export default {
     return {
       repoName: '',
       currentBranch: '',
-      trackingBranch: ''
+      trackingBranch: '',
+      currentView: '/file'
     }
   },
 
@@ -84,6 +85,7 @@ export default {
     },
     switchView(url) {
       this.$root.$router.push(url)
+      this.currentView = url
     },
     exit() {
       // this.$root.$emit('exit')

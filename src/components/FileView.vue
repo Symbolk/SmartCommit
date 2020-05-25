@@ -1,5 +1,18 @@
 <template>
   <div>
+    <!-- use 'hide-close-button blocking' to force user action -->
+    <sweet-modal icon="success" ref="successModal" title="Success">{{successMessage}}</sweet-modal>
+    <sweet-modal icon="warning" ref="alertModal" title="Alert">{{alertMessage}}</sweet-modal>
+    <sweet-modal icon="error" ref="errorModal" title="Error">{{errorMessage}}</sweet-modal>
+
+    <sweet-modal blocking hide-close-button icon="info" overlay-theme="dark" ref="usageModal">
+      <b>Usage:</b>
+      <br />1. Open terminal under a Git repo.
+      <br />2. Run `git sc` in terminal.
+      <br />
+      <b-button @click="exit()" class="right-button" variant="outline-danger">Got It!</b-button>
+    </sweet-modal>
+
     <b-form-row>
       <b-col cols="3">
         <div class="button-area">
@@ -214,19 +227,6 @@
       </div>
     </sweet-modal>
 
-    <!-- use 'hide-close-button blocking' to force user action -->
-    <sweet-modal icon="success" ref="successModal" title="Success">{{successMessage}}</sweet-modal>
-    <sweet-modal icon="warning" ref="alertModal" title="Alert">{{alertMessage}}</sweet-modal>
-    <sweet-modal blocking hide-close-button icon="info" overlay-theme="dark" ref="usageModal">
-      <b>Usage:</b>
-      <br />1. Open terminal under a Git repo.
-      <br />2. Run `git sc` in terminal.
-      <br />
-      <b-button @click="exit()" class="right-button" variant="outline-danger">Got It!</b-button>
-    </sweet-modal>
-
-    <sweet-modal icon="error" ref="error" title="Error">{{errorMessage}}</sweet-modal>
-
     <!-- modal to show diff view-->
     <!-- sweet-modal-vue -->
     <sweet-modal :title="diffViewTitle" ref="diffViewModal" width="80%">
@@ -271,9 +271,9 @@
 import { Container, Draggable } from 'vue-smooth-dnd'
 import vuescroll from 'vuescroll'
 import { applyDrag, generateItems, truncateLongPath } from './utils/helpers'
+import { getFileName } from './utils/fsutils'
 import {
   checkIsRepo,
-  getFileName,
   getRootPath,
   analyzeStatus,
   doCommit,
@@ -475,7 +475,7 @@ export default {
       // updated & popover positioned first
       this.$nextTick(() => {
         this.$nextTick(() => {
-          (ref.$el || ref).focus()
+          ;(ref.$el || ref).focus()
         })
       })
     },
@@ -544,7 +544,7 @@ export default {
     init() {
       this.getHintWords()
       // console.log("Analyzing git repo "+ __dirname);
-      getRootPath(this.REPO_PATH)
+      getRootPath('')
         .then(rootPath => {
           this.REPO_PATH = rootPath + '/'
           console.log('Repo root path: ' + this.REPO_PATH)
