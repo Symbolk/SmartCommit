@@ -285,6 +285,7 @@ import MonacoEditor from './vue-monaco'
 
 const fs = require('fs')
 const git2json = require('@fabien0102/git2json')
+const remote = require('electron').remote
 
 const badgeTypeMap = new Map([
   ['Modified', 'primary'],
@@ -417,7 +418,6 @@ export default {
 
   methods: {
     exit() {
-      const remote = require('electron').remote
       let w = remote.getCurrentWindow()
       w.close()
     },
@@ -475,7 +475,7 @@ export default {
       // updated & popover positioned first
       this.$nextTick(() => {
         this.$nextTick(() => {
-          ;(ref.$el || ref).focus()
+          (ref.$el || ref).focus()
         })
       })
     },
@@ -541,24 +541,7 @@ export default {
     },
 
     //  prepare data by analyzing git repo
-    init() {
-      this.getHintWords()
-      // console.log("Analyzing git repo "+ __dirname);
-      getRootPath('')
-        .then(rootPath => {
-          this.REPO_PATH = rootPath + '/'
-          console.log('Repo root path: ' + this.REPO_PATH)
-          this.REPO_NAME = getFileName(rootPath)
-          console.log('Repo name: ' + this.REPO_NAME)
-          this.analyzeGitRepo()
-        })
-        .catch(err => {
-          this.loadingStatus = false
-          console.log(err)
-          this.errorMessage = err.message
-          this.$refs.errorModal.open()
-        })
-    },
+    init() {},
     filterDiffs(diffs) {
       let res = []
       for (let k in diffs) {
@@ -918,10 +901,31 @@ export default {
   },
 
   created() {
-    checkIsRepo(this.REPO_PATH)
+    let currentPath = ''
+    // console.log(remote.process.argv)
+    // console.log(window.process.argv)
+    if (remote.process.argv.length > 0) {
+      currentPath = remote.process.argv.slice(-1)[0]
+    }
+    console.log('Current path: ' + currentPath)
+    checkIsRepo(currentPath)
       .then(res => {
         if (res) {
-          this.init()
+          this.getHintWords()
+          getRootPath(currentPath)
+            .then(rootPath => {
+              this.REPO_PATH = rootPath + '/'
+              console.log('Repo root path: ' + this.REPO_PATH)
+              this.REPO_NAME = getFileName(rootPath)
+              console.log('Repo name: ' + this.REPO_NAME)
+              this.analyzeGitRepo()
+            })
+            .catch(err => {
+              this.loadingStatus = false
+              console.log(err)
+              this.errorMessage = err.message
+              this.$refs.errorModal.open()
+            })
         } else {
           this.$refs.usageModal.open()
         }

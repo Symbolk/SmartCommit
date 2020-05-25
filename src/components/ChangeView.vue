@@ -165,6 +165,7 @@ import { applyDrag, generateItems } from './utils/helpers'
 const loadJsonFile = require('load-json-file')
 const fs = require('fs')
 const path = require('path')
+const remote = require('electron').remote
 
 const scene = {
   type: 'container',
@@ -578,11 +579,15 @@ export default {
     this.$refs.analyzeModal.open()
   },
   created() {
-    checkIsRepo('')
+    let currentPath = ''
+    if (remote.process.argv.length > 0) {
+      currentPath = remote.process.argv.slice(-1)[0]
+    }
+    console.log('Current path: ' + currentPath)
+    checkIsRepo(currentPath)
       .then(res => {
         if (res) {
-          console.log('Loading data: ' + __dirname)
-          getRootPath(this.REPO_PATH)
+          getRootPath(currentPath)
             .then(rootPath => {
               this.REPO_PATH = rootPath + '/'
               console.log('Repo root path: ' + this.REPO_PATH)

@@ -123,7 +123,8 @@ app.on('ready', async () => {
     height: height,
     show: false,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      additionalArguments: process.argv
       // webSecurity: false
     }
   }
@@ -141,7 +142,6 @@ app.on('ready', async () => {
     }
   })
   // setTimeout(() => {win.close(); console.log("CLOSE")}, 2500)
-
   createWindow()
 })
 
