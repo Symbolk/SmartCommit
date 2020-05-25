@@ -61,7 +61,6 @@ function generateNode(repo_path, path, operation) {
 
     // check if the path is a directory
     try {
-      console.log(abs_path)
       if (fs.existsSync(abs_path) && fs.lstatSync(abs_path).isDirectory()) {
         let node = {
           operation: operation,
@@ -84,7 +83,7 @@ function generateNode(repo_path, path, operation) {
         .then(res => {
           let buf = Buffer.from(res, 'utf8')
           let isBinary = isBinaryFileSync(buf)
-          let fileType = isBinary ? 'binary' : 'text'
+          let fileType = isBinary ? 'binary' : 'plaintext'
           if (isBinary) {
             let node = {
               operation: 'Deleted',
@@ -96,7 +95,9 @@ function generateNode(repo_path, path, operation) {
             }
             resolve(node)
           } else {
-            lang = langMapper[langDetector.filename(abs_path)].aceMode
+            if (langMapper[langDetector.filename(abs_path)] != undefined) {
+              lang = langMapper[langDetector.filename(abs_path)].aceMode
+            }
             let node = {
               operation: operation,
               type: fileType,
@@ -114,7 +115,7 @@ function generateNode(repo_path, path, operation) {
     } else {
       // check if the file is binary first
       let isBinary = isBinaryFileSync(abs_path)
-      let fileType = isBinary ? 'binary' : 'text'
+      let fileType = isBinary ? 'binary' : 'plaintext'
       if (isBinary) {
         let node = {
           operation: operation,
