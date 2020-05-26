@@ -20,6 +20,7 @@
       overlay-theme="light"
       ref="analyzeModal"
       title="Analyzing changes ..."
+      v-if="hasAnalyzed == false"
     >
       <b-progress max="max">
         <b-progress-bar
@@ -211,6 +212,7 @@ export default {
       REPO_PATH: '',
       REPO_NAME: '',
       DATA_PATH: '',
+      hasAnalyzed: false,
 
       // analyze with jar
       progress: 0,
@@ -285,6 +287,7 @@ export default {
       this.progress = 50
       invokeAnalysis(this.REPO_PATH)
         .then(output => {
+          this.hasAnalyzed = true
           console.log(output)
           // return data path
           this.DATA_PATH = output
@@ -299,6 +302,7 @@ export default {
         })
         .catch(err => {
           this.alertMsg = err
+          this.hasAnalyzed = true
           console.log(err)
           this.$refs.alertModal.open()
           this.$refs.analyzeModal.close()
@@ -594,7 +598,7 @@ export default {
               this.REPO_NAME = getFileName(rootPath)
               console.log('Repo name: ' + this.REPO_NAME)
               // show the repo info in the navbar
-              this.$root.$emit('showRepoName', this.REPO_NAME, '', '')
+              // this.$root.$emit('showRepoName', this.REPO_NAME, '', '')
             })
             .catch(err => {
               this.loadingStatus = false

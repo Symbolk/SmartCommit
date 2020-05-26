@@ -2,7 +2,9 @@
   <div id="app">
     <NavBar></NavBar>
     <!-- <HelloWorld msg="Welcome to SmartCommit!"/> -->
-    <router-view></router-view>
+    <keep-alive include="ChangeView">
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 
