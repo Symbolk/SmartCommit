@@ -624,7 +624,7 @@ export default {
       this.$refs.diffViewModal.open('sideDiff')
       this.loadingDiff = true
       this.diffViewTitle = abs_path
-      if (type == 'text') {
+      if (type == 'plaintext') {
         if (operation == 'Untracked' || operation == 'Created') {
           // when the file is newly added
           this.codeLeft = ''
