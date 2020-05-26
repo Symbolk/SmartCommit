@@ -28,7 +28,8 @@ module.exports = {
         },
         extraFiles: [
           'git-sc',
-          'assets/icon.svg'
+          'assets/icon.svg',
+          // 'smartcommitcore-1.0.jar'
         ],
         compression: 'maximum',
         nsis: {

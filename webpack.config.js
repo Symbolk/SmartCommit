@@ -1,5 +1,6 @@
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 // const path = require('path')
+const npmPackage = require('./package.json')
 module.exports = {
   // entry: './main.js',
   // output: {
@@ -18,7 +19,11 @@ module.exports = {
       languages: ['javascript', 'css', 'html', 'typescript', 'json']
     })
   ],
-  externals: {
-    'simple-git/promise': "require('simple-git/promise')"
-  }
+  externals: [
+    ...Object.keys(npmPackage.dependencies),
+    "require('simple-git/promise')"
+  ]
+  // externals: {
+  //   'simple-git/promise': "require('simple-git/promise')"
+  // }
 }
