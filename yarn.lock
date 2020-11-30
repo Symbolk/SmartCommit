@@ -9782,6 +9782,11 @@ vue-loader@^15.7.0:
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
 
+vue-range-component@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npm.taobao.org/vue-range-component/download/vue-range-component-1.0.3.tgz#17a1faa0cf3ccb67bdcc767564fd9b9b1b71c237"
+  integrity sha1-F6H6oM88y2e9zHZ1ZP2bmxtxwjc=
+
 vue-router@^3.1.6:
   version "3.1.6"
   resolved "https://registry.npm.taobao.org/vue-router/download/vue-router-3.1.6.tgz#45f5a3a3843e31702c061dd829393554e4328f89"

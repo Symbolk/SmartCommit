@@ -49,6 +49,15 @@
               drag-handle-selector=".column-drag-handle"
               orientation="horizontal"
             >
+              <vue-range-slider
+                :value="threshold"
+                direction="vertical"
+                height="300px"
+                max=minThreshold
+                min=minThreshold
+                style="margin:40px 10px 40px 40px;"
+                width="10"
+              ></vue-range-slider>
               <Draggable :key="column.id" v-for="column in scene.children">
                 <div :class="column.props.className">
                   <div class="card-column-header">
@@ -68,6 +77,9 @@
                         v-model="column.commit_msg"
                       ></b-form-textarea>
                       <b-input-group-append>
+                        <b-button variant="outline-danger">
+                          <v-icon name="eraser" />
+                        </b-button>
                         <b-button
                           :disabled="!column.commit_msg"
                           :variant="column.variant"
@@ -116,7 +128,7 @@
                   </vue-scroll>
                 </div>
               </Draggable>
-              <b-button @click="appendNewGroup" variant="outputline-success">+ New Group</b-button>
+              <b-button @click="appendNewGroup" variant="outline-success">+ New Group</b-button>
             </Container>
           </vue-scroll>
         </div>
@@ -162,6 +174,8 @@ import MonacoEditor from './vue-monaco'
 import { checkIsRepo, getRootPath } from './utils/gitutils'
 import { isPathValid, invokeAnalysis, getFileName } from './utils/fsutils'
 import { applyDrag, generateItems } from './utils/helpers'
+import VueRangeSlider from 'vue-range-component'
+import 'vue-range-component/dist/vue-range-slider.css'
 
 const loadJsonFile = require('load-json-file')
 const fs = require('fs')
@@ -189,7 +203,7 @@ const cardColors = [
   'khaki'
 ]
 
-const pickColor = fileIndex => {
+const pickColor = (fileIndex) => {
   if (fileIndex < cardColors.length) {
     return cardColors[fileIndex]
   } else {
@@ -204,7 +218,8 @@ export default {
     Container,
     Draggable,
     SweetModal,
-    MonacoEditor
+    MonacoEditor,
+    VueRangeSlider
   },
   data() {
     return {
@@ -217,6 +232,10 @@ export default {
       // analyze with jar
       progress: 0,
       max: 100,
+
+      threshold: 0.6,
+      minThreshold: 0,
+      maxThreshold: 1,
 
       // code related data
       language: 'java',
@@ -237,7 +256,7 @@ export default {
         // rulers: [1, 2, 3],
         // ignoreTrimWhitespace: false,
         // smoothScrolling: true
-        renderFinalNewline: false
+        renderFinalNewline: false,
       },
       horizonScrollOps: {
         // vuescroll: {
@@ -249,8 +268,8 @@ export default {
       },
       verticalScrollOps: {
         bar: {
-          keepShow: true
-        }
+          keepShow: true,
+        },
       },
 
       // view data
@@ -258,12 +277,12 @@ export default {
       upperDropPlaceholderOptions: {
         className: 'cards-drop-preview',
         animationDuration: '100',
-        showOnTop: true
+        showOnTop: true,
       },
       dropPlaceholderOptions: {
         className: 'drop-preview',
         animationDuration: '100',
-        showOnTop: true
+        showOnTop: true,
       },
 
       barValue: 0,
@@ -278,7 +297,7 @@ export default {
       // prompt messages
       successMsg: '',
       alertMsg: '',
-      errorMsg: ''
+      errorMsg: '',
     }
   },
   methods: {
@@ -300,7 +319,7 @@ export default {
           // this.$refs.successModal.open()
           this.$refs.analyzeModal.close()
         })
-        .catch(err => {
+        .catch((err) => {
           this.alertMsg = err
           this.hasAnalyzed = true
           console.log(err)
@@ -313,17 +332,17 @@ export default {
       // load and extract data into list of json
       let groupsDir = this.DATA_PATH + '/generated_groups'
       let groups = []
-      fs.readdirSync(groupsDir).forEach(filename => {
+      fs.readdirSync(groupsDir).forEach((filename) => {
         const name = path.parse(filename).name.replace(/(.*).json/, '')
         const content = loadJsonFile.sync(path.resolve(groupsDir, filename))
         groups.push({
           name: name,
-          content: content
+          content: content,
         })
       })
       let diffsDir = this.DATA_PATH + '/diffs'
       let diffs = {}
-      fs.readdirSync(diffsDir).forEach(filename => {
+      fs.readdirSync(diffsDir).forEach((filename) => {
         const name = path.parse(filename).name.replace(/(.*).json/, '')
         const content = loadJsonFile.sync(path.resolve(diffsDir, filename))
         diffs[name] = content
@@ -347,39 +366,39 @@ export default {
       this.scene = {
         type: 'container',
         props: {
-          orientation: 'horizontal'
+          orientation: 'horizontal',
         },
-        children: generateItems(groups.length, i => ({
+        children: generateItems(groups.length, (i) => ({
           id: i,
           type: 'container',
           name: 'Group $i',
           props: {
             orientation: 'vertical',
-            className: 'card-container'
+            className: 'card-container',
           },
           group_id: groups[i].content.groupID,
           group_label: groups[i].content.intentLabel,
           commit_msg: groups[i].content.commitMsg,
-          variant: 'outputline-success', // checked or not
+          variant: 'outline-success', // checked or not
           committed: false, // whether the group has been committed
           // diff hunks
-          children: generateItems(groups[i].diff_hunks.length, j => ({
+          children: generateItems(groups[i].diff_hunks.length, (j) => ({
             type: 'draggable',
             id: `${i}${j}`,
             props: {
               className: 'card',
               style: {
-                backgroundColor: pickColor(groups[i].diff_hunks[j].fileIndex)
-              }
+                backgroundColor: pickColor(groups[i].diff_hunks[j].fileIndex),
+              },
             },
             file_index: groups[i].diff_hunks[j].fileIndex,
             diff_hunk_index: groups[i].diff_hunks[j].index,
             change_type: groups[i].diff_hunks[j].changeType,
             description: groups[i].diff_hunks[j].description,
             a_hunk: groups[i].diff_hunks[j].baseHunk,
-            b_hunk: groups[i].diff_hunks[j].currentHunk
-          }))
-        }))
+            b_hunk: groups[i].diff_hunks[j].currentHunk,
+          })),
+        })),
       }
       // refresh to load data
     },
@@ -399,7 +418,7 @@ export default {
         solid: true,
         variant: 'success',
         // appendToast: false,
-        noAutoHide: true
+        noAutoHide: true,
       })
 
       if (!isPathValid(this.pathLeft)) {
@@ -453,9 +472,9 @@ export default {
               linesDecorationsClassName: 'line-decoration',
               inlineClassName: 'line-decoration',
               className: 'line-decoration',
-              marginClassName: 'line-decoration'
-            }
-          }
+              marginClassName: 'line-decoration',
+            },
+          },
         ]
       )
 
@@ -473,15 +492,15 @@ export default {
               isWholeLine: true,
               linesDecorationsClassName: 'line-decoration',
               className: 'line-decoration',
-              marginClassName: 'line-decoration'
-            }
-          }
+              marginClassName: 'line-decoration',
+            },
+          },
         ]
       )
 
       this.$refs.diffEditor.getEditor().setModel({
         original: originalModel,
-        modified: modifiedModel
+        modified: modifiedModel,
       })
 
       // this.$refs.diffEditor
@@ -507,20 +526,20 @@ export default {
         name: `Group ${newGroupID}`,
         props: {
           orientation: 'vertical',
-          className: 'card-container'
+          className: 'card-container',
         },
         group_id: 'group ${newGroupID}',
         group_label: 'NEW',
         commit_msg: '',
         committed: false,
-        children: []
+        children: [],
       })
       this.scene = scene
     },
 
     getCardPayload(columnId) {
-      return index => {
-        return this.scene.children.filter(p => p.id === columnId)[0].children[
+      return (index) => {
+        return this.scene.children.filter((p) => p.id === columnId)[0].children[
           index
         ]
       }
@@ -539,7 +558,7 @@ export default {
     onCardDrop(columnId, dropResult) {
       if (dropResult.removedIndex !== null || dropResult.addedIndex !== null) {
         const scene = Object.assign({}, this.scene)
-        const column = scene.children.filter(p => p.id === columnId)[0]
+        const column = scene.children.filter((p) => p.id === columnId)[0]
         const columnIndex = scene.children.indexOf(column)
         const newColumn = Object.assign({}, column)
         newColumn.children = applyDrag(newColumn.children, dropResult)
@@ -577,7 +596,7 @@ export default {
     dragStart() {
       // console.log('drag started')
     },
-    log() {}
+    log() {},
   },
   mounted() {
     this.$refs.analyzeModal.open()
@@ -589,18 +608,18 @@ export default {
     }
     console.log('Current path: ' + currentPath)
     checkIsRepo(currentPath)
-      .then(res => {
+      .then((res) => {
         if (res) {
           getRootPath(currentPath)
-            .then(rootPath => {
+            .then((rootPath) => {
               this.REPO_PATH = rootPath + '/'
               console.log('Repo root path: ' + this.REPO_PATH)
               this.REPO_NAME = getFileName(rootPath)
               console.log('Repo name: ' + this.REPO_NAME)
               // show the repo info in the navbar
-              // this.$root.$emit('showRepoName', this.REPO_NAME, '', '')
+              this.$root.$emit('showRepoName', this.REPO_NAME, '', '')
             })
-            .catch(err => {
+            .catch((err) => {
               this.loadingStatus = false
               console.log(err)
               this.errorMsg = err.message
@@ -610,12 +629,12 @@ export default {
           this.$refs.usageModal.open()
         }
       })
-      .catch(err => {
+      .catch((err) => {
         this.alertMsg = err
         console.log(err)
         this.$refs.alertModal.open()
       })
-  }
+  },
 }
 </script>
 
@@ -675,7 +694,7 @@ h6 {
 
 .card-scroll-area {
   /* overflow: scroll; */
-  height: 40vh;
+  height: 35vh;
   /* position: fixed; */
   /* z-index: 2; */
 }
