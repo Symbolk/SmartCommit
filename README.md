@@ -1,39 +1,57 @@
-# <center>SmartCommit</center>
 
-> Note that this is solely the frontend GUI of SmartCommit, the core algorithm will be public once it passes the security check.
+<div align="center">
+  <a href="" target="_blank">
+    <img width="160" src="https://github.com/Symbolk/SmartCommit/blob/master/assets/icon.png" alt="logo">
+  </a>
+  <h1 id="smartcommit"><a href="" target="_blank">SmartCommit</a></h1>
 
-#### SmartCommit aims at making "code commit" both an elegant and decent daily work.
+</div>
 
-As suggested by [Google's engineering practices] (2019), developers are encouraged to submit cohesive and self-contained commits, with clear and uniform commit messages. SmartCommit assists you to follow this best practice.
+> Note that this repo just serves as a demo GUI with maintenance suspend, SmartCommit-UI privately lives as a proprietary industrial project inside company since 2020.
 
-SmartCommit allows you to review&organize your local changes in groups, and commit them with one click, instead of typing `git-status`, `git-diff`, `git-add`, `git-commit` and `git-push` again and again.
+#### SmartCommit aims at making "code commit" an elegant and decent daily work for developers.
 
+As advocated by many communites (e.g., [Git official doc], [Angular contribution instructions]) and companies (e.g., [Google's engineering practices]), developers are encouraged to submit cohesive and self-contained commits, accompanying with clear and informative commit messages. 
+
+SmartCommit is the assistant for you to follow this best practice. 
+
+Specifically, it helps you to:
+
+- Organize your local changes into groups, each of which is expected to focus on one specific task.
+- Review and stage fine-grained code changes within an inituive GUI, in the forms of code hunks or files.
+- Commit and push multiple commits with one single click, saving the effort to type `git-status`, `git-diff`, `git-add`, `git-commit` and `git-push` commands.
+
+[Git official doc]: https://git-scm.com/docs/gitworkflows#_separate_changes
+[Angular contribution instructions]:  https://github.com/angular/angular/blob/master/CONTRIBUTING.md
 [Google's engineering practices]: https://github.com/google/eng-practices/blob/master/review/developer/small-cls.md
+
+This repo is the frontend GUI client of SmartCommit, check the [SmartCommitCore] repo for the change decomposition suggestion algorithm.
+
+[SmartCommitCore]: https://github.com/Symbolk/SmartCommitCore
 
 ---
 ## Features
 
-- Stage&Commit changes in groups
+- Commit local code changes in task-oriented groups
 - Diff&Compare diff code side by side or line by line
-- Suggest key words for commit message
-- Push to the remote
-- Customizable template for commit message (developing)
-
+- Push to the remote host platform (GitHub, GitLab, etc.)
+- Suggest key words or pharses for the commit message (doing)
+- Allow for customizable template for commit message (doing)
+  
 ---
 
 ## As a User
 
-> Currently the app only support Windows x64, Linux and macOS version will be released when the :-)
+> Currently the release binary only supports Windows 10(x64), Linux and macOS version requires signing and will be considered in the future.
 
 ### Requirements
 
-- Windows
-- Git
-- Network access
+- Windows 10(x64)
+- Git ^2.18.0   
 
 ### Installation
 
-#### Installer
+#### Installer Version
 1. Download the latest release installer `SmartCommit-Setup-x.y.z.exe` from https://github.com/Symbolk/SmartCommit/releases/latest ;
 2. Double click it to install on your machine;
 > Security software like 360 may report warnings, it is safe to ignore.
@@ -41,7 +59,7 @@ SmartCommit allows you to review&organize your local changes in groups, and comm
 > After the installation, better not choose to directly run it, see the following Usage.
 4. Append the path to `PATH` of your environment variable.
 
-#### Portable
+#### Portable Version
 1. Download the latest release portable package `SmartCommit-Portable-x.y.z.zip` from https://github.com/Symbolk/SmartCommit/releases/latest ;
 2. Unzip the zip package to a folder, **copy** the path of this folder, in which you can find the file `SmartCommit.exe`;
 3. Append the path to `PATH` of your environment variable.
@@ -79,9 +97,10 @@ When you have some changes to commit:
 
 ### Requirements
 
-- Windows
-- Git ^2.18.0
+- Windows/macOS/Linux
+- Git ^2.18.0   
 - Node.js ^v10.16.0
+- Python ^2.7.18
 - Yarn ~v1.16.0
 - Vue-cli ~v3.8.4
 
@@ -110,12 +129,13 @@ SmartCommit is powered by multiple nice open source projects. Thanks for all the
 
 | Module       | Component              | Version |
 | ------------ | --------------------- | -------------------- |
+| Framework| [Electron] | ^5.0.12 |
 | Frontend| [Vue] | ^2.6.10 |
+| Backend | NodeJS | ^10.16.0 |
 | Scaffold| [vue-smooth-dnd] | ^0.8.0 |
 | UI | [bootstrap-vue] | ^2.0.0-rc.24 |
 | Modal | [sweet-modal-vue] | ^2.0.0 |
 | Icon | [vue-awesome] | ^3.5.4 |
-| App Framework| [Electron] | ^5.0.0 |
 | Git Function | [git-js] | ^1.118.0 |
 | Diff View | [vue-monaco] | ^1.0.1|
 | Language Detector | [language-detect] | ^1.1.0 |
