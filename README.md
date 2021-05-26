@@ -11,14 +11,14 @@
 
 #### SmartCommit aims at making "code commit" an elegant and decent daily work for developers.
 
-As advocated by many communites (e.g., [Git official doc], [Angular contribution instructions]) and companies (e.g., [Google's engineering practices]), developers are encouraged to submit cohesive and self-contained commits, accompanying with clear and informative commit messages. 
+As advocated by many communities (e.g., [Git official doc], [Angular contribution instructions]) and companies (e.g., [Google's engineering practices]), developers are encouraged to submit cohesive and self-contained commits, accompanying with clear and informative commit messages. 
 
 SmartCommit is the assistant for you to follow this best practice. 
 
 Specifically, it helps you to:
 
 - Organize your local changes into groups, each of which is expected to focus on one specific task.
-- Review and stage fine-grained code changes within an inituive GUI, in the forms of code hunks or files.
+- Review and stage fine-grained code changes within an intuitive GUI, in the forms of code hunks or files.
 - Commit and push multiple commits with one single click, saving the effort to type `git-status`, `git-diff`, `git-add`, `git-commit` and `git-push` commands.
 
 [Git official doc]: https://git-scm.com/docs/gitworkflows#_separate_changes
